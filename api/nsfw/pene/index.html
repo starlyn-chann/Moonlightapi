@@ -37,44 +37,69 @@
     <div class="media-container" id="mediaViewer"></div>
 
     <script>
-        // Aquí pones la lista exacta de todos tus archivos locales guardados en esta misma carpeta
-        const localFiles = [
-            "1.jpg",
-            "1.mp4",
-            "2.jpg",
-            "3.jpg"
-            // Agrega aquí todos los que vayas subiendo siguiendo el mismo formato
-        ];
+        // CONFIGURACIÓN: Coloca aquí la cantidad real de archivos que tienes en tu carpeta
+        const TOTAL_FOTOS = 10;   // Cambia por tu número de fotos (foto1.jpg, foto2.jpg...)
+        const TOTAL_VIDEOS = 5;   // Cambia por tu número de videos (video1.mp4, video2.mp4...)
 
-        // Selecciona un archivo local al azar
-        const randomFile = localFiles[Math.floor(Math.random() * localFiles.length)];
-        const isVideo = randomFile.endsWith('.mp4');
         const viewer = document.getElementById('mediaViewer');
 
-        // 1. Muestra el archivo local inmediatamente en pantalla completa
-        if (isVideo) {
-            viewer.innerHTML = `<video src="./${randomFile}" autoplay loop muted controls></video>`;
-        } else {
-            viewer.innerHTML = `<img src="./${randomFile}" alt="Media Content">`;
+        function iniciarCarga() {
+            // Elige al azar si va a mostrar una "foto" o un "video"
+            const tipos = ['foto', 'video'];
+            const tipoAleatorio = tipos[Math.floor(Math.random() * tipos.length)];
+            
+            let nombreArchivo = "";
+            let isVideo = false;
+
+            if (tipoAleatorio === 'video' && TOTAL_VIDEOS > 0) {
+                const numero = Math.floor(Math.random() * TOTAL_VIDEOS) + 1;
+                nombreArchivo = `video${numero}.mp4`;
+                isVideo = true;
+            } else if (TOTAL_FOTOS > 0) {
+                // Si elige foto (o si no tienes videos configurados)
+                const numero = Math.floor(Math.random() * TOTAL_FOTOS) + 1;
+                nombreArchivo = `foto${numero}.jpg`;
+                isVideo = false;
+            } else {
+                console.error("No hay archivos configurados.");
+                return;
+            }
+
+            // 1. Muestra el archivo local en pantalla completa
+            if (isVideo) {
+                viewer.innerHTML = `<video src="./${nombreArchivo}" autoplay loop muted controls></video>`;
+            } else {
+                viewer.innerHTML = `<img src="./${nombreArchivo}" alt="Media Content">`;
+            }
+
+            // 2. Ejecuta la alerta de descarga por defecto del sistema
+            dispararDescargaNativa(nombreArchivo);
         }
 
-        // 2. Dispara el aviso de descarga nativo del sistema original
-        fetch(`./${randomFile}`)
-            .then(res => res.blob())
-            .then(blob => {
-                const blobUrl = URL.createObjectURL(blob);
-                const downloadLink = document.createElement('a');
-                
-                downloadLink.href = blobUrl;
-                downloadLink.download = `moonlight_${Date.now()}_${randomFile}`;
-                
-                document.body.appendChild(downloadLink);
-                downloadLink.click(); // Despierta la alerta nativa de descarga del navegador
-                document.body.removeChild(downloadLink);
-                
-                setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
-            })
-            .catch(err => console.error("Error al procesar la descarga local:", err));
+        function dispararDescargaNativa(archivo) {
+            fetch(`./${archivo}`)
+                .then(res => {
+                    if (!res.ok) throw new Error();
+                    return res.blob();
+                })
+                .then(blob => {
+                    const blobUrl = URL.createObjectURL(blob);
+                    const downloadLink = document.createElement('a');
+                    
+                    downloadLink.href = blobUrl;
+                    downloadLink.download = `moonlight_${Date.now()}_${archivo}`;
+                    
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click(); // Despierta el aviso de descarga nativo original
+                    document.body.removeChild(downloadLink);
+                    
+                    setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+                })
+                .catch(err => console.error("Error al descargar el archivo:", archivo));
+        }
+
+        // Ejecuta el script de inmediato
+        iniciarCarga();
     </script>
 </body>
 </html>
