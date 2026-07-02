@@ -5,24 +5,19 @@
     <title>Nsfw Pene Endpoint</title>
 </head>
 <body style="background-color: #070510; color: #94a3b8; font-family: monospace; padding: 20px;">
-    <pre id="jsonRender">// Fetching live database links...</pre>
+    <pre id="jsonRender">// Fetching live API response...</pre>
 
     <script>
-        // Lee el archivo pene.json que está en su misma carpeta
         fetch('./pene.json')
             .then(response => {
                 if (!response.ok) throw new Error('No se pudo leer el archivo de enlaces');
                 return response.json();
             })
             .then(linksArray => {
-                // Selecciona un enlace al azar de la lista
                 const randomLink = linksArray[Math.floor(Math.random() * linksArray.length)];
-                
-                // Detecta automáticamente si es video o imagen por su extensión
                 const isVideo = randomLink.endsWith('.mp4');
                 const mimeType = isVideo ? 'video/mp4' : (randomLink.endsWith('.png') ? 'image/png' : 'image/jpeg');
                 
-                // Arma la estructura exacta del JSON final
                 const jsonResponse = {
                     "status": true,
                     "Author": "StarLyn",
@@ -40,13 +35,12 @@
                     }
                 };
 
-                // Lo imprime en la pantalla como texto plano
                 document.getElementById('jsonRender').innerText = JSON.stringify(jsonResponse, null, 2);
             })
             .catch(err => {
                 document.getElementById('jsonRender').innerText = JSON.stringify({
                     "status": false,
-                    "error": "No se pudo cargar la base de datos de enlaces locales"
+                    "error": "No se pudo estructurar el endpoint de la API"
                 }, null, 2);
                 console.error(err);
             });
