@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moonlight API Docs</title>
+    <link rel="icon" href="moon.jpg" type="image/jpeg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #0b071a;
+            background-image: radial-gradient(#1a1235 1px, transparent 1px);
+            background-size: 20px 20px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #94a3b8;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container { max-width: 700px; width: 100%; margin-top: 10px; margin-bottom: 40px; }
+        .api-banner { width: 100%; height: 180px; border-radius: 16px; border: 1px solid #1f1640; overflow: hidden; background: #000; margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6); }
+        .api-banner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .api-header { margin-bottom: 25px; }
+        .api-title { font-family: 'Space Grotesk', sans-serif; font-size: 2.2rem; font-weight: 700; color: #ffffff; text-transform: uppercase; letter-spacing: 1px; }
+        .api-title span { color: #a855f7; font-weight: 500; }
+        .api-limit { display: inline-flex; align-items: center; background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.3); color: #c084fc; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-top: 8px; font-family: 'Space Grotesk', sans-serif; letter-spacing: 0.5px; }
+        .api-subtitle { font-size: 0.9rem; color: #64748b; margin-top: 12px; }
+        .nav-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
+        .nav-btn { display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 0.75rem; font-weight: 700; color: #94a3b8; background: rgba(22, 16, 49, 0.6); border: 1px solid #251b4f; border-radius: 8px; padding: 12px 5px; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s ease; }
+        .nav-btn:hover { color: #ffffff; border-color: #a855f7; background: rgba(168, 85, 247, 0.05); }
+        .search-box { position: relative; width: 100%; margin-bottom: 20px; }
+        .search-box input { width: 100%; background: rgba(13, 9, 31, 0.8); border: 1px solid #211847; border-radius: 10px; padding: 14px 16px; color: #ffffff; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
+        .search-box input:focus { border-color: #a855f7; }
+        .category-chips { display: flex; gap: 8px; margin-bottom: 25px; overflow-x: auto; }
+        .chip { background: rgba(25, 18, 56, 0.5); border: 1px solid #281d59; color: #8a99ad; padding: 8px 16px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; cursor: pointer; white-space: nowrap; letter-spacing: 0.5px; }
+        .chip span { color: #a855f7; margin-left: 4px; font-weight: 600; }
+        .chip.active { background: #a855f7; border-color: #c084fc; color: #ffffff; box-shadow: 0 0 15px rgba(168, 85, 247, 0.4); }
+        .chip.active span { color: #ffffff; }
+        .endpoint-card { background: rgba(17, 12, 38, 0.7); border: 1px solid #241952; border-radius: 12px; overflow: hidden; backdrop-filter: blur(10px); }
+        .endpoint-header { display: flex; align-items: center; gap: 12px; padding: 16px; background: rgba(22, 16, 49, 0.9); border-bottom: 1px solid #241952; }
+        .method-get { background: #10b981; color: #ffffff; font-size: 0.75rem; font-weight: 800; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; }
+        .endpoint-title { font-family: 'Space Grotesk', sans-serif; color: #ffffff; font-weight: 700; font-size: 1rem; }
+        .endpoint-body { padding: 20px; }
+        .endpoint-desc { font-size: 0.88rem; color: #64748b; margin-bottom: 15px; background: rgba(10, 7, 24, 0.5); padding: 10px 14px; border-radius: 6px; border-left: 3px solid #a855f7; }
+        .param-section { margin-bottom: 18px; }
+        .param-label { font-size: 0.8rem; font-weight: 700; color: #cbd5e1; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .param-input-box { display: flex; align-items: center; background: #090617; border: 1px solid #21174a; border-radius: 8px; padding: 12px 14px; color: #a855f7; font-family: 'Fira Code', monospace; font-size: 0.85rem; }
+        .param-input-box span { color: #64748b; margin-right: 5px; }
+        .param-input-box input { background: transparent; border: none; color: #ffffff; outline: none; width: 100%; font-family: 'Fira Code', monospace; }
+        .url-box { background: #070512; border: 1px solid #1c1440; border-radius: 8px; padding: 14px; font-family: 'Fira Code', monospace; font-size: 0.8rem; color: #34d399; margin-bottom: 15px; word-break: break-all; }
+        .btn-execute { width: 100%; background: #a855f7; border: 1px solid #c084fc; color: #ffffff; font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem; font-weight: 700; padding: 14px; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3); display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
+        .btn-execute:hover { background: #b55fe6; box-shadow: 0 4px 20px rgba(168, 85, 247, 0.5); }
+        .response-container { margin-top: 20px; }
+        .status-bar { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 6px; text-transform: uppercase; }
+        .status-dot { width: 8px; height: 8px; background: #64748b; border-radius: 50%; }
+        .status-dot.success { background: #10b981; box-shadow: 0 0 8px #10b981; }
+        .status-dot.error { background: #f43f5e; box-shadow: 0 0 8px #f43f5e; }
+        .json-box { background: #05030f; border: 1px solid #1b133d; border-radius: 8px; padding: 16px; font-family: 'Fira Code', monospace; font-size: 0.85rem; color: #e2e8f0; overflow-x: auto; white-space: pre; min-height: 80px; line-height: 1.5; }
+        .json-key { color: #f43f5e; }
+        .json-string { color: #34d399; }
+        .json-boolean { color: #f59e0b; }
+        @media (max-width: 600px) { .nav-buttons { grid-template-columns: repeat(2, 1fr); } .api-title { font-size: 1.8rem; } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="api-banner"><img src="moon.jpg" alt="API Banner"></div>
+
+        <div class="api-header">
+            <h1 class="api-title">Moonlight <span>Docs</span></h1>
+            <div class="api-limit">FREE REST API</div>
+            <p class="api-subtitle">Explore & test live endpoints – modular folder layout.</p>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="https://wa.me/529992042946?text=starlyn" target="_blank" class="nav-btn">Contact Dev</a>
+            <a href="#" class="nav-btn">Feedback</a>
+            <a href="https://whatsapp.com/channel/0029Vb6qIht5q08ZMPgVrA1y" target="_blank" class="nav-btn">Channel</a>
+            <a href="https://chat.whatsapp.com/F41976tzldkDSA6gtTj5sT" target="_blank" class="nav-btn">Group</a>
+        </div>
+
+        <div class="search-box"><input type="text" placeholder="Cari endpoint..." value="pene"></div>
+
+        <div class="category-chips">
+            <div class="chip active">NSFW <span>1</span></div>
+            <div class="chip">AI <span>15</span></div>
+            <div class="chip">MAKER <span>33</span></div>
+            <div class="chip">RANDOM <span>10</span></div>
+        </div>
+
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="method-get">GET</span>
+                <span class="endpoint-title">Nsfw Pene</span>
+            </div>
+            
+            <div class="endpoint-body">
+                <div class="endpoint-desc">Fetches actual real-time data from the modular endpoint logic.</div>
+
+                <div class="param-section">
+                    <div class="param-label">Query (q) <span style="color:#f43f5e;">*</span></div>
+                    <div class="param-input-box">
+                        <span>string</span>
+                        <input type="text" id="queryParam" value="pene" oninput="updateUrl()">
+                    </div>
+                </div>
+
+                <div class="param-label">Request URL</div>
+                <div class="url-box" id="apiUrlBox">/pene/</div>
+
+                <button class="btn-execute" onclick="executeApi()">EXECUTE</button>
+
+                <div class="response-container">
+                    <div class="status-bar">
+                        <div class="status-dot" id="statusDot"></div>
+                        <span id="statusText">Idle</span>
+                    </div>
+                    <div class="json-box" id="jsonOutput">// Awaiting...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateUrl() {
+            const queryValue = encodeURIComponent(document.getElementById('queryParam').value || 'pene');
+            // Cambiado para que refleje la ruta de tu subcarpeta real
+            document.getElementById('apiUrlBox').innerText = `${window.location.origin}/pene/?q=${queryValue}`;
+        }
+        
+        // Ejecución inicial para pintar la URL al cargar
+        updateUrl();
+
+        function executeApi() {
+            const outputBox = document.getElementById('jsonOutput');
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+
+            outputBox.innerText = '// Fetching live endpoint data...';
+            
+            // HACE UNA LLAMADA REAL A TU CARPETA /pene/
+            fetch('./pene/')
+                .then(response => {
+                    if (!response.ok) throw new Error('Network error');
+                    return response.json();
+                })
+                .then(data => {
+                    let jsonString = JSON.stringify(data, null, 2);
+                    jsonString = jsonString
+                        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                        .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|\b[0-9]+\b)/g, function (match) {
+                            let cls = 'json-string';
+                            if (/^"/.test(match)) {
+                                if (/:$/.test(match)) cls = 'json-key';
+                                else cls = 'json-string';
+                            } else if (/true|false/.test(match)) cls = 'json-boolean';
+                            return '<span class="' + cls + '">' + match + '</span>';
+                        });
+
+                    statusDot.className = "status-dot success";
+                    statusText.innerText = "Response: 200 OK";
+                    outputBox.innerHTML = jsonString;
+                })
+                .catch(err => {
+                    statusDot.className = "status-dot error";
+                    statusText.innerText = "Response: Error";
+                    outputBox.innerText = '// Error cargando los datos de ./pene/index.html';
+                });
+        }
+    </script>
+</body>
+</html>
