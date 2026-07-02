@@ -1,48 +1,52 @@
-const fs = require('fs');
-const path = require('path');
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Download Media</title>
+</head>
+<body style="background-color: #070510; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh;">
 
-module.exports = async (req, res) => {
-    const jsonPath = path.join(__dirname, 'pene.json');
-    
-    fs.readFile(jsonPath, 'utf8', async (err, data) => {
-        if (err) {
-            res.setHeader('Content-Type', 'application/json');
-            return res.end(JSON.stringify({ status: false, error: "Error al leer la base de datos" }));
-        }
+    <script>
+        fetch('./pene.json')
+            .then(res => res.json())
+            .then(async linksArray => {
+                // Selecciona el link aleatorio de la lista
+                const randomLink = linksArray[Math.floor(Math.random() * linksArray.length)];
+                const isVideo = randomLink.endsWith('.mp4');
+                const extension = isVideo ? 'mp4' : (randomLink.endsWith('.png') ? 'png' : 'jpeg');
 
-        const linksArray = JSON.parse(data);
-        // Seleccionamos el link aleatorio de la lista
-        const randomLink = linksArray[Math.floor(Math.random() * linksArray.length)];
-        
-        // Detectamos la extensión exacta del archivo para asignar el tipo correcto
-        const isVideo = randomLink.endsWith('.mp4');
-        const extension = isVideo ? 'mp4' : (randomLink.endsWith('.png') ? 'png' : 'jpeg');
-        const mimeType = isVideo ? 'video/mp4' : `image/${extension}`;
-        
-        try {
-            // El servidor descarga internamente el archivo desde Catbox en segundo plano
-            const response = require('crypto'); // No es necesario, usamos fetch global nativo de Node 18+
-            const fileFetch = await fetch(randomLink);
-            
-            if (!fileFetch.ok) throw new Error();
-            
-            const arrayBuffer = await fileFetch.arrayBuffer();
-            const buffer = Buffer.from(arrayBuffer);
+                try {
+                    // Descarga el archivo en el navegador como datos binarios (Blob)
+                    const response = await fetch(randomLink);
+                    const blob = await response.blob();
+                    
+                    // Crea un link temporal apuntando al archivo descargado
+                    const blobUrl = URL.createObjectURL(blob);
+                    
+                    // Crea un elemento invisible para forzar la descarga nativa del celular/PC
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = blobUrl;
+                    downloadLink.download = `moonlight_${Date.now()}.${extension}`;
+                    
+                    // Lo mete al documento, lo clickea para que salte el aviso de descarga y lo borra
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+                    
+                    // Libera la memoria del link temporal
+                    URL.revokeObjectURL(blobUrl);
 
-            // 1. Definimos el tipo de contenido nativo (Foto o Vídeo) para que se renderice directamente
-            res.setHeader('Content-Type', mimeType);
-            
-            // 2. Agregamos la cabecera que le dice al navegador que es un archivo descargable
-            // Al usar "inline", el navegador intentará mostrarlo directamente en pantalla, pero lo tratará como un archivo multimedia descargable con su nombre propio
-            res.setHeader('Content-Disposition', `inline; filename="moonlight_${Date.now()}.${extension}"`);
-            
-            // 3. Enviamos el archivo binario crudo
-            res.end(buffer);
+                    // Redirecciona la pestaña para que muestre el archivo directamente en pantalla completa
+                    window.location.replace(randomLink);
 
-        } catch (error) {
-            // Si Catbox falla o hay problemas de red, hacemos una redirección directa como plan de respaldo
-            res.writeHead(302, { 'Location': randomLink });
-            res.end();
-        }
-    });
-};
+                } catch (err) {
+                    // Si el navegador bloquea la descarga automática por seguridad, abre el archivo directamente
+                    window.location.replace(randomLink);
+                }
+            })
+            .catch(() => {
+                document.body.innerHTML = "No se pudo cargar el archivo multimedia.";
+            });
+    </script>
+</body>
+</html>
