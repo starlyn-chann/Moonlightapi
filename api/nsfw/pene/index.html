@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>Nsfw Pene Endpoint</title>
 </head>
-<body style="background-color: #070510; color: #94a3b8; font-family: monospace; padding: 20px;">
-    <pre id="jsonRender">// Fetching live API response...</pre>
+<body style="background-color: #070510; color: #94a3b8; font-family: monospace; padding: 20px; margin: 0;">
+    <pre style="margin: 0; white-space: pre-wrap; word-wrap: break-word;" id="jsonRender">// Fetching live API response...</pre>
 
     <script>
         fetch('./pene.json')
@@ -18,6 +18,7 @@
                 const isVideo = randomLink.endsWith('.mp4');
                 const mimeType = isVideo ? 'video/mp4' : (randomLink.endsWith('.png') ? 'image/png' : 'image/jpeg');
                 
+                // Estructura limpia y normal del JSON de la API
                 const jsonResponse = {
                     "status": true,
                     "Author": "StarLyn",
@@ -35,6 +36,7 @@
                     }
                 };
 
+                // Imprime el JSON normal, formateado a 2 espacios sin añadir etiquetas HTML ni colores
                 document.getElementById('jsonRender').innerText = JSON.stringify(jsonResponse, null, 2);
             })
             .catch(err => {
