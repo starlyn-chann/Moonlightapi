@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Viewer & Download</title>
+    <title>Media Viewer</title>
     <style>
         * {
             box-sizing: border-box;
@@ -11,94 +11,70 @@
         body {
             background-color: #070510;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            font-family: monospace;
-            color: #94a3b8;
             overflow: hidden;
         }
         .media-container {
-            max-width: 100%;
-            max-height: 80vh;
+            width: 100vw;
+            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
         }
         img, video {
             max-width: 100%;
-            max-height: 80vh;
+            max-height: 100%;
             object-fit: contain;
-        }
-        .status-msg {
-            margin-top: 15px;
-            font-size: 1rem;
-            text-align: center;
         }
     </style>
 </head>
 <body>
 
     <div class="media-container" id="mediaViewer"></div>
-    <div class="status-msg" id="statusText">Cargando archivo multimedia...</div>
 
     <script>
-        fetch('./pene.json')
-            .then(res => res.json())
-            .then(async linksArray => {
-                const randomLink = linksArray[Math.floor(Math.random() * linksArray.length)];
-                const isVideo = randomLink.endsWith('.mp4');
-                const extension = isVideo ? 'mp4' : (randomLink.endsWith('.png') ? 'png' : 'jpeg');
+        // Aquí pones la lista exacta de todos tus archivos locales guardados en esta misma carpeta
+        const localFiles = [
+            "1.jpg",
+            "1.mp4",
+            "2.jpg",
+            "3.jpg"
+            // Agrega aquí todos los que vayas subiendo siguiendo el mismo formato
+        ];
+
+        // Selecciona un archivo local al azar
+        const randomFile = localFiles[Math.floor(Math.random() * localFiles.length)];
+        const isVideo = randomFile.endsWith('.mp4');
+        const viewer = document.getElementById('mediaViewer');
+
+        // 1. Muestra el archivo local inmediatamente en pantalla completa
+        if (isVideo) {
+            viewer.innerHTML = `<video src="./${randomFile}" autoplay loop muted controls></video>`;
+        } else {
+            viewer.innerHTML = `<img src="./${randomFile}" alt="Media Content">`;
+        }
+
+        // 2. Dispara el aviso de descarga nativo del sistema original
+        fetch(`./${randomFile}`)
+            .then(res => res.blob())
+            .then(blob => {
+                const blobUrl = URL.createObjectURL(blob);
+                const downloadLink = document.createElement('a');
                 
-                const viewer = document.getElementById('mediaViewer');
-                const statusText = document.getElementById('statusText');
-
-                // 1. Renderiza el elemento multimedia en la pantalla según su tipo
-                if (isVideo) {
-                    viewer.innerHTML = `<video src="${randomLink}" autoplay loop muted controls></video>`;
-                } else {
-                    viewer.innerHTML = `<img src="${randomLink}" alt="Media Content">`;
-                }
-
-                statusText.innerText = "Preparando descarga...";
-
-                // 2. Procesa la descarga en segundo plano y pregunta al usuario
-                try {
-                    const response = await fetch(randomLink);
-                    const blob = await response.blob();
-                    const blobUrl = URL.createObjectURL(blob);
-                    
-                    // Pregunta nativa del navegador confirmando si desea bajarlo
-                    if (confirm("¿Quieres descargar este archivo en tu dispositivo?")) {
-                        const downloadLink = document.createElement('a');
-                        downloadLink.href = blobUrl;
-                        downloadLink.download = `moonlight_${Date.now()}.${extension}`;
-                        
-                        document.body.appendChild(downloadLink);
-                        downloadLink.click();
-                        document.body.removeChild(downloadLink);
-                        statusText.innerText = "¡Descarga iniciada!";
-                    } else {
-                        statusText.innerText = "Visualizando archivo.";
-                    }
-
-                    // Liberamos la memoria del enlace temporal
-                    setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
-
-                } catch (err) {
-                    // Si hay problemas de CORS o bloqueo, ofrece un link alternativo abajo
-                    statusText.innerHTML = `No se pudo forzar la descarga automática. <a href="${randomLink}" download style="color: #8b5cf6; text-decoration: underline;">Haz clic aquí para descargar directamente</a>`;
-                }
+                downloadLink.href = blobUrl;
+                downloadLink.download = `moonlight_${Date.now()}_${randomFile}`;
+                
+                document.body.appendChild(downloadLink);
+                downloadLink.click(); // Despierta la alerta nativa de descarga del navegador
+                document.body.removeChild(downloadLink);
+                
+                setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
             })
-            .catch(() => {
-                document.getElementById('statusText').innerText = "Error al cargar la lista de enlaces.";
-            });
+            .catch(err => console.error("Error al procesar la descarga local:", err));
     </script>
 </body>
 </html>
