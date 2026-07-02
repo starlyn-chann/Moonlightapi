@@ -1,42 +1,48 @@
-
 const fs = require('fs');
 const path = require('path');
 
 module.exports = async (req, res) => {
-    // Lee el archivo local de enlaces
     const jsonPath = path.join(__dirname, 'pene.json');
     
-    fs.readFile(jsonPath, 'utf8', (err, data) => {
+    fs.readFile(jsonPath, 'utf8', async (err, data) => {
         if (err) {
             res.setHeader('Content-Type', 'application/json');
             return res.end(JSON.stringify({ status: false, error: "Error al leer la base de datos" }));
         }
 
         const linksArray = JSON.parse(data);
+        // Seleccionamos el link aleatorio de la lista
         const randomLink = linksArray[Math.floor(Math.random() * linksArray.length)];
+        
+        // Detectamos la extensión exacta del archivo para asignar el tipo correcto
         const isVideo = randomLink.endsWith('.mp4');
-        const mimeType = isVideo ? 'video/mp4' : (randomLink.endsWith('.png') ? 'image/png' : 'image/jpeg');
+        const extension = isVideo ? 'mp4' : (randomLink.endsWith('.png') ? 'png' : 'jpeg');
+        const mimeType = isVideo ? 'video/mp4' : `image/${extension}`;
+        
+        try {
+            // El servidor descarga internamente el archivo desde Catbox en segundo plano
+            const response = require('crypto'); // No es necesario, usamos fetch global nativo de Node 18+
+            const fileFetch = await fetch(randomLink);
+            
+            if (!fileFetch.ok) throw new Error();
+            
+            const arrayBuffer = await fileFetch.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
 
-        // Estructura oficial de tu API
-        const jsonResponse = {
-            "status": true,
-            "Author": "StarLyn",
-            "result": {
-                "status": true,
-                "data": [
-                    {
-                        "title": "Moonlight Staff API",
-                        "image": isVideo ? "null" : randomLink,
-                        "video": isVideo ? randomLink : "null",
-                        "category": "NSFW",
-                        "type": mimeType
-                    }
-                ]
-            }
-        };
+            // 1. Definimos el tipo de contenido nativo (Foto o Vídeo) para que se renderice directamente
+            res.setHeader('Content-Type', mimeType);
+            
+            // 2. Agregamos la cabecera que le dice al navegador que es un archivo descargable
+            // Al usar "inline", el navegador intentará mostrarlo directamente en pantalla, pero lo tratará como un archivo multimedia descargable con su nombre propio
+            res.setHeader('Content-Disposition', `inline; filename="moonlight_${Date.now()}.${extension}"`);
+            
+            // 3. Enviamos el archivo binario crudo
+            res.end(buffer);
 
-        // Tu código: Envía las cabeceras nativas y el JSON crudo en texto plano
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(jsonResponse, null, 2));
+        } catch (error) {
+            // Si Catbox falla o hay problemas de red, hacemos una redirección directa como plan de respaldo
+            res.writeHead(302, { 'Location': randomLink });
+            res.end();
+        }
     });
 };
