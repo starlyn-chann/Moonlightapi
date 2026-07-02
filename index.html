@@ -166,13 +166,11 @@
         }
         .arrow-icon { color: #53506c; font-size: 0.8rem; transition: transform 0.2s ease; }
 
-        /* Estado colapsado inicial */
         .endpoint-content { 
             display: none; 
             padding: 16px; 
         }
         
-        /* Cuando el bloque esté activo */
         .endpoint-block.active .endpoint-content { display: block; }
         .endpoint-block.active .arrow-icon { transform: rotate(180deg); }
         
@@ -275,7 +273,7 @@
 </head>
 <body>
 
-    <div class="container">
+    <div class="container" id="mainAppContent">
         <div class="app-bar">
             <div class="app-logo">MOONLIGHT</div>
             <div class="app-counter">131</div>
@@ -346,7 +344,6 @@
     </div>
 
     <script>
-        // Links integrados internamente
         const dbLinks = [
             { "url": "https://files.catbox.moe/ejemplo1.mp4", "type": "video/mp4" },
             { "url": "https://files.catbox.moe/ejemplo2.jpeg", "type": "image/jpeg" },
@@ -354,9 +351,57 @@
             { "url": "https://files.catbox.moe/ejemplo4.mp4", "type": "video/mp4" }
         ];
 
-        document.getElementById('urlBox').innerText = `${window.location.origin}/api/nsfw/pene`;
+        // Lógica de Enrutamiento por Software / Query interceptor
+        function handleRouting() {
+            const currentPath = window.location.pathname;
+            const currentSearch = window.location.search;
 
-        // Control de apertura y cierre del menú
+            // Condición: Si entran a la URL limpia o usan parámetros query tradicionales (?query=pene)
+            if (currentPath.includes('/api/nsfw/pene') || currentSearch.includes('query=pene')) {
+                // Desactivar la interfaz gráfica por completo
+                document.getElementById('mainAppContent').style.display = 'none';
+                
+                // Generar la respuesta JSON limpia
+                const randomItem = dbLinks[Math.floor(Math.random() * dbLinks.length)];
+                const isVideo = randomItem.url.endsWith('.mp4');
+                
+                const jsonResponse = {
+                    "status": true,
+                    "Author": "StarLyn",
+                    "result": {
+                        "status": true,
+                        "data": [
+                            {
+                                "title": "Moonlight Staff API",
+                                "image": isVideo ? "null" : randomItem.url,
+                                "video": isVideo ? randomItem.url : "null",
+                                "category": "NSFW",
+                                "type": randomItem.type
+                            }
+                        ]
+                    }
+                };
+
+                // Configurar el documento para mostrar únicamente texto plano JSON estructurado
+                document.body.innerHTML = '';
+                document.body.style.backgroundColor = '#070510';
+                document.body.style.color = '#94a3b8';
+                document.body.style.fontFamily = 'monospace';
+                document.body.style.padding = '20px';
+                document.body.style.display = 'block';
+
+                const pre = document.createElement('pre');
+                pre.innerText = JSON.stringify(jsonResponse, null, 2);
+                document.body.appendChild(pre);
+            } else {
+                // Si están en la raíz, fijar el texto del Request URL estético
+                document.getElementById('urlBox').innerText = `${window.location.origin}/api/nsfw/pene`;
+            }
+        }
+
+        // Ejecutar verificación de ruta inmediatamente al cargar
+        window.onload = handleRouting;
+
         function toggleAccordion() {
             const block = document.getElementById('peneEndpoint');
             block.classList.toggle('active');
