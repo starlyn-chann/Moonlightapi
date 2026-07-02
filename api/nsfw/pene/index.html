@@ -1,15 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>JSON</title>
-    <style>
-        /* Elimina cualquier diseño, margen o color forzado, dejando el texto crudo */
-        body { margin: 0; padding: 8px; }
-        pre { word-wrap: break-word; white-space: pre-wrap; margin: 0; font-family: monospace; }
-    </style>
-</head>
-<body><pre id="json"></pre><script>
+<script>
     fetch('./pene.json')
         .then(res => res.json())
         .then(linksArray => {
@@ -34,11 +23,10 @@
                 }
             };
 
-            // Entrega el JSON directo como texto plano
-            document.getElementById('json').textContent = JSON.stringify(jsonResponse, null, 2);
+            // Borra cualquier rastro de HTML y muestra el JSON puro nativo
+            document.body.innerHTML = JSON.stringify(jsonResponse, null, 2);
         })
         .catch(() => {
-            document.getElementById('json').textContent = JSON.stringify({ "status": false }, null, 2);
+            document.body.innerHTML = JSON.stringify({ "status": false, "error": "No se pudo procesar" }, null, 2);
         });
-</script></body>
-</html>
+</script>
