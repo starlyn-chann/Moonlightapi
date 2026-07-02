@@ -328,7 +328,7 @@
                 </div>
 
                 <div class="url-title">Request URL</div>
-                <div class="url-display" id="urlBox">/api/nsfw/pene</div>
+                <div class="url-display" id="urlBox">/api/nsfw/pene/pene.json</div>
 
                 <button class="execute-button" onclick="fireEngine()">Execute</button>
 
@@ -344,7 +344,7 @@
     </div>
 
     <script>
-        document.getElementById('urlBox').innerText = `${window.location.origin}/api/nsfw/pene`;
+        document.getElementById('urlBox').innerText = `${window.location.origin}/api/nsfw/pene/pene.json`;
 
         function toggleAccordion() {
             const block = document.getElementById('peneEndpoint');
@@ -356,21 +356,40 @@
             const ind = document.getElementById('ind');
             const txt = document.getElementById('txt');
 
-            output.innerText = '// Fetching live data from backend endpoint...';
+            output.innerText = '// Processing random link engine...';
 
-            fetch('./api/nsfw/pene/')
+            fetch('./pene.json')
                 .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.text();
+                    if (!response.ok) throw new Error('File read crash');
+                    return response.json();
                 })
-                .then(htmlString => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(htmlString, 'text/html');
-                    const rawJson = doc.getElementById('jsonRender').innerText;
+                .then(linksArray => {
+                    // Selecciona un link aleatorio del array plano
+                    const randomLink = linksArray[Math.floor(Math.random() * linksArray.length)];
+                    const isVideo = randomLink.endsWith('.mp4');
+                    const mimeType = isVideo ? 'video/mp4' : (randomLink.endsWith('.png') ? 'image/png' : 'image/jpeg');
                     
-                    const resObj = JSON.parse(rawJson);
-                    let formatted = JSON.stringify(resObj, null, 2);
+                    // Construye la estructura JSON completa dinámicamente
+                    const responseStructure = {
+                        "status": true,
+                        "Author": "StarLyn",
+                        "result": {
+                            "status": true,
+                            "data": [
+                                {
+                                    "title": "Moonlight Staff API",
+                                    "image": isVideo ? "null" : randomLink,
+                                    "video": isVideo ? randomLink : "null",
+                                    "category": "NSFW",
+                                    "type": mimeType
+                                }
+                            ]
+                        }
+                    };
+
+                    let formatted = JSON.stringify(responseStructure, null, 2);
                     
+                    // Resaltado de colores neón
                     formatted = formatted
                         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
                         .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|\b[0-9]+\b)/g, function (match) {
@@ -389,7 +408,7 @@
                 .catch(err => {
                     ind.className = "status-indicator";
                     txt.innerText = "Error";
-                    output.innerText = '// Error: No se pudo conectar con ./api/nsfw/pene/';
+                    output.innerText = '// Error: No se pudo procesar la lista local de enlaces.';
                 });
         }
     </script>
