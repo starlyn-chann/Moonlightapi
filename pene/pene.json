@@ -1,0 +1,20 @@
+{
+  "links": [
+    {
+      "url": "https://files.catbox.moe/ejemplo1.mp4",
+      "type": "video/mp4"
+    },
+    {
+      "url": "https://files.catbox.moe/ejemplo2.jpeg",
+      "type": "image/jpeg"
+    },
+    {
+      "url": "https://files.catbox.moe/ejemplo3.jpg",
+      "type": "image/jpeg"
+    },
+    {
+      "url": "https://files.catbox.moe/ejemplo4.mp4",
+      "type": "video/mp4"
+    }
+  ]
+}
