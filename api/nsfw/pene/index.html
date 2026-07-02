@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Nsfw Pene Endpoint</title>
+</head>
+<body style="background-color: #070510; color: #94a3b8; font-family: monospace; padding: 20px;">
+    <pre id="jsonRender"></pre>
+
+    <script>
+        const dbLinks = [
+            { "url": "https://files.catbox.moe/ejemplo1.mp4", "type": "video/mp4" },
+            { "url": "https://files.catbox.moe/ejemplo2.jpeg", "type": "image/jpeg" },
+            { "url": "https://files.catbox.moe/ejemplo3.jpg", "type": "image/jpeg" },
+            { "url": "https://files.catbox.moe/ejemplo4.mp4", "type": "video/mp4" }
+        ];
+
+        const randomItem = dbLinks[Math.floor(Math.random() * dbLinks.length)];
+        const isVideo = randomItem.url.endsWith('.mp4');
+        
+        const jsonResponse = {
+            "status": true,
+            "Author": "StarLyn",
+            "result": {
+                "status": true,
+                "data": [
+                    {
+                        "title": "Moonlight Staff API",
+                        "image": isVideo ? "null" : randomItem.url,
+                        "video": isVideo ? randomItem.url : "null",
+                        "category": "NSFW",
+                        "type": randomItem.type
+                    }
+                ]
+            }
+        };
+
+        document.getElementById('jsonRender').innerText = JSON.stringify(jsonResponse, null, 2);
+    </script>
+</body>
+</html>
