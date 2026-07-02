@@ -273,7 +273,7 @@
 </head>
 <body>
 
-    <div class="container" id="mainAppContent">
+    <div class="container">
         <div class="app-bar">
             <div class="app-logo">MOONLIGHT</div>
             <div class="app-counter">131</div>
@@ -344,63 +344,7 @@
     </div>
 
     <script>
-        const dbLinks = [
-            { "url": "https://files.catbox.moe/ejemplo1.mp4", "type": "video/mp4" },
-            { "url": "https://files.catbox.moe/ejemplo2.jpeg", "type": "image/jpeg" },
-            { "url": "https://files.catbox.moe/ejemplo3.jpg", "type": "image/jpeg" },
-            { "url": "https://files.catbox.moe/ejemplo4.mp4", "type": "video/mp4" }
-        ];
-
-        // Lógica de Enrutamiento por Software / Query interceptor
-        function handleRouting() {
-            const currentPath = window.location.pathname;
-            const currentSearch = window.location.search;
-
-            // Condición: Si entran a la URL limpia o usan parámetros query tradicionales (?query=pene)
-            if (currentPath.includes('/api/nsfw/pene') || currentSearch.includes('query=pene')) {
-                // Desactivar la interfaz gráfica por completo
-                document.getElementById('mainAppContent').style.display = 'none';
-                
-                // Generar la respuesta JSON limpia
-                const randomItem = dbLinks[Math.floor(Math.random() * dbLinks.length)];
-                const isVideo = randomItem.url.endsWith('.mp4');
-                
-                const jsonResponse = {
-                    "status": true,
-                    "Author": "StarLyn",
-                    "result": {
-                        "status": true,
-                        "data": [
-                            {
-                                "title": "Moonlight Staff API",
-                                "image": isVideo ? "null" : randomItem.url,
-                                "video": isVideo ? randomItem.url : "null",
-                                "category": "NSFW",
-                                "type": randomItem.type
-                            }
-                        ]
-                    }
-                };
-
-                // Configurar el documento para mostrar únicamente texto plano JSON estructurado
-                document.body.innerHTML = '';
-                document.body.style.backgroundColor = '#070510';
-                document.body.style.color = '#94a3b8';
-                document.body.style.fontFamily = 'monospace';
-                document.body.style.padding = '20px';
-                document.body.style.display = 'block';
-
-                const pre = document.createElement('pre');
-                pre.innerText = JSON.stringify(jsonResponse, null, 2);
-                document.body.appendChild(pre);
-            } else {
-                // Si están en la raíz, fijar el texto del Request URL estético
-                document.getElementById('urlBox').innerText = `${window.location.origin}/api/nsfw/pene`;
-            }
-        }
-
-        // Ejecutar verificación de ruta inmediatamente al cargar
-        window.onload = handleRouting;
+        document.getElementById('urlBox').innerText = `${window.location.origin}/api/nsfw/pene`;
 
         function toggleAccordion() {
             const block = document.getElementById('peneEndpoint');
@@ -412,46 +356,41 @@
             const ind = document.getElementById('ind');
             const txt = document.getElementById('txt');
 
-            output.innerText = '// Awaiting...';
+            output.innerText = '// Fetching live data from backend endpoint...';
 
-            setTimeout(() => {
-                const randomItem = dbLinks[Math.floor(Math.random() * dbLinks.length)];
-                const isVideo = randomItem.url.endsWith('.mp4');
-                
-                const res = {
-                    "status": true,
-                    "Author": "StarLyn",
-                    "result": {
-                        "status": true,
-                        "data": [
-                            {
-                                "title": "Moonlight Staff API",
-                                "image": isVideo ? "null" : randomItem.url,
-                                "video": isVideo ? randomItem.url : "null",
-                                "category": "NSFW",
-                                "type": randomItem.type
-                            }
-                        ]
-                    }
-                };
+            fetch('./api/nsfw/pene/')
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.text();
+                })
+                .then(htmlString => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(htmlString, 'text/html');
+                    const rawJson = doc.getElementById('jsonRender').innerText;
+                    
+                    const resObj = JSON.parse(rawJson);
+                    let formatted = JSON.stringify(resObj, null, 2);
+                    
+                    formatted = formatted
+                        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                        .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|\b[0-9]+\b)/g, function (match) {
+                            let cls = 'j-string';
+                            if (/^"/.test(match)) {
+                                if (/:$/.test(match)) cls = 'j-key';
+                                else cls = 'j-string';
+                            } else if (/true|false|null/.test(match)) cls = 'j-bool';
+                            return '<span class="' + cls + '">' + match + '</span>';
+                        });
 
-                let formatted = JSON.stringify(res, null, 2);
-                
-                formatted = formatted
-                    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                    .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|\b[0-9]+\b)/g, function (match) {
-                        let cls = 'j-string';
-                        if (/^"/.test(match)) {
-                            if (/:$/.test(match)) cls = 'j-key';
-                            else cls = 'j-string';
-                        } else if (/true|false|null/.test(match)) cls = 'j-bool';
-                        return '<span class="' + cls + '">' + match + '</span>';
-                    });
-
-                ind.className = "status-indicator success";
-                txt.innerText = "200 OK";
-                output.innerHTML = formatted;
-            }, 250);
+                    ind.className = "status-indicator success";
+                    txt.innerText = "200 OK";
+                    output.innerHTML = formatted;
+                })
+                .catch(err => {
+                    ind.className = "status-indicator";
+                    txt.innerText = "Error";
+                    output.innerText = '// Error: No se pudo conectar con ./api/nsfw/pene/';
+                });
         }
     </script>
 </body>
