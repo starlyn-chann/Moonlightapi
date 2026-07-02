@@ -2,50 +2,102 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Download Media</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Viewer & Download</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #070510;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: monospace;
+            color: #94a3b8;
+            overflow: hidden;
+        }
+        .media-container {
+            max-width: 100%;
+            max-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+        }
+        img, video {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+        .status-msg {
+            margin-top: 15px;
+            font-size: 1rem;
+            text-align: center;
+        }
+    </style>
 </head>
-<body style="background-color: #070510; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh;">
+<body>
+
+    <div class="media-container" id="mediaViewer"></div>
+    <div class="status-msg" id="statusText">Cargando archivo multimedia...</div>
 
     <script>
         fetch('./pene.json')
             .then(res => res.json())
             .then(async linksArray => {
-                // Selecciona el link aleatorio de la lista
                 const randomLink = linksArray[Math.floor(Math.random() * linksArray.length)];
                 const isVideo = randomLink.endsWith('.mp4');
                 const extension = isVideo ? 'mp4' : (randomLink.endsWith('.png') ? 'png' : 'jpeg');
+                
+                const viewer = document.getElementById('mediaViewer');
+                const statusText = document.getElementById('statusText');
 
+                // 1. Renderiza el elemento multimedia en la pantalla según su tipo
+                if (isVideo) {
+                    viewer.innerHTML = `<video src="${randomLink}" autoplay loop muted controls></video>`;
+                } else {
+                    viewer.innerHTML = `<img src="${randomLink}" alt="Media Content">`;
+                }
+
+                statusText.innerText = "Preparando descarga...";
+
+                // 2. Procesa la descarga en segundo plano y pregunta al usuario
                 try {
-                    // Descarga el archivo en el navegador como datos binarios (Blob)
                     const response = await fetch(randomLink);
                     const blob = await response.blob();
-                    
-                    // Crea un link temporal apuntando al archivo descargado
                     const blobUrl = URL.createObjectURL(blob);
                     
-                    // Crea un elemento invisible para forzar la descarga nativa del celular/PC
-                    const downloadLink = document.createElement('a');
-                    downloadLink.href = blobUrl;
-                    downloadLink.download = `moonlight_${Date.now()}.${extension}`;
-                    
-                    // Lo mete al documento, lo clickea para que salte el aviso de descarga y lo borra
-                    document.body.appendChild(downloadLink);
-                    downloadLink.click();
-                    document.body.removeChild(downloadLink);
-                    
-                    // Libera la memoria del link temporal
-                    URL.revokeObjectURL(blobUrl);
+                    // Pregunta nativa del navegador confirmando si desea bajarlo
+                    if (confirm("¿Quieres descargar este archivo en tu dispositivo?")) {
+                        const downloadLink = document.createElement('a');
+                        downloadLink.href = blobUrl;
+                        downloadLink.download = `moonlight_${Date.now()}.${extension}`;
+                        
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
+                        document.body.removeChild(downloadLink);
+                        statusText.innerText = "¡Descarga iniciada!";
+                    } else {
+                        statusText.innerText = "Visualizando archivo.";
+                    }
 
-                    // Redirecciona la pestaña para que muestre el archivo directamente en pantalla completa
-                    window.location.replace(randomLink);
+                    // Liberamos la memoria del enlace temporal
+                    setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
 
                 } catch (err) {
-                    // Si el navegador bloquea la descarga automática por seguridad, abre el archivo directamente
-                    window.location.replace(randomLink);
+                    // Si hay problemas de CORS o bloqueo, ofrece un link alternativo abajo
+                    statusText.innerHTML = `No se pudo forzar la descarga automática. <a href="${randomLink}" download style="color: #8b5cf6; text-decoration: underline;">Haz clic aquí para descargar directamente</a>`;
                 }
             })
             .catch(() => {
-                document.body.innerHTML = "No se pudo cargar el archivo multimedia.";
+                document.getElementById('statusText').innerText = "Error al cargar la lista de enlaces.";
             });
     </script>
 </body>
