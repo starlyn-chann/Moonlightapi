@@ -1,45 +1,47 @@
-<script>
-    fetch('./pene.json')
-        .then(response => {
-            if (!response.ok) throw new Error();
-            return response.json();
-        })
-        .then(linksArray => {
-            const randomLink = linksArray[Math.floor(Math.random() * linksArray.length)];
-            const isVideo = randomLink.endsWith('.mp4');
-            const mimeType = isVideo ? 'video/mp4' : (randomLink.endsWith('.png') ? 'image/png' : 'image/jpeg');
-            
-            const jsonResponse = {
-                "status": true,
-                "Author": "StarLyn",
-                "result": {
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <script>
+        fetch('./pene.json')
+            .then(response => {
+                if (!response.ok) throw new Error();
+                return response.json();
+            })
+            .then(linksArray => {
+                const randomLink = linksArray[Math.floor(Math.random() * linksArray.length)];
+                const isVideo = randomLink.endsWith('.mp4');
+                const mimeType = isVideo ? 'video/mp4' : (randomLink.endsWith('.png') ? 'image/png' : 'image/jpeg');
+                
+                const jsonResponse = {
                     "status": true,
-                    "data": [
-                        {
-                            "title": "Moonlight Staff API",
-                            "image": isVideo ? "null" : randomLink,
-                            "video": isVideo ? randomLink : "null",
-                            "category": "NSFW",
-                            "type": mimeType
-                        }
-                    ]
-                }
-            };
+                    "Author": "StarLyn",
+                    "result": {
+                        "status": true,
+                        "data": [
+                            {
+                                "title": "Moonlight Staff API",
+                                "image": isVideo ? "null" : randomLink,
+                                "video": isVideo ? randomLink : "null",
+                                "category": "NSFW",
+                                "type": mimeType
+                            }
+                        ]
+                    }
+                };
 
-            // Convertimos la respuesta en texto plano puro de navegador para eliminar cualquier rastro de HTML
-            const jsonString = JSON.stringify(jsonResponse, null, 2);
-            
-            document.open("text/plain");
-            document.write(jsonString);
-            document.close();
-        })
-        .catch(() => {
-            const errorResponse = {
-                "status": false,
-                "error": "No se pudo estructurar el endpoint de la API"
-            };
-            document.open("text/plain");
-            document.write(JSON.stringify(errorResponse, null, 2));
-            document.close();
-        });
-</script>
+                // Convierte el JSON en un string limpio
+                const jsonString = JSON.stringify(jsonResponse, null, 2);
+                
+                // Fuerza al navegador a salir del modo HTML y entrar en modo JSON directo
+                window.location.replace("data:application/json;charset=utf-8," + encodeURIComponent(jsonString));
+            })
+            .catch(() => {
+                const errorResponse = { "status": false, "error": "No se pudo estructurar el endpoint" };
+                window.location.replace("data:application/json;charset=utf-8," + encodeURIComponent(JSON.stringify(errorResponse, null, 2)));
+            });
+    </script>
+</body>
+</html>
