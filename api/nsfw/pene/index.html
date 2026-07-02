@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <title>Nsfw Pene Endpoint</title>
 </head>
-<body style="background-color: #070510; color: #94a3b8; font-family: monospace; padding: 20px; margin: 0;">
-    <pre style="margin: 0; white-space: pre-wrap; word-wrap: break-word;" id="jsonRender"></pre>
-
+<body>
     <script>
         fetch('./pene.json')
             .then(response => {
@@ -35,13 +33,19 @@
                     }
                 };
 
-                document.getElementById('jsonRender').innerText = JSON.stringify(jsonResponse, null, 2);
+                // Esto borra todo el HTML visual y deja el JSON puro como texto nativo del navegador
+                document.open();
+                document.write('<pre style="word-wrap: break-word; white-space: pre-wrap;">' + JSON.stringify(jsonResponse, null, 2) + '</pre>');
+                document.close();
             })
             .catch(() => {
-                document.getElementById('jsonRender').innerText = JSON.stringify({
+                const errorResponse = {
                     "status": false,
                     "error": "No se pudo estructurar el endpoint de la API"
-                }, null, 2);
+                };
+                document.open();
+                document.write('<pre>' + JSON.stringify(errorResponse, null, 2) + '</pre>');
+                document.close();
             });
     </script>
 </body>
