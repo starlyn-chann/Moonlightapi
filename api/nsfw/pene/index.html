@@ -2,46 +2,43 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <title>JSON</title>
+    <style>
+        /* Elimina cualquier diseño, margen o color forzado, dejando el texto crudo */
+        body { margin: 0; padding: 8px; }
+        pre { word-wrap: break-word; white-space: pre-wrap; margin: 0; font-family: monospace; }
+    </style>
 </head>
-<body>
-    <script>
-        fetch('./pene.json')
-            .then(response => {
-                if (!response.ok) throw new Error();
-                return response.json();
-            })
-            .then(linksArray => {
-                const randomLink = linksArray[Math.floor(Math.random() * linksArray.length)];
-                const isVideo = randomLink.endsWith('.mp4');
-                const mimeType = isVideo ? 'video/mp4' : (randomLink.endsWith('.png') ? 'image/png' : 'image/jpeg');
-                
-                const jsonResponse = {
+<body><pre id="json"></pre><script>
+    fetch('./pene.json')
+        .then(res => res.json())
+        .then(linksArray => {
+            const randomLink = linksArray[Math.floor(Math.random() * linksArray.length)];
+            const isVideo = randomLink.endsWith('.mp4');
+            const mimeType = isVideo ? 'video/mp4' : (randomLink.endsWith('.png') ? 'image/png' : 'image/jpeg');
+            
+            const jsonResponse = {
+                "status": true,
+                "Author": "StarLyn",
+                "result": {
                     "status": true,
-                    "Author": "StarLyn",
-                    "result": {
-                        "status": true,
-                        "data": [
-                            {
-                                "title": "Moonlight Staff API",
-                                "image": isVideo ? "null" : randomLink,
-                                "video": isVideo ? randomLink : "null",
-                                "category": "NSFW",
-                                "type": mimeType
-                            }
-                        ]
-                    }
-                };
+                    "data": [
+                        {
+                            "title": "Moonlight Staff API",
+                            "image": isVideo ? "null" : randomLink,
+                            "video": isVideo ? randomLink : "null",
+                            "category": "NSFW",
+                            "type": mimeType
+                        }
+                    ]
+                }
+            };
 
-                // Convierte el JSON en un string limpio
-                const jsonString = JSON.stringify(jsonResponse, null, 2);
-                
-                // Fuerza al navegador a salir del modo HTML y entrar en modo JSON directo
-                window.location.replace("data:application/json;charset=utf-8," + encodeURIComponent(jsonString));
-            })
-            .catch(() => {
-                const errorResponse = { "status": false, "error": "No se pudo estructurar el endpoint" };
-                window.location.replace("data:application/json;charset=utf-8," + encodeURIComponent(JSON.stringify(errorResponse, null, 2)));
-            });
-    </script>
-</body>
+            // Entrega el JSON directo como texto plano
+            document.getElementById('json').textContent = JSON.stringify(jsonResponse, null, 2);
+        })
+        .catch(() => {
+            document.getElementById('json').textContent = JSON.stringify({ "status": false }, null, 2);
+        });
+</script></body>
 </html>
