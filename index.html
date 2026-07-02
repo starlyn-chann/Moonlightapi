@@ -3,159 +3,375 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moonlight API Docs</title>
+    <title>Moonlight Docs</title>
     <link rel="icon" href="https://files.catbox.moe/8i7nc1.jpeg" type="image/jpeg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        
         body {
-            background-color: #06040d;
-            background-image: radial-gradient(rgba(147, 51, 234, 0.05) 1px, transparent 1px);
-            background-size: 24px 24px;
+            background-color: #0d0b18;
+            background-image: radial-gradient(#17142b 1px, transparent 1px), radial-gradient(#17142b 1px, #0d0b18 1px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            color: #94a3b8;
-            padding: 20px;
+            color: #706d87;
+            padding: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
         }
-        .container { max-width: 750px; width: 100%; margin-top: 10px; margin-bottom: 40px; }
+
+        .container { max-width: 550px; width: 100%; margin: 0 auto; }
+
+        .app-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            background: rgba(18, 14, 36, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid #221b47;
+            border-radius: 14px;
+            margin-bottom: 16px;
+        }
+        .app-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #925bf7;
+            letter-spacing: 1px;
+        }
+        .app-counter {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: #25184f;
+            border: 1px solid #3d2580;
+            color: #b08bfc;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .hero-banner {
+            width: 100%;
+            height: 160px;
+            border-radius: 16px;
+            border: 1px solid #221b47;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+        }
+        .hero-banner img { width: 100%; height: 100%; object-fit: cover; }
+
+        .doc-intro { margin-bottom: 20px; padding: 0 4px; }
+        .doc-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+        .doc-title span { color: #8b5cf6; }
+        .doc-subtitle { font-size: 0.85rem; color: #53506c; margin-top: 6px; font-weight: 500; }
+
+        .btn-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 24px; }
+        .grid-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-decoration: none;
+            background: #141029;
+            border: 1px solid #201942;
+            color: #8c88a5;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 12px;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            letter-spacing: 0.5px;
+        }
+        .grid-btn:hover { border-color: #8b5cf6; color: #ffffff; background: #1a1436; }
+
+        .search-container { position: relative; width: 100%; margin-bottom: 20px; }
+        .search-container input {
+            width: 100%;
+            background: #110d24;
+            border: 1px solid #1f183f;
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: #a3a0bd;
+            font-size: 0.88rem;
+            outline: none;
+        }
+
+        .categories-wrapper { display: flex; gap: 8px; margin-bottom: 18px; }
+        .cat-chip {
+            background: #7c3aed;
+            color: #ffffff;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
+        }
+        .cat-chip span { opacity: 0.6; font-size: 0.7rem; }
+
+        .endpoint-block {
+            background: #120e24;
+            border: 1px solid #221b4a;
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
         
-        /* Banner Actualizado */
-        .api-banner { width: 100%; height: 190px; border-radius: 12px; border: 1px solid #1a1235; overflow: hidden; background: #000; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7); }
-        .api-banner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .endpoint-trigger {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: #15102c;
+            border-bottom: 1px solid #221b4a;
+        }
+        .trigger-left { display: flex; align-items: center; gap: 12px; }
+        .badge-get {
+            background: #10b981;
+            color: #052e16;
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+        .endpoint-name {
+            font-family: 'Space Grotesk', sans-serif;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .arrow-icon { color: #53506c; font-size: 0.8rem; }
+
+        .endpoint-content { padding: 16px; }
         
-        .api-header { margin-bottom: 25px; border-left: 4px solid #a855f7; padding-left: 15px; }
-        .api-title { font-family: 'Space Grotesk', sans-serif; font-size: 2.4rem; font-weight: 700; color: #ffffff; letter-spacing: -0.5px; }
-        .api-title span { color: #a855f7; }
-        .api-limit { display: inline-flex; align-items: center; background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.25); color: #c084fc; padding: 3px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; margin-top: 6px; font-family: 'Space Grotesk', sans-serif; letter-spacing: 0.5px; }
-        .api-subtitle { font-size: 0.88rem; color: #475569; margin-top: 8px; }
-        
-        .nav-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
-        .nav-btn { display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 0.72rem; font-weight: 700; color: #64748b; background: #0b0817; border: 1px solid #161030; border-radius: 6px; padding: 12px 5px; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s ease; }
-        .nav-btn:hover { color: #ffffff; border-color: #a855f7; background: rgba(168, 85, 247, 0.03); }
-        
-        .search-box { position: relative; width: 100%; margin-bottom: 25px; }
-        .search-box input { width: 100%; background: #090614; border: 1px solid #161030; border-radius: 8px; padding: 14px 16px; color: #64748b; font-size: 0.85rem; outline: none; }
-        
-        .category-chips { display: flex; gap: 8px; margin-bottom: 20px; }
-        .chip { background: #0c081a; border: 1px solid #1b133a; color: #ffffff; padding: 6px 14px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #a855f7; }
-        .chip span { color: #a855f7; margin-left: 4px; }
-        
-        /* Endpoint Card con Estilo NANZZAPI */
-        .endpoint-card { background: #090615; border: 1px solid #140e2b; border-radius: 10px; overflow: hidden; }
-        .endpoint-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: #0d0921; border-bottom: 1px solid #140e2b; }
-        .method-get { background: #10b981; color: #ffffff; font-size: 0.7rem; font-weight: 800; padding: 3px 6px; border-radius: 4px; }
-        .endpoint-title { font-family: 'Space Grotesk', sans-serif; color: #ffffff; font-weight: 700; font-size: 0.95rem; }
-        .endpoint-body { padding: 20px; }
-        
-        .param-label { font-size: 0.75rem; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .url-box { background: #04030a; border: 1px solid #110c24; border-radius: 6px; padding: 14px; font-family: 'Fira Code', monospace; font-size: 0.8rem; color: #10b981; margin-bottom: 20px; word-break: break-all; }
-        
-        .btn-execute { width: 100%; background: #a855f7; border: none; color: #ffffff; font-family: 'Space Grotesk', sans-serif; font-size: 0.9rem; font-weight: 700; padding: 14px; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: background 0.2s; }
-        .btn-execute:hover { background: #9333ea; }
-        
-        .response-container { margin-top: 20px; }
-        .status-bar { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase; }
-        .status-dot { width: 6px; height: 6px; background: #475569; border-radius: 50%; }
-        .status-dot.success { background: #10b981; box-shadow: 0 0 6px #10b981; }
-        
-        .json-box { background: #030207; border: 1px solid #110c24; border-radius: 6px; padding: 16px; font-family: 'Fira Code', monospace; font-size: 0.82rem; color: #cbd5e1; overflow-x: auto; white-space: pre; min-height: 60px; line-height: 1.5; }
-        .json-key { color: #f43f5e; }
-        .json-string { color: #10b981; }
-        .json-boolean { color: #f59e0b; }
+        .endpoint-info-box {
+            background: #0b0819;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.8rem;
+            color: #8c88a5;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .info-dot { width: 14px; height: 14px; background: #8b5cf6; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 0.65rem; font-weight: bold; }
+
+        .param-row { margin-bottom: 16px; }
+        .param-header { display: flex; font-size: 0.75rem; font-weight: 700; margin-bottom: 6px; gap: 6px; }
+        .param-name { color: #94a3b8; font-family: 'JetBrains Mono', monospace; }
+        .param-type { color: #475569; }
+        .param-required { color: #ef4444; }
+        .param-input {
+            width: 100%;
+            background: #090614;
+            border: 1px solid #1c153b;
+            border-radius: 8px;
+            padding: 12px;
+            color: #ffffff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        .url-title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #475569; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .url-display {
+            background: #090614;
+            border: 1px solid #1c153b;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            color: #10b981;
+            margin-bottom: 16px;
+            word-break: break-all;
+        }
+
+        .execute-button {
+            width: 100%;
+            background: #8b5cf6;
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: background 0.2s;
+            box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4);
+        }
+        .execute-button:hover { background: #7c3aed; }
+
+        .response-wrapper { margin-top: 18px; }
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+        .status-indicator { width: 6px; height: 6px; background: #475569; border-radius: 50%; }
+        .status-indicator.success { background: #10b981; box-shadow: 0 0 8px #10b981; }
+
+        .code-screen {
+            background: #070510;
+            border: 1px solid #1a1338;
+            border-radius: 10px;
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            color: #94a3b8;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.5;
+            min-height: 65px;
+        }
+        .j-key { color: #f43f5e; }
+        .j-string { color: #10b981; }
+        .j-bool { color: #f59e0b; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="api-banner">
-            <img src="https://files.catbox.moe/8i7nc1.jpeg" alt="API Banner">
+        <div class="app-bar">
+            <div class="app-logo">MOONLIGHT</div>
+            <div class="app-counter">131</div>
         </div>
 
-        <div class="api-header">
-            <h1 class="api-title">Moonlight <span>Docs</span></h1>
-            <div class="api-limit">PRO REST API</div>
-            <p class="api-subtitle">Repositorio de endpoints privados.</p>
+        <div class="hero-banner">
+            <img src="https://files.catbox.moe/8i7nc1.jpeg" alt="Hero Banner">
         </div>
 
-        <div class="nav-buttons">
-            <a href="https://wa.me/529992042946?text=starlyn" target="_blank" class="nav-btn">Contact</a>
-            <a href="#" class="nav-btn">Feedback</a>
-            <a href="https://whatsapp.com/channel/0029Vb6qIht5q08ZMPgVrA1y" target="_blank" class="nav-btn">Channel</a>
-            <a href="https://chat.whatsapp.com/F41976tzldkDSA6gtTj5sT" target="_blank" class="nav-btn">Group</a>
+        <div class="doc-intro">
+            <h1 class="doc-title">Moonlight <span>Docs</span></h1>
+            <div class="app-counter" style="margin-top:6px; display:inline-flex;">131</div>
+            <p class="doc-subtitle">Explore & test live endpoints – file upload included.</p>
         </div>
 
-        <div class="search-box"><input type="text" value="pene" disabled></div>
-
-        <div class="category-chips">
-            <div class="chip">NSFW <span>1</span></div>
+        <div class="btn-grid">
+            <a href="https://wa.me/529992042946?text=starlyn" target="_blank" class="grid-btn">Contact Dev</a>
+            <a href="#" class="grid-btn">Feedback</a>
+            <a href="https://whatsapp.com/channel/0029Vb6qIht5q08ZMPgVrA1y" target="_blank" class="grid-btn">Channel</a>
+            <a href="https://chat.whatsapp.com/F41976tzldkDSA6gtTj5sT" target="_blank" class="grid-btn">Group</a>
         </div>
 
-        <div class="endpoint-card">
-            <div class="endpoint-header">
-                <span class="method-get">GET</span>
-                <span class="endpoint-title">Nsfw Pene</span>
+        <div class="search-container">
+            <input type="text" value="Cari endpoint..." disabled style="color: #3b3754;">
+        </div>
+
+        <div class="categories-wrapper">
+            <div class="cat-chip">NSFW <span>1</span></div>
+        </div>
+
+        <div class="endpoint-block">
+            <div class="endpoint-trigger">
+                <div class="trigger-left">
+                    <span class="badge-get">GET</span>
+                    <span class="endpoint-name">Nsfw Pene</span>
+                </div>
+                <span class="arrow-icon">▲</span>
             </div>
             
-            <div class="endpoint-body">
-                <div class="param-label">Request URL</div>
-                <div class="url-box">/api/nsfw/pene</div>
+            <div class="endpoint-content">
+                <div class="endpoint-info-box">
+                    <span class="info-dot">i</span> Random System Engine Repository.
+                </div>
 
-                <button class="btn-execute" onclick="runLocalEndpoint()">EXECUTE</button>
-
-                <div class="response-container">
-                    <div class="status-bar">
-                        <div class="status-dot" id="statusDot"></div>
-                        <span id="statusText">Idle</span>
+                <div class="param-row">
+                    <div class="param-header">
+                        <span class="param-name">query</span>
+                        <span class="param-type">string</span>
+                        <span class="param-required">*</span>
                     </div>
-                    <div class="json-box" id="jsonOutput">// Awaiting execution...</div>
+                    <input type="text" class="param-input" value="pene" disabled>
+                </div>
+
+                <div class="url-title">Request URL</div>
+                <div class="url-display" id="urlBox">/pene.html</div>
+
+                <button class="execute-button" onclick="fireEngine()">Execute</button>
+
+                <div class="response-wrapper">
+                    <div class="status-badge">
+                        <div class="status-indicator" id="ind"></div>
+                        <span id="txt">Idle</span>
+                    </div>
+                    <div class="code-screen" id="output">// Awaiting...</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="./pene/index.html" id="endpointScript"></script>
+    <script src="./pene.html" id="coreScript"></script>
 
     <script>
-        function runLocalEndpoint() {
-            const outputBox = document.getElementById('jsonOutput');
-            const statusDot = document.getElementById('statusDot');
-            const statusText = document.getElementById('statusText');
+        document.getElementById('urlBox').innerText = `${window.location.origin}/pene.html`;
 
-            outputBox.innerText = '// Executing core logic inside /pene/...';
+        function fireEngine() {
+            const output = document.getElementById('output');
+            const ind = document.getElementById('ind');
+            const txt = document.getElementById('txt');
+
+            output.innerText = '// Awaiting...';
 
             setTimeout(() => {
-                // Comprobamos si la base de datos interna se cargó correctamente desde el otro index
                 if (typeof getPeneData === 'function') {
-                    const data = getPeneData();
-                    let jsonString = JSON.stringify(data, null, 2);
+                    const res = getPeneData();
+                    let formatted = JSON.stringify(res, null, 2);
                     
-                    // Colorear el JSON de salida
-                    jsonString = jsonString
+                    formatted = formatted
                         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
                         .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|\b[0-9]+\b)/g, function (match) {
-                            let cls = 'json-string';
+                            let cls = 'j-string';
                             if (/^"/.test(match)) {
-                                if (/:$/.test(match)) cls = 'json-key';
-                                else cls = 'json-string';
-                            } else if (/true|false|null/.test(match)) cls = 'json-boolean';
+                                if (/:$/.test(match)) cls = 'j-key';
+                                else cls = 'j-string';
+                            } else if (/true|false|null/.test(match)) cls = 'j-bool';
                             return '<span class="' + cls + '">' + match + '</span>';
                         });
 
-                    statusDot.className = "status-dot success";
-                    statusText.innerText = "Status: 200 OK";
-                    outputBox.innerHTML = jsonString;
+                    ind.className = "status-indicator success";
+                    txt.innerText = "200 OK";
+                    output.innerHTML = formatted;
                 } else {
-                    statusDot.className = "status-dot";
-                    statusText.innerText = "Error";
-                    outputBox.innerText = '// Error: No se pudo enlazar la lógica interna del archivo ./pene/index.html';
+                    ind.className = "status-indicator";
+                    txt.innerText = "Error";
+                    output.innerText = '// Fallo al conectar con el script de ./pene.html';
                 }
-            }, 300);
+            }, 250);
         }
     </script>
 </body>
