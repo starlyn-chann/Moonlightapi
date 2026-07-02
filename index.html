@@ -328,7 +328,7 @@
                 </div>
 
                 <div class="url-title">Request URL</div>
-                <div class="url-display" id="urlBox">/api/nsfw/pene/pene.json</div>
+                <div class="url-display" id="urlBox">/api/nsfw/pene/</div>
 
                 <button class="execute-button" onclick="fireEngine()">Execute</button>
 
@@ -344,7 +344,7 @@
     </div>
 
     <script>
-        document.getElementById('urlBox').innerText = `${window.location.origin}/api/nsfw/pene/pene.json`;
+        document.getElementById('urlBox').innerText = `${window.location.origin}/api/nsfw/pene/`;
 
         function toggleAccordion() {
             const block = document.getElementById('peneEndpoint');
@@ -356,7 +356,7 @@
             const ind = document.getElementById('ind');
             const txt = document.getElementById('txt');
 
-            output.innerText = '// Processing random link engine...';
+            output.innerText = '// Processing request...';
 
             fetch('./pene.json')
                 .then(response => {
@@ -364,12 +364,10 @@
                     return response.json();
                 })
                 .then(linksArray => {
-                    // Selecciona un link aleatorio del array plano
                     const randomLink = linksArray[Math.floor(Math.random() * linksArray.length)];
                     const isVideo = randomLink.endsWith('.mp4');
                     const mimeType = isVideo ? 'video/mp4' : (randomLink.endsWith('.png') ? 'image/png' : 'image/jpeg');
                     
-                    // Construye la estructura JSON completa dinámicamente
                     const responseStructure = {
                         "status": true,
                         "Author": "StarLyn",
@@ -389,7 +387,6 @@
 
                     let formatted = JSON.stringify(responseStructure, null, 2);
                     
-                    // Resaltado de colores neón
                     formatted = formatted
                         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
                         .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|\b[0-9]+\b)/g, function (match) {
