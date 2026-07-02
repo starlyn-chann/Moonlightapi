@@ -2,47 +2,45 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Pene Endpoint</title>
+    <title>Moonlight Engine - Pene JSON</title>
 </head>
 <body>
     <script>
-        // Cabecera para indicarle al navegador que esto es un JSON de API, no una página web
-        document.body.style.fontFamily = 'monospace';
-        document.body.style.backgroundColor = '#000';
-        document.body.style.color = '#fff';
+        // 1. TU LISTA INDEPENDIENTE DE LINKS (Pon aquí todos los que quieras)
+        const dbLinks = [
+            { "url": "https://files.catbox.moe/ejemplo1.mp4", "type": "video/mp4" },
+            { "url": "https://files.catbox.moe/ejemplo2.jpeg", "type": "image/jpeg" },
+            { "url": "https://files.catbox.moe/ejemplo3.jpg", "type": "image/jpeg" },
+            { "url": "https://files.catbox.moe/ejemplo4.mp4", "type": "video/mp4" }
+        ];
 
-        // Leer la base de datos pene.json que está en esta misma carpeta
-        fetch('./pene.json')
-            .then(res => res.json())
-            .then(database => {
-                // Elegir un link aleatorio de la lista
-                const lista = database.links;
-                const itemAleatorio = lista[Math.floor(Math.random() * lista.length)];
+        // 2. LÓGICA DE SELECCIÓN ALEATORIA
+        const itemAleatorio = dbLinks[Math.floor(Math.random() * dbLinks.length)];
+        const isVideo = itemAleatorio.url.endsWith('.mp4');
 
-                // Construir la estructura exacta solicitada
-                const jsonFinal = {
-                    "status": true,
-                    "Author": "StarLyn",
-                    "result": {
-                        "status": true,
-                        "data": [
-                            {
-                                "title": "Moonlight Staff API",
-                                "image": itemAleatorio.url.endsWith('.jpeg') || itemAleatorio.url.endsWith('.jpg') ? itemAleatorio.url : "null",
-                                "video": itemAleatorio.url.endsWith('.mp4') ? itemAleatorio.url : "null",
-                                "category": "NSFW",
-                                "type": itemAleatorio.type
-                            }
-                        ]
+        // 3. CONSTRUCCIÓN DE LA RESPUESTA JSON EXACTA
+        const jsonResponse = {
+            "status": true,
+            "Author": "StarLyn",
+            "result": {
+                "status": true,
+                "data": [
+                    {
+                        "title": "Moonlight Staff API",
+                        "image": isVideo ? "null" : itemAleatorio.url,
+                        "video": isVideo ? itemAleatorio.url : "null",
+                        "category": "NSFW",
+                        "type": itemAleatorio.type
                     }
-                };
+                ]
+            }
+        };
 
-                // Imprimir el JSON limpio en la pantalla
-                document.body.innerHTML = `<pre>${JSON.stringify(jsonFinal, null, 2)}</pre>`;
-            })
-            .catch(err => {
-                document.body.innerText = JSON.stringify({ "status": false, "error": "No se pudo cargar pene.json" });
-            });
+        // 4. IMPRESIÓN LIMPIA EN PANTALLA COMO TEXTO PLANO
+        document.body.style.fontFamily = 'monospace';
+        document.body.style.backgroundColor = '#05030f';
+        document.body.style.color = '#e2e8f0';
+        document.body.innerHTML = `<pre>${JSON.stringify(jsonResponse, null, 2)}</pre>`;
     </script>
 </body>
 </html>
