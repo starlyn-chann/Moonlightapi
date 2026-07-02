@@ -1,32 +1,42 @@
-<script>
-    fetch('./pene.json')
-        .then(res => res.json())
-        .then(linksArray => {
-            const randomLink = linksArray[Math.floor(Math.random() * linksArray.length)];
-            const isVideo = randomLink.endsWith('.mp4');
-            const mimeType = isVideo ? 'video/mp4' : (randomLink.endsWith('.png') ? 'image/png' : 'image/jpeg');
-            
-            const jsonResponse = {
-                "status": true,
-                "Author": "StarLyn",
-                "result": {
-                    "status": true,
-                    "data": [
-                        {
-                            "title": "Moonlight Staff API",
-                            "image": isVideo ? "null" : randomLink,
-                            "video": isVideo ? randomLink : "null",
-                            "category": "NSFW",
-                            "type": mimeType
-                        }
-                    ]
-                }
-            };
 
-            // Borra cualquier rastro de HTML y muestra el JSON puro nativo
-            document.body.innerHTML = JSON.stringify(jsonResponse, null, 2);
-        })
-        .catch(() => {
-            document.body.innerHTML = JSON.stringify({ "status": false, "error": "No se pudo procesar" }, null, 2);
-        });
-</script>
+const fs = require('fs');
+const path = require('path');
+
+module.exports = async (req, res) => {
+    // Lee el archivo local de enlaces
+    const jsonPath = path.join(__dirname, 'pene.json');
+    
+    fs.readFile(jsonPath, 'utf8', (err, data) => {
+        if (err) {
+            res.setHeader('Content-Type', 'application/json');
+            return res.end(JSON.stringify({ status: false, error: "Error al leer la base de datos" }));
+        }
+
+        const linksArray = JSON.parse(data);
+        const randomLink = linksArray[Math.floor(Math.random() * linksArray.length)];
+        const isVideo = randomLink.endsWith('.mp4');
+        const mimeType = isVideo ? 'video/mp4' : (randomLink.endsWith('.png') ? 'image/png' : 'image/jpeg');
+
+        // Estructura oficial de tu API
+        const jsonResponse = {
+            "status": true,
+            "Author": "StarLyn",
+            "result": {
+                "status": true,
+                "data": [
+                    {
+                        "title": "Moonlight Staff API",
+                        "image": isVideo ? "null" : randomLink,
+                        "video": isVideo ? randomLink : "null",
+                        "category": "NSFW",
+                        "type": mimeType
+                    }
+                ]
+            }
+        };
+
+        // Tu código: Envía las cabeceras nativas y el JSON crudo en texto plano
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(jsonResponse, null, 2));
+    });
+};
