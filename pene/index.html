@@ -2,11 +2,11 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Moonlight Engine - Pene JSON</title>
+    <title>Nsfw Pene Endpoint</title>
 </head>
 <body>
     <script>
-        // 1. TU LISTA INDEPENDIENTE DE LINKS (Pon aquí todos los que quieras)
+        // ESTA ES TU LISTA DE LINKS INDEPENDIENTE
         const dbLinks = [
             { "url": "https://files.catbox.moe/ejemplo1.mp4", "type": "video/mp4" },
             { "url": "https://files.catbox.moe/ejemplo2.jpeg", "type": "image/jpeg" },
@@ -14,33 +14,36 @@
             { "url": "https://files.catbox.moe/ejemplo4.mp4", "type": "video/mp4" }
         ];
 
-        // 2. LÓGICA DE SELECCIÓN ALEATORIA
-        const itemAleatorio = dbLinks[Math.floor(Math.random() * dbLinks.length)];
-        const isVideo = itemAleatorio.url.endsWith('.mp4');
-
-        // 3. CONSTRUCCIÓN DE LA RESPUESTA JSON EXACTA
-        const jsonResponse = {
-            "status": true,
-            "Author": "StarLyn",
-            "result": {
+        // Función global que procesa y devuelve el formato exacto de tu API
+        function getPeneData() {
+            const randomItem = dbLinks[Math.floor(Math.random() * dbLinks.length)];
+            const isVideo = randomItem.url.endsWith('.mp4');
+            
+            return {
                 "status": true,
-                "data": [
-                    {
-                        "title": "Moonlight Staff API",
-                        "image": isVideo ? "null" : itemAleatorio.url,
-                        "video": isVideo ? itemAleatorio.url : "null",
-                        "category": "NSFW",
-                        "type": itemAleatorio.type
-                    }
-                ]
-            }
-        };
+                "Author": "StarLyn",
+                "result": {
+                    "status": true,
+                    "data": [
+                        {
+                            "title": "Moonlight Staff API",
+                            "image": isVideo ? "null" : randomItem.url,
+                            "video": isVideo ? randomItem.url : "null",
+                            "category": "NSFW",
+                            "type": randomItem.type
+                        }
+                    ]
+                }
+            };
+        }
 
-        // 4. IMPRESIÓN LIMPIA EN PANTALLA COMO TEXTO PLANO
-        document.body.style.fontFamily = 'monospace';
-        document.body.style.backgroundColor = '#05030f';
-        document.body.style.color = '#e2e8f0';
-        document.body.innerHTML = `<pre>${JSON.stringify(jsonResponse, null, 2)}</pre>`;
+        // Si el usuario entra directamente a la URL /pene/, mostramos el JSON limpio en pantalla
+        if (window.location.pathname.endsWith('/pene/') || window.location.pathname.endsWith('/pene/index.html')) {
+            document.body.style.fontFamily = 'monospace';
+            document.body.style.backgroundColor = '#030207';
+            document.body.style.color = '#cbd5e1';
+            document.body.innerHTML = `<pre>${JSON.stringify(getPeneData(), null, 2)}</pre>`;
+        }
     </script>
 </body>
 </html>
