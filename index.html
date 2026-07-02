@@ -146,6 +146,8 @@
             padding: 16px;
             background: #15102c;
             border-bottom: 1px solid #221b4a;
+            cursor: pointer;
+            user-select: none;
         }
         .trigger-left { display: flex; align-items: center; gap: 12px; }
         .badge-get {
@@ -162,9 +164,17 @@
             font-weight: 600;
             font-size: 0.95rem;
         }
-        .arrow-icon { color: #53506c; font-size: 0.8rem; }
+        .arrow-icon { color: #53506c; font-size: 0.8rem; transition: transform 0.2s ease; }
 
-        .endpoint-content { padding: 16px; }
+        /* Estado colapsado inicial */
+        .endpoint-content { 
+            display: none; 
+            padding: 16px; 
+        }
+        
+        /* Cuando el bloque esté activo */
+        .endpoint-block.active .endpoint-content { display: block; }
+        .endpoint-block.active .arrow-icon { transform: rotate(180deg); }
         
         .endpoint-info-box {
             background: #0b0819;
@@ -296,13 +306,13 @@
             <div class="cat-chip">NSFW <span>1</span></div>
         </div>
 
-        <div class="endpoint-block">
-            <div class="endpoint-trigger">
+        <div class="endpoint-block" id="peneEndpoint">
+            <div class="endpoint-trigger" onclick="toggleAccordion()">
                 <div class="trigger-left">
                     <span class="badge-get">GET</span>
                     <span class="endpoint-name">Nsfw Pene</span>
                 </div>
-                <span class="arrow-icon">▲</span>
+                <span class="arrow-icon">▼</span>
             </div>
             
             <div class="endpoint-content">
@@ -320,7 +330,7 @@
                 </div>
 
                 <div class="url-title">Request URL</div>
-                <div class="url-display" id="urlBox">/pene.html</div>
+                <div class="url-display" id="urlBox">/api/nsfw/pene</div>
 
                 <button class="execute-button" onclick="fireEngine()">Execute</button>
 
@@ -335,10 +345,22 @@
         </div>
     </div>
 
-    <script src="./pene.html" id="coreScript"></script>
-
     <script>
-        document.getElementById('urlBox').innerText = `${window.location.origin}/pene.html`;
+        // Links integrados internamente
+        const dbLinks = [
+            { "url": "https://files.catbox.moe/ejemplo1.mp4", "type": "video/mp4" },
+            { "url": "https://files.catbox.moe/ejemplo2.jpeg", "type": "image/jpeg" },
+            { "url": "https://files.catbox.moe/ejemplo3.jpg", "type": "image/jpeg" },
+            { "url": "https://files.catbox.moe/ejemplo4.mp4", "type": "video/mp4" }
+        ];
+
+        document.getElementById('urlBox').innerText = `${window.location.origin}/api/nsfw/pene`;
+
+        // Control de apertura y cierre del menú
+        function toggleAccordion() {
+            const block = document.getElementById('peneEndpoint');
+            block.classList.toggle('active');
+        }
 
         function fireEngine() {
             const output = document.getElementById('output');
@@ -348,29 +370,42 @@
             output.innerText = '// Awaiting...';
 
             setTimeout(() => {
-                if (typeof getPeneData === 'function') {
-                    const res = getPeneData();
-                    let formatted = JSON.stringify(res, null, 2);
-                    
-                    formatted = formatted
-                        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                        .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|\b[0-9]+\b)/g, function (match) {
-                            let cls = 'j-string';
-                            if (/^"/.test(match)) {
-                                if (/:$/.test(match)) cls = 'j-key';
-                                else cls = 'j-string';
-                            } else if (/true|false|null/.test(match)) cls = 'j-bool';
-                            return '<span class="' + cls + '">' + match + '</span>';
-                        });
+                const randomItem = dbLinks[Math.floor(Math.random() * dbLinks.length)];
+                const isVideo = randomItem.url.endsWith('.mp4');
+                
+                const res = {
+                    "status": true,
+                    "Author": "StarLyn",
+                    "result": {
+                        "status": true,
+                        "data": [
+                            {
+                                "title": "Moonlight Staff API",
+                                "image": isVideo ? "null" : randomItem.url,
+                                "video": isVideo ? randomItem.url : "null",
+                                "category": "NSFW",
+                                "type": randomItem.type
+                            }
+                        ]
+                    }
+                };
 
-                    ind.className = "status-indicator success";
-                    txt.innerText = "200 OK";
-                    output.innerHTML = formatted;
-                } else {
-                    ind.className = "status-indicator";
-                    txt.innerText = "Error";
-                    output.innerText = '// Fallo al conectar con el script de ./pene.html';
-                }
+                let formatted = JSON.stringify(res, null, 2);
+                
+                formatted = formatted
+                    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|\b[0-9]+\b)/g, function (match) {
+                        let cls = 'j-string';
+                        if (/^"/.test(match)) {
+                            if (/:$/.test(match)) cls = 'j-key';
+                            else cls = 'j-string';
+                        } else if (/true|false|null/.test(match)) cls = 'j-bool';
+                        return '<span class="' + cls + '">' + match + '</span>';
+                    });
+
+                ind.className = "status-indicator success";
+                txt.innerText = "200 OK";
+                output.innerHTML = formatted;
             }, 250);
         }
     </script>
