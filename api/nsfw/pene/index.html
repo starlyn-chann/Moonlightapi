@@ -5,37 +5,51 @@
     <title>Nsfw Pene Endpoint</title>
 </head>
 <body style="background-color: #070510; color: #94a3b8; font-family: monospace; padding: 20px;">
-    <pre id="jsonRender"></pre>
+    <pre id="jsonRender">// Fetching live database links...</pre>
 
     <script>
-        const dbLinks = [
-            { "url": "https://files.catbox.moe/ejemplo1.mp4", "type": "video/mp4" },
-            { "url": "https://files.catbox.moe/ejemplo2.jpeg", "type": "image/jpeg" },
-            { "url": "https://files.catbox.moe/ejemplo3.jpg", "type": "image/jpeg" },
-            { "url": "https://files.catbox.moe/ejemplo4.mp4", "type": "video/mp4" }
-        ];
-
-        const randomItem = dbLinks[Math.floor(Math.random() * dbLinks.length)];
-        const isVideo = randomItem.url.endsWith('.mp4');
-        
-        const jsonResponse = {
-            "status": true,
-            "Author": "StarLyn",
-            "result": {
-                "status": true,
-                "data": [
-                    {
-                        "title": "Moonlight Staff API",
-                        "image": isVideo ? "null" : randomItem.url,
-                        "video": isVideo ? randomItem.url : "null",
-                        "category": "NSFW",
-                        "type": randomItem.type
+        // Lee el archivo pene.json que está en su misma carpeta
+        fetch('./pene.json')
+            .then(response => {
+                if (!response.ok) throw new Error('No se pudo leer el archivo de enlaces');
+                return response.json();
+            })
+            .then(linksArray => {
+                // Selecciona un enlace al azar de la lista
+                const randomLink = linksArray[Math.floor(Math.random() * linksArray.length)];
+                
+                // Detecta automáticamente si es video o imagen por su extensión
+                const isVideo = randomLink.endsWith('.mp4');
+                const mimeType = isVideo ? 'video/mp4' : (randomLink.endsWith('.png') ? 'image/png' : 'image/jpeg');
+                
+                // Arma la estructura exacta del JSON final
+                const jsonResponse = {
+                    "status": true,
+                    "Author": "StarLyn",
+                    "result": {
+                        "status": true,
+                        "data": [
+                            {
+                                "title": "Moonlight Staff API",
+                                "image": isVideo ? "null" : randomLink,
+                                "video": isVideo ? randomLink : "null",
+                                "category": "NSFW",
+                                "type": mimeType
+                            }
+                        ]
                     }
-                ]
-            }
-        };
+                };
 
-        document.getElementById('jsonRender').innerText = JSON.stringify(jsonResponse, null, 2);
+                // Lo imprime en la pantalla como texto plano
+                document.getElementById('jsonRender').innerText = JSON.stringify(jsonResponse, null, 2);
+            })
+            .catch(err => {
+                document.getElementById('jsonRender').innerText = JSON.stringify({
+                    "status": false,
+                    "error": "No se pudo cargar la base de datos de enlaces locales"
+                }, null, 2);
+                console.error(err);
+            });
     </script>
 </body>
 </html>
