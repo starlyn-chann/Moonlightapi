@@ -48,11 +48,7 @@
         .endpoint-title { font-family: 'Space Grotesk', sans-serif; color: #ffffff; font-weight: 700; font-size: 1rem; }
         .endpoint-body { padding: 20px; }
         .endpoint-desc { font-size: 0.88rem; color: #64748b; margin-bottom: 15px; background: rgba(10, 7, 24, 0.5); padding: 10px 14px; border-radius: 6px; border-left: 3px solid #a855f7; }
-        .param-section { margin-bottom: 18px; }
         .param-label { font-size: 0.8rem; font-weight: 700; color: #cbd5e1; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .param-input-box { display: flex; align-items: center; background: #090617; border: 1px solid #21174a; border-radius: 8px; padding: 12px 14px; color: #a855f7; font-family: 'Fira Code', monospace; font-size: 0.85rem; }
-        .param-input-box span { color: #64748b; margin-right: 5px; }
-        .param-input-box input { background: transparent; border: none; color: #ffffff; outline: none; width: 100%; font-family: 'Fira Code', monospace; }
         .url-box { background: #070512; border: 1px solid #1c1440; border-radius: 8px; padding: 14px; font-family: 'Fira Code', monospace; font-size: 0.8rem; color: #34d399; margin-bottom: 15px; word-break: break-all; }
         .btn-execute { width: 100%; background: #a855f7; border: 1px solid #c084fc; color: #ffffff; font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem; font-weight: 700; padding: 14px; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3); display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
         .btn-execute:hover { background: #b55fe6; box-shadow: 0 4px 20px rgba(168, 85, 247, 0.5); }
@@ -76,7 +72,7 @@
         <div class="api-header">
             <h1 class="api-title">Moonlight <span>Docs</span></h1>
             <div class="api-limit">FREE REST API</div>
-            <p class="api-subtitle">Explore & test live endpoints – modular folder layout.</p>
+            <p class="api-subtitle">Explore & test live endpoints – modular logic architecture.</p>
         </div>
 
         <div class="nav-buttons">
@@ -86,13 +82,10 @@
             <a href="https://chat.whatsapp.com/F41976tzldkDSA6gtTj5sT" target="_blank" class="nav-btn">Group</a>
         </div>
 
-        <div class="search-box"><input type="text" placeholder="Cari endpoint..." value="pene"></div>
+        <div class="search-box"><input type="text" placeholder="Cari endpoint..." value="pene" disabled></div>
 
         <div class="category-chips">
             <div class="chip active">NSFW <span>1</span></div>
-            <div class="chip">AI <span>15</span></div>
-            <div class="chip">MAKER <span>33</span></div>
-            <div class="chip">RANDOM <span>10</span></div>
         </div>
 
         <div class="endpoint-card">
@@ -102,15 +95,7 @@
             </div>
             
             <div class="endpoint-body">
-                <div class="endpoint-desc">Fetches actual real-time data from the modular endpoint logic.</div>
-
-                <div class="param-section">
-                    <div class="param-label">Query (q) <span style="color:#f43f5e;">*</span></div>
-                    <div class="param-input-box">
-                        <span>string</span>
-                        <input type="text" id="queryParam" value="pene" oninput="updateUrl()">
-                    </div>
-                </div>
+                <div class="endpoint-desc">Fetches actual real-time random data directly from the subfolder system logic.</div>
 
                 <div class="param-label">Request URL</div>
                 <div class="url-box" id="apiUrlBox">/pene/</div>
@@ -129,29 +114,24 @@
     </div>
 
     <script>
-        function updateUrl() {
-            const queryValue = encodeURIComponent(document.getElementById('queryParam').value || 'pene');
-            // Cambiado para que refleje la ruta de tu subcarpeta real
-            document.getElementById('apiUrlBox').innerText = `${window.location.origin}/pene/?q=${queryValue}`;
-        }
-        
-        // Ejecución inicial para pintar la URL al cargar
-        updateUrl();
+        // Setea de forma automática la URL según dónde esté hosteado (Render, GitHub, Localhost, etc)
+        document.getElementById('apiUrlBox').innerText = `${window.location.origin}/pene/`;
 
         function executeApi() {
             const outputBox = document.getElementById('jsonOutput');
             const statusDot = document.getElementById('statusDot');
             const statusText = document.getElementById('statusText');
 
-            outputBox.innerText = '// Fetching live endpoint data...';
+            outputBox.innerText = '// Fetching data from ./pene/ endpoint...';
             
-            // HACE UNA LLAMADA REAL A TU CARPETA /pene/
+            // LLAMADA EN TIEMPO REAL A LA SUB-CARPETA
             fetch('./pene/')
                 .then(response => {
-                    if (!response.ok) throw new Error('Network error');
+                    if (!response.ok) throw new Error('Network response was not ok');
                     return response.json();
                 })
                 .then(data => {
+                    // Pintar y colorear el JSON devuelto por la subcarpeta
                     let jsonString = JSON.stringify(data, null, 2);
                     jsonString = jsonString
                         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -160,7 +140,7 @@
                             if (/^"/.test(match)) {
                                 if (/:$/.test(match)) cls = 'json-key';
                                 else cls = 'json-string';
-                            } else if (/true|false/.test(match)) cls = 'json-boolean';
+                            } else if (/true|false|null/.test(match)) cls = 'json-boolean';
                             return '<span class="' + cls + '">' + match + '</span>';
                         });
 
@@ -171,7 +151,7 @@
                 .catch(err => {
                     statusDot.className = "status-dot error";
                     statusText.innerText = "Response: Error";
-                    outputBox.innerText = '// Error cargando los datos de ./pene/index.html';
+                    outputBox.innerText = '// Error cargando los datos de ./pene/\n// RECUERDA: En tu PC local necesitas usar un servidor web local (como Live Server de VS Code) para que los navegadores te permitan hacer peticiones Fetch entre carpetas.';
                 });
         }
     </script>
