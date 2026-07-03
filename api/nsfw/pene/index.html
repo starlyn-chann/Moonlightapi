@@ -3,103 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Viewer</title>
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-        body {
-            background-color: #070510;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            overflow: hidden;
-        }
-        .media-container {
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        img, video {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-    </style>
+    <title>Sirius API</title>
 </head>
 <body>
-
-    <div class="media-container" id="mediaViewer"></div>
+    <pre id="api-raw-output" style="word-wrap: break-word; white-space: pre-wrap; font-family: monospace; padding: 15px; background: #000; color: #fff; height: 100vh; margin: 0;"></pre>
 
     <script>
-        // CONFIGURACIÓN: Coloca aquí la cantidad real de archivos que tienes en tu carpeta
-        const TOTAL_FOTOS = 34;   // Cambia por tu número de fotos (foto1.jpg, foto2.jpg...)
-        const TOTAL_VIDEOS = 30;   // Cambia por tu número de videos (video1.mp4, video2.mp4...)
+        // CONFIGURACIÓN DEL ENLACE CON TU BOT:
+        // Cuando cambies de Termux a otro servidor, solo cambia 'localhost' por la IP pública de tu red.
+        const DIRECCION_BOT = 'localhost'; 
+        const URL_SOLICITUD = `http://${DIRECCION_BOT}:5000/api/json-links`; 
 
-        const viewer = document.getElementById('mediaViewer');
+        async function procesarSolicitudApi() {
+            try {
+                // 1. Vercel recibe la visita y le pide al instante el JSON a la raíz de tu bot
+                const respuestaBot = await fetch(URL_SOLICITUD);
+                const datosJson = await respuestaBot.json();
 
-        function iniciarCarga() {
-            // Elige al azar si va a mostrar una "foto" o un "video"
-            const tipos = ['foto', 'video'];
-            const tipoAleatorio = tipos[Math.floor(Math.random() * tipos.length)];
-            
-            let nombreArchivo = "";
-            let isVideo = false;
+                if (datosJson.status && datosJson.result.length > 0) {
+                    // 2. Extrae el array de links y escoge uno de Catbox de forma aleatoria
+                    const listaEnlaces = datosJson.result;
+                    const enlaceAleatorio = listaEnlaces[Math.floor(Math.random() * listaEnlaces.length)];
 
-            if (tipoAleatorio === 'video' && TOTAL_VIDEOS > 0) {
-                const numero = Math.floor(Math.random() * TOTAL_VIDEOS) + 1;
-                nombreArchivo = `video${numero}.mp4`;
-                isVideo = true;
-            } else if (TOTAL_FOTOS > 0) {
-                // Si elige foto (o si no tienes videos configurados)
-                const numero = Math.floor(Math.random() * TOTAL_FOTOS) + 1;
-                nombreArchivo = `foto${numero}.jpg`;
-                isVideo = false;
-            } else {
-                console.error("No hay archivos configurados.");
-                return;
+                    // 3. Estructura la salida exacta, limpia y directa que tu bot de WhatsApp espera leer
+                    const respuestaEstructurada = {
+                        status: true,
+                        result: enlaceAleatorio
+                    };
+
+                    // Imprime el JSON puro en la pantalla
+                    document.getElementById('api-raw-output').textContent = JSON.stringify(respuestaEstructurada, null, 2);
+                } else {
+                    document.getElementById('api-raw-output').textContent = JSON.stringify({ 
+                        status: false, 
+                        error: "El archivo pene.json está vacío en la raíz del bot" 
+                    }, null, 2);
+                }
+            } catch (error) {
+                // Si el bot está apagado o el puerto 5000 cerrado, muestra el error estructurado
+                document.getElementById('api-raw-output').textContent = JSON.stringify({ 
+                    status: false, 
+                    error: "No se pudo recibir respuesta del bot 24/7. Verifica que index.js esté corriendo.",
+                    detalles: error.message
+                }, null, 2);
             }
-
-            // 1. Muestra el archivo local en pantalla completa
-            if (isVideo) {
-                viewer.innerHTML = `<video src="./${nombreArchivo}" autoplay loop muted controls></video>`;
-            } else {
-                viewer.innerHTML = `<img src="./${nombreArchivo}" alt="Media Content">`;
-            }
-
-            // 2. Ejecuta la alerta de descarga por defecto del sistema
-            dispararDescargaNativa(nombreArchivo);
         }
 
-        function dispararDescargaNativa(archivo) {
-            fetch(`./${archivo}`)
-                .then(res => {
-                    if (!res.ok) throw new Error();
-                    return res.blob();
-                })
-                .then(blob => {
-                    const blobUrl = URL.createObjectURL(blob);
-                    const downloadLink = document.createElement('a');
-                    
-                    downloadLink.href = blobUrl;
-                    downloadLink.download = `moonlight_${Date.now()}_${archivo}`;
-                    
-                    document.body.appendChild(downloadLink);
-                    downloadLink.click(); // Despierta el aviso de descarga nativo original
-                    document.body.removeChild(downloadLink);
-                    
-                    setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
-                })
-                .catch(err => console.error("Error al descargar el archivo:", archivo));
+        // =========================================================
+        // ESCUDO ANTI-SUSPENSIÓN DE VERCEL (Mantiene la API despierta)
+        // =========================================================
+        function blindajeVeinticuatroSiete() {
+            // Envía un ping automático a sí mismo cada 4 minutos para que Vercel nunca congele la ruta
+            setInterval(async () => {
+                try {
+                    await fetch(window.location.href);
+                } catch (e) {}
+            }, 4 * 60 * 1000);
         }
 
-        // Ejecuta el script de inmediato
-        iniciarCarga();
+        // Ejecutar los procesos en cuanto carga el archivo en Vercel
+        procesarSolicitudApi();
+        blindajeVeinticuatroSiete();
     </script>
 </body>
 </html>
