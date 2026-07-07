@@ -7,11 +7,8 @@ export default async function handler(req, res) {
         const rutaJson = path.join(process.cwd(), 'api', 'nsfw', 'pene', 'pene.json');
 
         if (!fs.existsSync(rutaJson)) {
-            res.setHeader('Content-Type', 'application/json');
-            return res.status(404).json({ 
-                status: false, 
-                error: "El archivo pene.json no está en esta carpeta" 
-            });
+            res.setHeader('Content-Type', 'application/json; charset=utf-8');
+            return res.status(404).send(JSON.stringify({ status: false, error: "Falta pene.json" }, null, 2));
         }
 
         // Lee el archivo json de al lado
@@ -19,19 +16,22 @@ export default async function handler(req, res) {
         const linksArray = JSON.parse(contenidoRaw);
 
         if (!linksArray || linksArray.length === 0) {
-            res.setHeader('Content-Type', 'application/json');
-            return res.status(400).json({ status: false, error: "El archivo pene.json está vacío" });
+            res.setHeader('Content-Type', 'application/json; charset=utf-8');
+            return res.status(400).send(JSON.stringify({ status: false, error: "pene.json vacío" }, null, 2));
         }
 
         // Selecciona el link aleatorio de Catbox
         const linkAleatorio = linksArray[Math.floor(Math.random() * linksArray.length)];
 
-        // Configuramos las cabeceras reales de una API para curl y tu bot
-        res.setHeader('Content-Type', 'application/json');
-        res.setHeader('Access-Control-Allow-Origin', '*'); 
+        // DETECCIÓN AUTOMÁTICA: ¿Es foto o es video?
+        const esVideo = linkAleatorio.toLowerCase().endsWith('.mp4');
+        
+        const urlImagen = esVideo ? "null" : linkAleatorio;
+        const urlVideo = esVideo ? linkAleatorio : "null";
+        const tipoMime = esVideo ? "video/mp4" : "image/jpeg";
 
-        // Entregamos el JSON crudo real
-        return res.status(200).json({
+        // Estructura del objeto final
+        const respuestaApi = {
             status: true,
             Author: "StarLyn",
             result: {
@@ -39,21 +39,25 @@ export default async function handler(req, res) {
                 data: [
                     {
                         title: "Moonlight Staff API",
-                        image: linkAleatorio,
-                        video: "null",
+                        image: urlImagen,
+                        video: urlVideo,
                         category: "NSFW",
-                        type: "image/jpeg"
+                        type: tipoMime
                     }
                 ]
             }
-        });
+        };
+
+        // CONFIGURACIÓN DE CABECERAS (Forzamos JSON con codificación limpia)
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        res.setHeader('Access-Control-Allow-Origin', '*'); 
+
+        // EL TRUCO: Enviamos el JSON formateado con 2 espacios de separación
+        const jsonBonito = JSON.stringify(respuestaApi, null, 2);
+        return res.status(200).send(jsonBonito);
 
     } catch (error) {
-        res.setHeader('Content-Type', 'application/json');
-        return res.status(500).json({ 
-            status: false, 
-            error: "Error en el servidor de la API",
-            detalle: error.message 
-        });
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        return res.status(500).send(JSON.stringify({ status: false, error: "Error interno" }, null, 2));
     }
 }
