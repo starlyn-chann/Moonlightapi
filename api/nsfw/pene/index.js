@@ -5,70 +5,42 @@ export default async function handler(req, res) {
     try {
         const carpetaImagenes = path.join(process.cwd(), 'api', 'nsfw', 'pene');
 
-        // Verificar que la carpeta existe
+        // Verificar carpeta
         if (!fs.existsSync(carpetaImagenes)) {
-            res.setHeader('Content-Type', 'application/json; charset=utf-8');
-            return res.status(404).send(JSON.stringify({ 
-                status: false, 
-                error: "Carpeta de imágenes no encontrada" 
-            }, null, 2));
+            return res.status(404).send('Carpeta de imágenes no encontrada');
         }
 
-        // Generar array con las 34 imágenes
-        const imagenes = [];
+        // Buscar imágenes foto1.jpg hasta foto34.jpg
+        const imagenesDisponibles = [];
         for (let i = 1; i <= 34; i++) {
-            const nombreArchivo = `foto${i}.jpg`;
-            const rutaArchivo = path.join(carpetaImagenes, nombreArchivo);
-            
-            if (fs.existsSync(rutaArchivo)) {
-                imagenes.push(nombreArchivo);
+            const archivo = `foto${i}.jpg`;
+            if (fs.existsSync(path.join(carpetaImagenes, archivo))) {
+                imagenesDisponibles.push(archivo);
             }
         }
 
-        if (imagenes.length === 0) {
-            res.setHeader('Content-Type', 'application/json; charset=utf-8');
-            return res.status(404).send(JSON.stringify({ 
-                status: false, 
-                error: "No se encontraron imágenes (foto1.jpg a foto34.jpg)" 
-            }, null, 2));
+        if (imagenesDisponibles.length === 0) {
+            return res.status(404).send('No se encontraron imágenes foto1.jpg a foto34.jpg');
         }
 
         // Seleccionar imagen aleatoria
-        const imagenAleatoria = imagenes[Math.floor(Math.random() * imagenes.length)];
-        
-        // URL pública (ajusta según tu estructura)
-        const urlImagen = `/api/nsfw/pene/${imagenAleatoria}`;
+        const imagenAleatoria = imagenesDisponibles[Math.floor(Math.random() * imagenesDisponibles.length)];
+        const rutaImagen = path.join(carpetaImagenes, imagenAleatoria);
 
-        // Estructura de respuesta
-        const respuestaApi = {
-            status: true,
-            Author: "StarLyn",
-            result: {
-                status: true,
-                data: [
-                    {
-                        title: "Moonlight Staff API",
-                        image: urlImagen,
-                        video: "null",
-                        category: "NSFW",
-                        type: "image/jpeg"
-                    }
-                ]
-            }
-        };
+        // Leer la imagen
+        const imagenBuffer = fs.readFileSync(rutaImagen);
 
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        // Configurar headers para imagen
+        res.setHeader('Content-Type', 'image/jpeg');
+        res.setHeader('Content-Length', imagenBuffer.length);
+        res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache de 1 hora
         res.setHeader('Access-Control-Allow-Origin', '*');
 
-        const jsonBonito = JSON.stringify(respuestaApi, null, 2);
-        return res.status(200).send(jsonBonito);
+        // Enviar la imagen directamente
+        return res.status(200).send(imagenBuffer);
 
     } catch (error) {
         console.error(error);
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        return res.status(500).send(JSON.stringify({ 
-            status: false, 
-            error: "Error interno del servidor" 
-        }, null, 2));
+        return res.status(500).send('Error interno del servidor');
     }
 }
