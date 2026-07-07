@@ -3,41 +3,50 @@ import path from 'path';
 
 export default async function handler(req, res) {
     try {
-        const carpetaImagenes = path.join(process.cwd(), 'api', 'nsfw', 'pene');
+        const carpeta = path.join(process.cwd(), 'api', 'nsfw', 'pene');
 
-        // Verificar carpeta
-        if (!fs.existsSync(carpetaImagenes)) {
-            return res.status(404).send('Carpeta de imágenes no encontrada');
+        if (!fs.existsSync(carpeta)) {
+            return res.status(404).send('Carpeta no encontrada');
         }
 
-        // Buscar imágenes foto1.jpg hasta foto34.jpg
-        const imagenesDisponibles = [];
-        for (let i = 1; i <= 34; i++) {
-            const archivo = `foto${i}.jpg`;
-            if (fs.existsSync(path.join(carpetaImagenes, archivo))) {
-                imagenesDisponibles.push(archivo);
-            }
+        // Leer todos los archivos de la carpeta
+        const archivos = fs.readdirSync(carpeta);
+
+        // Filtrar solo imágenes y videos
+        const mediaFiles = archivos.filter(archivo => {
+            const ext = path.extname(archivo).toLowerCase();
+            return ext === '.jpg' || ext === '.jpeg' || ext === '.mp4';
+        });
+
+        if (mediaFiles.length === 0) {
+            return res.status(404).send('No se encontraron imágenes (.jpg) ni videos (.mp4)');
         }
 
-        if (imagenesDisponibles.length === 0) {
-            return res.status(404).send('No se encontraron imágenes foto1.jpg a foto34.jpg');
+        // Seleccionar archivo aleatorio
+        const archivoAleatorio = mediaFiles[Math.floor(Math.random() * mediaFiles.length)];
+        const rutaArchivo = path.join(carpeta, archivoAleatorio);
+
+        // Leer el archivo
+        const archivoBuffer = fs.readFileSync(rutaArchivo);
+
+        // Determinar tipo MIME
+        const extension = path.extname(archivoAleatorio).toLowerCase();
+        let contentType = 'application/octet-stream';
+
+        if (extension === '.jpg' || extension === '.jpeg') {
+            contentType = 'image/jpeg';
+        } else if (extension === '.mp4') {
+            contentType = 'video/mp4';
         }
 
-        // Seleccionar imagen aleatoria
-        const imagenAleatoria = imagenesDisponibles[Math.floor(Math.random() * imagenesDisponibles.length)];
-        const rutaImagen = path.join(carpetaImagenes, imagenAleatoria);
-
-        // Leer la imagen
-        const imagenBuffer = fs.readFileSync(rutaImagen);
-
-        // Configurar headers para imagen
-        res.setHeader('Content-Type', 'image/jpeg');
-        res.setHeader('Content-Length', imagenBuffer.length);
-        res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache de 1 hora
+        // Headers
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Content-Length', archivoBuffer.length);
+        res.setHeader('Cache-Control', 'public, max-age=3600');
         res.setHeader('Access-Control-Allow-Origin', '*');
 
-        // Enviar la imagen directamente
-        return res.status(200).send(imagenBuffer);
+        // Enviar el archivo directamente (imagen o video)
+        return res.status(200).send(archivoBuffer);
 
     } catch (error) {
         console.error(error);
