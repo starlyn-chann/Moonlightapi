@@ -1,185 +1,360 @@
-        <details class="ep-card" data-ep-id="${epId}" data-key="${esc(ep.method+':'+ep.path)}" data-cat-id="${esc(catId)}" data-search="${esc(searchText)}">
-          <summary class="ep-card-head">
-            <div class="ep-card-top">
-              <div class="ep-card-top-left">
-                <span class="method-pill" data-method="${esc(ep.method.toLowerCase())}">${esc(ep.method)}</span>
-                <span class="ep-card-title">${esc(ep.title)}</span>
-              </div>
-              <div class="ep-card-top-right">
-                <span class="ep-status-dot" data-status="${esc(ep.status || 'Funcionando')}"></span>
-                <svg class="ep-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-              </div>
-            </div>
-            <span class="ep-card-path">${esc(ep.path)}</span>
-            ${ep.description ? `<p class="ep-card-desc">${esc(ep.description)}</p>` : ''}
-          </summary>
-          <div class="ep-card-body">
-            <div class="section-head" style="margin:0">
-              <h2>Parámetros</h2>
-            </div>
-            <div class="params-grid">
-              ${paramsHtml}
-            </div>
-            <div class="section-head" style="margin:8px 0 0">
-              <h2>URL en tiempo real</h2>
-            </div>
-            <div class="url-preview">
-              <code data-url-preview>—</code>
-            </div>
-            ${codeBlocksHtml}
-            <div class="ep-actions">
-              <button class="btn btn-primary" data-run><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>Probar</button>
-              <button class="btn btn-secondary" data-copy-url><svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>Copiar URL</button>
-            </div>
-            <div class="response-panel" data-response-panel hidden>
-              <div class="response-header">
-                <div class="response-header-left">
-                  <span class="response-status-badge" data-response-badge>—</span>
-                  <span class="response-status-label" data-response-label>Esperando respuesta</span>
-                </div>
-                <div class="response-meta" data-response-meta>
-                  <span class="response-meta-dot"></span>—
-                </div>
-                <button class="btn btn-secondary" style="padding:4px 8px;font-size:11px;margin-left:auto" data-copy-response disabled>Copiar JSON</button>
-              </div>
-              <pre class="response-body"><code data-response></code></pre>
-            </div>
-          </div>
-        </details>
-      `;
-    }).join('');
-
-    return `
-      <div class="cat-section" data-cat-section-id="${esc(catId)}">
-        <div class="cat-section-head">
-          <div class="cat-section-title">
-            <span class="cat-icon">${categoryIcon(cat)}</span>
-            ${esc(cat)}
-          </div>
-          <span class="cat-section-count">${items.length} ${items.length === 1 ? 'endpoint' : 'endpoints'}</span>
-        </div>
-        <div class="ep-grid">
-          ${cardsHtml}
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  container.innerHTML = html;
-
-  // Vinculación de eventos a cada card inyectada
-  container.querySelectorAll('.ep-card').forEach(card => {
-    const key = card.dataset.key;
-    const ep = epMap.get(key);
-    if (ep) {
-      attachCardEventListeners(card, ep);
-      initCodeTabs(card, card.dataset.epId);
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Dashboard - Neon Dark</title>
+  <style>
+    :root {
+      --bg-main: #0a0b10;
+      --bg-card: #12131a;
+      --bg-strip: #181a24;
+      --neon-blue: #00f0ff;
+      --neon-purple: #bd00ff;
+      --text-main: #e2e8f0;
+      --text-muted: #64748b;
+      --border: #232635;
+      --success: #00ff87;
     }
-  });
-}
 
-function filterEndpoints() {
-  const query = state.filter.toLowerCase().trim();
-  const catFilter = state.category;
-
-  document.querySelectorAll('.cat-section').forEach(section => {
-    let visibleCards = 0;
-    const cards = section.querySelectorAll('.ep-card');
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+    body { background-color: var(--bg-main); color: var(--text-main); padding: 20px; min-height: 100vh; }
     
-    cards.forEach(card => {
-      const cardCat = card.dataset.catId;
-      const searchText = card.dataset.search || '';
-      
-      const matchCat = (catFilter === '__all__' || cardCat === catFilter);
-      const matchQuery = (!query || searchText.includes(query));
-
-      if (matchCat && matchQuery) {
-        card.classList.remove('hidden');
-        visibleCards++;
-      } else {
-        card.classList.add('hidden');
-        card.open = false; // Cierra si se oculta
-      }
-    });
-
-    if (visibleCards > 0) {
-      section.classList.remove('hidden');
-    } else {
-      section.classList.add('hidden');
+    .container { max-width: 1000px; margin: 0 auto; }
+    
+    /* Buscador e Interfaz Limpia */
+    .search-container { position: relative; margin-bottom: 24px; }
+    .search-input {
+      width: 100%; padding: 14px 20px; background: var(--bg-card);
+      border: 1px solid var(--border); border-radius: 12px; color: #fff;
+      font-size: 16px; outline: none; transition: all 0.3s ease;
     }
-  });
-}
+    .search-input:focus { border-color: var(--neon-blue); box-shadow: 0 0 12px rgba(0, 240, 255, 0.2); }
 
-/* ─────────────────────────────────────────────
-   INITIALIZATION & LOBBY LOGIC (MOCK)
-───────────────────────────────────────────── */
-async function refreshStatsOnly() {
-  // Simulación de actualización de estadísticas del estado actual
-  if (state.stats) {
-    state.stats.totalRequests++;
-    renderStats();
-  }
-}
+    /* Secciones de Categoría */
+    .cat-section { margin-bottom: 32px; }
+    .cat-section-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    }
+    .cat-section-title { font-size: 18px; font-weight: 600; color: var(--neon-blue); display: flex; align-items: center; gap: 8px; }
+    .cat-section-count { font-size: 12px; color: var(--text-muted); background: var(--bg-strip); padding: 4px 8px; border-radius: 20px; }
 
-document.addEventListener('DOMContentLoaded', () => {
-  renderStatusCodes();
-  
-  // Datos estructurales de prueba basados en tu ecosistema limpio de diseño (Neon/Dark)
-  endpoints = [
+    /* Estructura de las Cards (Details) */
+    .ep-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .ep-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+      overflow: hidden; transition: border-color 0.2s;
+    }
+    .ep-card[open] { border-color: rgba(189, 0, 255, 0.4); }
+    .ep-card:not(.hidden) { display: block; }
+    .hidden { display: none !important; }
+
+    summary {
+      list-style: none; padding: 16px; cursor: pointer; display: flex; flex-direction: column; gap: 8px;
+    }
+    summary::-webkit-details-marker { display: none; }
+
+    .ep-card-top { display: flex; justify-content: space-between; align-items: center; }
+    .ep-card-top-left { display: flex; align-items: center; gap: 12px; }
+    
+    /* Método Pill */
+    .method-pill {
+      font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 6px; text-transform: uppercase;
+      background: #1e293b; color: #94a3b8;
+    }
+    .method-pill[data-method="get"] { background: rgba(0, 240, 255, 0.1); color: var(--neon-blue); }
+    .method-pill[data-method="post"] { background: rgba(189, 0, 255, 0.1); color: var(--neon-purple); }
+
+    .ep-card-title { font-weight: 600; font-size: 16px; }
+    .ep-status-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success); }
+    .ep-card-path { font-family: monospace; color: var(--text-muted); font-size: 13px; }
+    .ep-card-desc { font-size: 13.5px; color: #94a3b8; margin-top: 4px; line-height: 1.4; }
+
+    /* Interior de la Card */
+    .ep-card-body { padding: 0 16px 16px 16px; border-top: 1px solid var(--border); background: #0e0f14; }
+    .section-head h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 8px; }
+    
+    .params-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .param-row { display: grid; grid-template-columns: 120px 1fr; align-items: center; gap: 10px; }
+    .param-name { font-family: monospace; font-size: 13px; color: var(--neon-blue); }
+    .param-input {
+      padding: 8px 12px; background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 6px; color: #fff; font-size: 13px; width: 100%; outline: none;
+    }
+    .param-input:focus { border-color: var(--neon-purple); }
+
+    .url-preview {
+      background: var(--bg-main); padding: 10px 14px; border-radius: 6px;
+      font-family: monospace; font-size: 13px; color: #a7f3d0; overflow-x: auto; margin-bottom: 16px;
+      border-left: 3px solid var(--success); white-space: nowrap;
+    }
+
+    /* Botones Estilo Neon/Clean */
+    .ep-actions { display: flex; gap: 12px; margin-bottom: 16px; }
+    .btn {
+      padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 500;
+      cursor: pointer; border: none; display: flex; align-items: center; gap: 8px; transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn-primary { background: var(--neon-blue); color: #000; font-weight: 600; }
+    .btn-secondary { background: var(--bg-strip); color: var(--text-main); border: 1px solid var(--border); }
+
+    /* Panel de Respuesta */
+    .response-panel { background: var(--bg-main); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .response-header {
+      background: var(--bg-strip); padding: 8px 14px; display: flex; justify-content: space-between;
+      align-items: center; font-size: 12px; border-bottom: 1px solid var(--border);
+    }
+    .response-body { padding: 14px; overflow-x: auto; font-family: monospace; font-size: 13px; color: #38bdf8; max-height: 250px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Buscador Integrado -->
+  <div class="search-container">
+    <input type="text" id="searchInput" class="search-input" placeholder="Buscar endpoints (ej: ytmp3, tts...)...">
+  </div>
+
+  <!-- Contenedor donde se renderiza todo el ecosistema -->
+  <div id="endpointsContainer"></div>
+</div>
+
+<script>
+  // Estado Local Estructurado
+  const state = {
+    filter: '',
+    baseUrl: window.location.origin
+  };
+
+  // Base de datos de endpoints modularizado
+  const endpointsData = [
     {
+      id: "ytmp3",
       title: "Descargar Música de YouTube",
       method: "GET",
       path: "/api/downloader/ytmp3",
-      category: "Music & Downloader",
-      status: "Funcionando",
-      description: "Obtén enlaces directos de descarga de audio de alta fidelidad pasando una URL de YouTube.",
+      category: "Descargadores",
+      description: "Obtén enlaces de descarga de audio de alta fidelidad enviando una URL de YouTube.",
       params: [
-        { name: "url", required: true, placeholder: "https://www.youtube.com/watch?v=...", description: "Enlace del video a procesar" },
-        { name: "quality", required: false, defaultValue: "128kbps", placeholder: "128kbps, 320kbps", description: "Tasa de bits de audio" }
+        { name: "url", placeholder: "https://www.youtube.com/watch?v=...", required: true },
+        { name: "quality", placeholder: "128kbps, 320kbps (Opcional)", required: false }
       ]
     },
     {
+      id: "tts",
       title: "Generación de Voz IA",
       method: "POST",
       path: "/api/ai/tts",
-      category: "IA & Tools",
-      status: "Funcionando",
-      description: "Genera pistas de audio a partir de texto utilizando voces neuronales fluidas y anónimas.",
+      category: "Inteligencia Artificial",
+      description: "Genera pistas de audio fluidas y anónimas a partir de texto plano.",
       params: [
-        { name: "text", required: true, placeholder: "Escribe el guión aquí...", description: "Texto que la IA leerá" },
-        { name: "voiceId", required: false, defaultValue: "es-MX-Standard-A", placeholder: "ID de configuración de voz", description: "Perfil de locutor de Garena/Comunidad" }
+        { name: "text", placeholder: "Escribe el guión aquí...", required: true },
+        { name: "voiceId", placeholder: "es-MX-Standard-A", required: false }
       ]
     }
   ];
 
-  state.docs = {
-    totalRequests: 4582, // Sincronizado a tus puntos estables de honor
-    totalEndpoints: endpoints.length
-  };
-  state.stats = {
-    totalRequests: 4582,
-    uptime: "99.98%",
-    topEndpoints: [
-      { title: "Descargar Música de YouTube", path: "/api/downloader/ytmp3", totalCalls: 3120 },
-      { title: "Generación de Voz IA", path: "/api/ai/tts", totalCalls: 1462 }
-    ]
-  };
+  // Función de escape segura para evitar inyecciones XSS en el HTML dinámico
+  function esc(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
 
-  renderStats();
-  renderTop();
-  renderCatStrip();
-  renderEndpoints();
+  // Agrupar los endpoints por su categoría de pertenencia
+  function groupByCategory(endpoints) {
+    return endpoints.reduce((groups, ep) => {
+      if (!groups[ep.category]) groups[ep.category] = [];
+      groups[ep.category].push(ep);
+      return groups;
+    }, {});
+  }
 
-  $('searchInput').addEventListener('input', (e) => {
-    state.filter = e.target.value;
-    filterEndpoints();
+  // Actualiza la visualización de la URL en tiempo real en base a los inputs del usuario
+  function updateUrlPreview(card, path, params) {
+    const previewEl = card.querySelector('[data-url-preview]');
+    if (!previewEl) return;
+
+    const queryParams = [];
+    params.forEach(param => {
+      const input = card.querySelector(`[data-param-name="${param.name}"]`);
+      if (input && input.value.trim() !== '') {
+        queryParams.push(`${encodeURIComponent(param.name)}=${encodeURIComponent(input.value.trim())}`);
+      }
+    });
+
+    const queryString = queryParams.length > 0 ? '?' + queryParams.join('&') : '';
+    previewEl.textContent = `${state.baseUrl}${path}${queryString}`;
+  }
+
+  // Renderizador principal del árbol de elementos
+  function renderEndpoints() {
+    const container = document.getElementById('endpointsContainer');
+    const grouped = groupByCategory(endpointsData);
+    
+    let html = '';
+
+    for (const [category, items] of Object.entries(grouped)) {
+      let cardsHtml = '';
+
+      items.forEach(ep => {
+        // Generar filas para los parámetros dinámicamente
+        const paramsHtml = ep.params.map(p => `
+          <div class="param-row">
+            <span class="param-name">${esc(p.name)}${p.required ? '*' : ''}</span>
+            <input type="text" class="param-input" data-param-name="${esc(p.name)}" placeholder="${esc(p.placeholder)}">
+          </div>
+        `).join('');
+
+        cardsHtml += `
+          <details class="ep-card" data-id="${esc(ep.id)}" data-search="${esc(ep.title.toLowerCase())} ${esc(ep.path.toLowerCase())}">
+            <summary>
+              <div class="ep-card-top">
+                <div class="ep-card-top-left">
+                  <span class="method-pill" data-method="${esc(ep.method.toLowerCase())}">${esc(ep.method)}</span>
+                  <span class="ep-card-title">${esc(ep.title)}</span>
+                </div>
+                <div class="ep-status-dot"></div>
+              </div>
+              <span class="ep-card-path">${esc(ep.path)}</span>
+              ${ep.description ? `<p class="ep-card-desc">${esc(ep.description)}</p>` : ''}
+            </summary>
+            
+            <div class="ep-card-body">
+              <div class="section-head" style="margin: 16px 0 8px 0;">
+                <h2>Parámetros</h2>
+              </div>
+              <div class="params-grid">${paramsHtml}</div>
+
+              <div class="section-head" style="margin: 12px 0 8px 0;">
+                <h2>URL de Consulta</h2>
+              </div>
+              <div class="url-preview"><code data-url-preview>—</code></div>
+
+              <div class="ep-actions">
+                <button class="btn btn-primary" data-action="run">Ejecutar API</button>
+                <button class="btn btn-secondary" data-action="copy">Copiar Enlace</button>
+              </div>
+
+              <div class="response-panel" data-response-panel style="display: none;">
+                <div class="response-header">
+                  <span style="color: var(--success)">STATUS: 200 OK</span>
+                  <span style="color: var(--text-muted)">MOCK_SERVER</span>
+                </div>
+                <pre class="response-body"><code data-response></code></pre>
+              </div>
+            </div>
+          </details>
+        `;
+      });
+
+      html += `
+        <div class="cat-section">
+          <div class="cat-section-head">
+            <div class="cat-section-title">${esc(category)}</div>
+            <span class="cat-section-count">${items.length} URL</span>
+          </div>
+          <div class="ep-grid">${cardsHtml}</div>
+        </div>
+      `;
+    }
+
+    container.innerHTML = html;
+
+    // Enganchar listeners una vez montado el árbol HTML
+    bindEvents();
+  }
+
+  // Manejo reactivo de interacciones por Card
+  function bindEvents() {
+    document.querySelectorAll('.ep-card').forEach(card => {
+      const epId = card.dataset.id;
+      const ep = endpointsData.find(e => e.id === epId);
+      if (!ep) return;
+
+      // Escuchar cambios en los inputs para actualizar la URL al vuelo
+      card.querySelectorAll('.param-input').forEach(input => {
+        input.addEventListener('input', () => updateUrlPreview(card, ep.path, ep.params));
+      });
+
+      // Inicializar la URL estática al cargar
+      updateUrlPreview(card, ep.path, ep.params);
+
+      // Delegación de eventos internos (Botones)
+      card.addEventListener('click', (e) => {
+        const actionBtn = e.target.closest('[data-action]');
+        if (!actionBtn) return;
+        
+        e.preventDefault(); // Evitar que colapse el <details> accidentalmente al pulsar botones
+        const action = actionBtn.dataset.action;
+
+        if (action === 'copy') {
+          const currentUrl = card.querySelector('[data-url-preview]').textContent;
+          navigator.clipboard.writeText(currentUrl);
+          const originalText = actionBtn.textContent;
+          actionBtn.textContent = '¡Copiado!';
+          setTimeout(() => actionBtn.textContent = originalText, 1500);
+        }
+
+        if (action === 'run') {
+          const panel = card.querySelector('[data-response-panel]');
+          const responseCode = card.querySelector('[data-response]');
+          
+          // Generación de respuesta Simulada pero interactiva usando las llaves del input
+          const mockResponse = {
+            status: true,
+            author: "StarLyn",
+            timestamp: new Date().toISOString(),
+            endpoint: ep.path,
+            results: {}
+          };
+
+          ep.params.forEach(p => {
+            const inputVal = card.querySelector(`[data-param-name="${p.name}"]`).value;
+            mockResponse.results[p.name] = inputVal || `(Defecto o vacío: ${p.placeholder})`;
+          });
+
+          responseCode.textContent = JSON.stringify(mockResponse, null, 2);
+          panel.style.display = 'block';
+        }
+      });
+    });
+  }
+
+  // Filtrado lógico del buscador nativo (Busca en títulos y rutas /paths)
+  function filterEndpoints(query) {
+    const cleanQuery = query.toLowerCase().trim();
+    
+    document.querySelectorAll('.ep-card').forEach(card => {
+      const searchText = card.dataset.search || '';
+      if (!cleanQuery || searchText.includes(cleanQuery)) {
+        card.classList.remove('hidden');
+      } else {
+        card.classList.add('hidden');
+        card.open = false; // Colapsar si no hace match
+      }
+    });
+
+    // Ocultar la sección entera si no tiene hijos visibles
+    document.querySelectorAll('.cat-section').forEach(section => {
+      const totalVisible = section.querySelectorAll('.ep-card:not(.hidden)').length;
+      if (totalVisible === 0) {
+        section.classList.add('hidden');
+      } else {
+        section.classList.remove('hidden');
+      }
+    });
+  }
+
+  // Disparador Inicializador de la aplicación
+  document.addEventListener('DOMContentLoaded', () => {
+    renderEndpoints();
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      filterEndpoints(e.target.value);
+    });
   });
-});
-
-// Métodos vacíos requeridos por los listeners de métricas
-function initCharts() {}
-function startRealtimeUpdates() {}
-function loadMetricsData() {}
 </script>
 </body>
 </html>
