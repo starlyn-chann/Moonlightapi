@@ -6,36 +6,38 @@ export default async function handler(req, res) {
         const carpeta = path.join(process.cwd(), 'api', 'nsfw', 'pene');
 
         if (!fs.existsSync(carpeta)) {
-            return res.status(404).send('Carpeta no encontrada');
+            return res.status(404).send('Carpeta no encontrada: api/nsfw/pene');
         }
 
-        // Leer todos los archivos de la carpeta
+        // Leer todos los archivos
         const archivos = fs.readdirSync(carpeta);
 
-        // Filtrar solo imágenes y videos
+        // Filtro más flexible: cualquier archivo que termine en .jpg, .jpeg o .mp4
         const mediaFiles = archivos.filter(archivo => {
-            const ext = path.extname(archivo).toLowerCase();
-            return ext === '.jpg' || ext === '.jpeg' || ext === '.mp4';
+            const nombreLower = archivo.toLowerCase();
+            return nombreLower.endsWith('.jpg') || 
+                   nombreLower.endsWith('.jpeg') || 
+                   nombreLower.endsWith('.mp4');
         });
 
         if (mediaFiles.length === 0) {
-            return res.status(404).send('No se encontraron imágenes (.jpg) ni videos (.mp4)');
+            return res.status(404).send(`No se encontraron archivos .jpg o .mp4 en la carpeta.\nArchivos encontrados: ${archivos.join(', ')}`);
         }
 
-        // Seleccionar archivo aleatorio
+        // Seleccionar uno aleatorio
         const archivoAleatorio = mediaFiles[Math.floor(Math.random() * mediaFiles.length)];
         const rutaArchivo = path.join(carpeta, archivoAleatorio);
 
-        // Leer el archivo
+        // Leer archivo
         const archivoBuffer = fs.readFileSync(rutaArchivo);
 
         // Determinar tipo MIME
-        const extension = path.extname(archivoAleatorio).toLowerCase();
+        const ext = path.extname(archivoAleatorio).toLowerCase();
         let contentType = 'application/octet-stream';
-
-        if (extension === '.jpg' || extension === '.jpeg') {
+        
+        if (ext === '.jpg' || ext === '.jpeg') {
             contentType = 'image/jpeg';
-        } else if (extension === '.mp4') {
+        } else if (ext === '.mp4') {
             contentType = 'video/mp4';
         }
 
@@ -44,8 +46,10 @@ export default async function handler(req, res) {
         res.setHeader('Content-Length', archivoBuffer.length);
         res.setHeader('Cache-Control', 'public, max-age=3600');
         res.setHeader('Access-Control-Allow-Origin', '*');
+        
+        // Nombre del archivo en header (útil para debugging)
+        res.setHeader('X-File-Name', archivoAleatorio);
 
-        // Enviar el archivo directamente (imagen o video)
         return res.status(200).send(archivoBuffer);
 
     } catch (error) {
