@@ -1,61 +1,63 @@
 import fs from 'fs';
 import path from 'path';
 
-export default function handler(req, res) {
-  try {
-    // Ruta hacia el archivo maid.json en la raíz del proyecto
-    const filePath = path.join(process.cwd(), 'maid.json');
-    
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({
-        status: false,
-        author: "StarLyn",
-        message: "El archivo base maid.json no fue encontrado en la raíz."
-      });
+export default async function handler(req, res) {
+    try {
+        // Busca el archivo maid.json que está en su misma carpeta
+        const rutaJson = path.join(process.cwd(), 'api', 'aleatorio', 'maid', 'maid.json');
+
+        if (!fs.existsSync(rutaJson)) {
+            res.setHeader('Content-Type', 'application/json; charset=utf-8');
+            return res.status(404).send(JSON.stringify({ status: false, error: "Falta maid.json" }, null, 2));
+        }
+
+        // Lee el archivo json de al lado
+        const contenidoRaw = fs.readFileSync(rutaJson, 'utf8');
+        const linksArray = JSON.parse(contenidoRaw);
+
+        if (!linksArray || linksArray.length === 0) {
+            res.setHeader('Content-Type', 'application/json; charset=utf-8');
+            return res.status(400).send(JSON.stringify({ status: false, error: "maid.json vacío" }, null, 2));
+        }
+
+        // Selecciona un link al azar de Maid
+        const linkAleatorio = linksArray[Math.floor(Math.random() * linksArray.length)];
+
+        // DETECCIÓN AUTOMÁTICA: ¿Es foto o es video de anime?
+        const esVideo = linkAleatorio.toLowerCase().endsWith('.mp4');
+
+        const urlImagen = esVideo ? "null" : linkAleatorio;
+        const urlVideo = esVideo ? linkAleatorio : "null";
+        const tipoMime = esVideo ? "video/mp4" : "image/jpeg";
+
+        // Estructura del objeto final ordenada con tu firma (Idéntica a Shinobu)
+        const respuestaApi = {
+            status: true,
+            Author: "StarLyn",
+            result: {
+                status: true,
+                data: [
+                    {
+                        title: "Moonlight Staff API",
+                        image: urlImagen,
+                        video: urlVideo,
+                        category: "Anime",
+                        type: tipoMime
+                    }
+                ]
+            }
+        };
+
+        // CONFIGURACIÓN DE CABECERAS (Forzamos JSON ordenado)
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        res.setHeader('Access-Control-Allow-Origin', '*'); 
+
+        // Enviamos el JSON formateado con los 2 espacios de separación para que no salga feo
+        const jsonBonito = JSON.stringify(respuestaApi, null, 2);
+        return res.status(200).send(jsonBonito);
+
+    } catch (error) {
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        return res.status(500).send(JSON.stringify({ status: false, error: "Error interno en la API de Maid" }, null, 2));
     }
-
-    // Leer y parsear los enlaces
-    const fileData = fs.readFileSync(filePath, 'utf-8');
-    const links = JSON.parse(fileData);
-
-    if (!Array.isArray(links) || links.length === 0) {
-      return res.status(500).json({
-        status: false,
-        author: "StarLyn",
-        message: "La base de datos de Maid está vacía o mal estructurada."
-      });
-    }
-
-    // Seleccionar enlace aleatorio
-    const randomLink = links[Math.floor(Math.random() * links.length)];
-    const esVideo = randomLink.toLowerCase().endsWith('.mp4');
-    const mime = esVideo ? 'video/mp4' : (randomLink.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg');
-
-    // CONFIGURACIÓN DE CABECERAS (Evita el almacenamiento en caché de Vercel)
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-
-    // RETORNO ESTRUCTURADO (Orden exacto igual al de Shinobu)
-    return res.status(200).json({
-      status: true,
-      Author: "StarLyn",
-      result: {
-        status: true,
-        title: "Moonlight Staff API",
-        url: randomLink,
-        category: "Anime",
-        type: mime
-      }
-    });
-
-  } catch (error) {
-    return res.status(500).json({
-      status: false,
-      author: "StarLyn",
-      message: "Error interno en el motor de Moonlight.",
-      error: error.message
-    });
-  }
 }
