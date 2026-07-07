@@ -10,21 +10,24 @@ export default async function handler(req, res) {
         }
 
         const contenidoRaw = fs.readFileSync(rutaJson, 'utf8');
-        const linksArray = JSON.parse(contenidoRaw);
+        let linksArray = JSON.parse(contenidoRaw);
 
-        if (!linksArray || linksArray.length === 0) {
-            return res.status(400).json({ status: false, error: "maid.json vacío" });
+        if (!Array.isArray(linksArray) || linksArray.length === 0) {
+            return res.status(400).json({ status: false, error: "maid.json vacío o inválido" });
         }
 
-        // Selecciona una imagen/video aleatoria
-        const linkAleatorio = linksArray[Math.floor(Math.random() * linksArray.length)];
+        // Selección aleatoria
+        const randomIndex = Math.floor(Math.random() * linksArray.length);
+        const linkAleatorio = linksArray[randomIndex];
 
-        const response = await fetch(linkAleatorio);
+        // Fetch desde Catbox
+        const response = await fetch(linkAleatorio, { cache: 'no-store' });
+
         if (!response.ok) {
-            return res.status(502).json({ status: false, error: "Error al obtener el archivo" });
+            return res.status(502).json({ status: false, error: "Error al cargar el archivo" });
         }
 
-        // Detectar tipo
+        // Tipo de contenido
         const esVideo = linkAleatorio.toLowerCase().endsWith('.mp4');
         const ext = path.extname(linkAleatorio).toLowerCase();
 
@@ -40,14 +43,18 @@ export default async function handler(req, res) {
             res.setHeader('Content-Type', 'image/jpeg');
         }
 
+        // === ANTI-CACHÉ FUERTE ===
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+        res.setHeader('Surrogate-Control', 'no-store');
         res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Cache-Control', 'public, max-age=7200'); // 2 horas de caché
 
         const buffer = await response.arrayBuffer();
         return res.status(200).send(Buffer.from(buffer));
 
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ status: false, error: "Error interno" });
+        console.error('Error en API Maid:', error);
+        return res.status(500).json({ status: false, error: "Error interno del servidor" });
     }
 }
