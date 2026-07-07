@@ -8,10 +8,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
+
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
+
         body {
             background-color: #0d0b18;
             background-image: radial-gradient(#17142b 1px, transparent 1px), radial-gradient(#17142b 1px, #0d0b18 1px);
@@ -115,7 +115,7 @@
             outline: none;
         }
 
-        .categories-wrapper { display: flex; gap: 8px; margin-bottom: 18px; }
+        .categories-wrapper { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
         .cat-chip {
             background: #7c3aed;
             color: #ffffff;
@@ -130,6 +130,7 @@
             box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
         }
         .cat-chip span { opacity: 0.6; font-size: 0.7rem; }
+        .cat-chip.anime-chip { background: #00f2ff; color: #000; box-shadow: 0 0 15px rgba(0, 242, 255, 0.3); }
 
         .endpoint-block {
             background: #120e24;
@@ -138,7 +139,7 @@
             overflow: hidden;
             margin-bottom: 20px;
         }
-        
+
         .endpoint-trigger {
             display: flex;
             align-items: center;
@@ -170,10 +171,10 @@
             display: none; 
             padding: 16px; 
         }
-        
+
         .endpoint-block.active .endpoint-content { display: block; }
         .endpoint-block.active .arrow-icon { transform: rotate(180deg); }
-        
+
         .endpoint-info-box {
             background: #0b0819;
             border-radius: 8px;
@@ -186,6 +187,7 @@
             gap: 8px;
         }
         .info-dot { width: 14px; height: 14px; background: #8b5cf6; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 0.65rem; font-weight: bold; }
+        .endpoint-block.anime-block .info-dot { background: #00f2ff; color: #000; }
 
         .param-row { margin-bottom: 16px; }
         .param-header { display: flex; font-size: 0.75rem; font-weight: 700; margin-bottom: 6px; gap: 6px; }
@@ -238,6 +240,8 @@
             box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4);
         }
         .execute-button:hover { background: #7c3aed; }
+        .endpoint-block.anime-block .execute-button { background: #00f2ff; color: #000; box-shadow: 0 4px 14px rgba(0, 242, 255, 0.3); }
+        .endpoint-block.anime-block .execute-button:hover { background: #00d4e0; }
 
         .response-wrapper { margin-top: 18px; }
         .status-badge {
@@ -302,17 +306,18 @@
 
         <div class="categories-wrapper">
             <div class="cat-chip">NSFW <span>1</span></div>
+            <div class="cat-chip anime-chip">Anime <span>1</span></div>
         </div>
 
         <div class="endpoint-block" id="peneEndpoint">
-            <div class="endpoint-trigger" onclick="toggleAccordion()">
+            <div class="endpoint-trigger" onclick="toggleAccordion('peneEndpoint')">
                 <div class="trigger-left">
                     <span class="badge-get">GET</span>
                     <span class="endpoint-name">Nsfw Pene</span>
                 </div>
                 <span class="arrow-icon">▼</span>
             </div>
-            
+
             <div class="endpoint-content">
                 <div class="endpoint-info-box">
                     <span class="info-dot">i</span> Random System Engine Repository.
@@ -328,46 +333,95 @@
                 </div>
 
                 <div class="url-title">Request URL</div>
-                <div class="url-display" id="urlBox">/api/nsfw/pene/</div>
+                <div class="url-display" id="urlBoxPene">/api/nsfw/pene/</div>
 
-                <button class="execute-button" onclick="fireEngine()">Execute</button>
+                <button class="execute-button" onclick="fireEngine('pene')">Execute</button>
 
                 <div class="response-wrapper">
                     <div class="status-badge">
-                        <div class="status-indicator" id="ind"></div>
-                        <span id="txt">Idle</span>
+                        <div class="status-indicator" id="indPene"></div>
+                        <span id="txtPene">Idle</span>
                     </div>
-                    <div class="code-screen" id="output">// Awaiting...</div>
+                    <div class="code-screen" id="outputPene">// Awaiting...</div>
                 </div>
             </div>
         </div>
+
+        <div class="endpoint-block anime-block" id="shinobuEndpoint">
+            <div class="endpoint-trigger" onclick="toggleAccordion('shinobuEndpoint')">
+                <div class="trigger-left">
+                    <span class="badge-get">GET</span>
+                    <span class="endpoint-name">Aleatorio Shinobu</span>
+                </div>
+                <span class="arrow-icon">▼</span>
+            </div>
+
+            <div class="endpoint-content">
+                <div class="endpoint-info-box">
+                    <span class="info-dot">i</span> Random Anime Shinobu Kocho Repository.
+                </div>
+
+                <div class="param-row">
+                    <div class="param-header">
+                        <span class="param-name">query</span>
+                        <span class="param-type">string</span>
+                        <span class="param-required">*</span>
+                    </div>
+                    <input type="text" class="param-input" value="shinobu" disabled>
+                </div>
+
+                <div class="url-title">Request URL</div>
+                <div class="url-display" id="urlBoxShinobu">/api/aleatorio/shinobu/</div>
+
+                <button class="execute-button" onclick="fireEngine('shinobu')">Execute</button>
+
+                <div class="response-wrapper">
+                    <div class="status-badge">
+                        <div class="status-indicator" id="indShinobu"></div>
+                        <span id="txtShinobu">Idle</span>
+                    </div>
+                    <div class="code-screen" id="outputShinobu">// Awaiting...</div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        document.getElementById('urlBox').innerText = `${window.location.origin}/api/nsfw/pene/`;
+        // Sincronizar dinámicamente los cuadros de las URL
+        document.getElementById('urlBoxPene').innerText = `${window.location.origin}/api/nsfw/pene/`;
+        document.getElementById('urlBoxShinobu').innerText = `${window.location.origin}/api/aleatorio/shinobu/`;
 
-        function toggleAccordion() {
-            const block = document.getElementById('peneEndpoint');
+        // Función de acordeón genérica para abrir el bloque correspondiente
+        function toggleAccordion(elementId) {
+            const block = document.getElementById(elementId);
             block.classList.toggle('active');
         }
 
-        function fireEngine() {
-            const output = document.getElementById('output');
-            const ind = document.getElementById('ind');
-            const txt = document.getElementById('txt');
+        // Motor unificado que procesa la petición de acuerdo al tipo ("pene" o "shinobu")
+        function fireEngine(tipo) {
+            const esPene = (tipo === 'pene');
+            
+            // Asignación de selectores según la categoría clicada
+            const output = document.getElementById(esPene ? 'outputPene' : 'outputShinobu');
+            const ind = document.getElementById(esPene ? 'indPene' : 'indShinobu');
+            const txt = document.getElementById(esPene ? 'txtPene' : 'txtShinobu');
+            const jsonRuta = esPene ? './pene.json' : '../../aleatorio/shinobu/shinobu.json';
+            const categoriaNombre = esPene ? 'NSFW' : 'Anime';
 
             output.innerText = '// Processing request...';
 
-            fetch('./pene.json')
+            fetch(jsonRuta)
                 .then(response => {
                     if (!response.ok) throw new Error('File read crash');
                     return response.json();
                 })
                 .then(linksArray => {
                     const randomLink = linksArray[Math.floor(Math.random() * linksArray.length)];
-                    const isVideo = randomLink.endsWith('.mp4');
-                    const mimeType = isVideo ? 'video/mp4' : (randomLink.endsWith('.png') ? 'image/png' : 'image/jpeg');
-                    
+                    const isVideo = randomLink.toLowerCase().endsWith('.mp4');
+                    const mimeType = isVideo ? 'video/mp4' : (randomLink.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg');
+
+                    // Armamos la respuesta exacta
                     const responseStructure = {
                         "status": true,
                         "Author": "StarLyn",
@@ -378,7 +432,7 @@
                                     "title": "Moonlight Staff API",
                                     "image": isVideo ? "null" : randomLink,
                                     "video": isVideo ? randomLink : "null",
-                                    "category": "NSFW",
+                                    "category": categoriaNombre,
                                     "type": mimeType
                                 }
                             ]
@@ -386,7 +440,8 @@
                     };
 
                     let formatted = JSON.stringify(responseStructure, null, 2);
-                    
+
+                    // Formateador visual para colorear las llaves del JSON
                     formatted = formatted
                         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
                         .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|\b[0-9]+\b)/g, function (match) {
@@ -405,7 +460,7 @@
                 .catch(err => {
                     ind.className = "status-indicator";
                     txt.innerText = "Error";
-                    output.innerText = '// Error: No se pudo procesar la lista local de enlaces.';
+                    output.innerText = `// Error: No se pudo procesar la lista local de enlaces de ${tipo}.`;
                 });
         }
     </script>
