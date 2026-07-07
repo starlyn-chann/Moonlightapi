@@ -2,68 +2,62 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sirius API</title>
+    <title>Sirius API - Swagger Mock</title>
 </head>
 <body>
-    <pre id="api-raw-output" style="word-wrap: break-word; white-space: pre-wrap; font-family: monospace; padding: 15px; background: #000; color: #fff; height: 100vh; margin: 0;"></pre>
-
     <script>
-        // CONFIGURACIÓN DEL ENLACE CON TU BOT:
-        // Cuando cambies de Termux a otro servidor, solo cambia 'localhost' por la IP pública de tu red.
-        const DIRECCION_BOT = 'localhost'; 
-        const URL_SOLICITUD = `http://${DIRECCION_BOT}:5000/api/json-links`; 
-
-        async function procesarSolicitudApi() {
+        async function cargarApiLocal() {
             try {
-                // 1. Vercel recibe la visita y le pide al instante el JSON a la raíz de tu bot
-                const respuestaBot = await fetch(URL_SOLICITUD);
-                const datosJson = await respuestaBot.json();
+                // Al poner './pene.json' le decimos que busque el archivo en su misma carpeta
+                const respuesta = await fetch('./pene.json');
+                const linksArray = await respuesta.json();
 
-                if (datosJson.status && datosJson.result.length > 0) {
-                    // 2. Extrae el array de links y escoge uno de Catbox de forma aleatoria
-                    const listaEnlaces = datosJson.result;
-                    const enlaceAleatorio = listaEnlaces[Math.floor(Math.random() * listaEnlaces.length)];
+                if (linksArray && linksArray.length > 0) {
+                    // Elegimos un enlace de Catbox al azar
+                    const linkAleatorio = linksArray[Math.floor(Math.random() * linksArray.length)];
 
-                    // 3. Estructura la salida exacta, limpia y directa que tu bot de WhatsApp espera leer
-                    const respuestaEstructurada = {
+                    // Armamos la estructura exacta que me mostraste
+                    const respuestaApi = {
                         status: true,
-                        result: enlaceAleatorio
+                        Author: "StarLyn",
+                        result: {
+                            status: true,
+                            data: [
+                                {
+                                    title: "Moonlight Staff API",
+                                    image: linkAleatorio,
+                                    video: "null",
+                                    category: "NSFW",
+                                    type: "image/jpeg"
+                                }
+                            ]
+                        }
                     };
 
-                    // Imprime el JSON puro en la pantalla
-                    document.getElementById('api-raw-output').textContent = JSON.stringify(respuestaEstructurada, null, 2);
+                    // Destruimos el HTML para mostrar el JSON crudo en blanco y negro
+                    document.open("application/json");
+                    document.write(JSON.stringify(respuestaApi, null, 2));
+                    document.close();
                 } else {
-                    document.getElementById('api-raw-output').textContent = JSON.stringify({ 
-                        status: false, 
-                        error: "El archivo pene.json está vacío en la raíz del bot" 
-                    }, null, 2);
+                    mostrarError("El archivo pene.json al lado del index está vacío");
                 }
             } catch (error) {
-                // Si el bot está apagado o el puerto 5000 cerrado, muestra el error estructurado
-                document.getElementById('api-raw-output').textContent = JSON.stringify({ 
-                    status: false, 
-                    error: "No se pudo recibir respuesta del bot 24/7. Verifica que index.js esté corriendo.",
-                    detalles: error.message
-                }, null, 2);
+                mostrarError("No se pudo leer el archivo pene.json en esta carpeta");
             }
         }
 
-        // =========================================================
-        // ESCUDO ANTI-SUSPENSIÓN DE VERCEL (Mantiene la API despierta)
-        // =========================================================
-        function blindajeVeinticuatroSiete() {
-            // Envía un ping automático a sí mismo cada 4 minutos para que Vercel nunca congele la ruta
-            setInterval(async () => {
-                try {
-                    await fetch(window.location.href);
-                } catch (e) {}
-            }, 4 * 60 * 1000);
+        function mostrarError(mensaje) {
+            const errorJson = {
+                status: false,
+                error: mensaje
+            };
+            document.open("application/json");
+            document.write(JSON.stringify(errorJson, null, 2));
+            document.close();
         }
 
-        // Ejecutar los procesos en cuanto carga el archivo en Vercel
-        procesarSolicitudApi();
-        blindajeVeinticuatroSiete();
+        // Se ejecuta en automático
+        cargarApiLocal();
     </script>
 </body>
 </html>
