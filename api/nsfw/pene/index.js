@@ -3,34 +3,43 @@ import path from 'path';
 
 export default async function handler(req, res) {
     try {
-        // Busca el archivo pene.json que está en su misma carpeta
-        const rutaJson = path.join(process.cwd(), 'api', 'nsfw', 'pene', 'pene.json');
+        const carpetaImagenes = path.join(process.cwd(), 'api', 'nsfw', 'pene');
 
-        if (!fs.existsSync(rutaJson)) {
+        // Verificar que la carpeta existe
+        if (!fs.existsSync(carpetaImagenes)) {
             res.setHeader('Content-Type', 'application/json; charset=utf-8');
-            return res.status(404).send(JSON.stringify({ status: false, error: "Falta pene.json" }, null, 2));
+            return res.status(404).send(JSON.stringify({ 
+                status: false, 
+                error: "Carpeta de imágenes no encontrada" 
+            }, null, 2));
         }
 
-        // Lee el archivo json de al lado
-        const contenidoRaw = fs.readFileSync(rutaJson, 'utf8');
-        const linksArray = JSON.parse(contenidoRaw);
-
-        if (!linksArray || linksArray.length === 0) {
-            res.setHeader('Content-Type', 'application/json; charset=utf-8');
-            return res.status(400).send(JSON.stringify({ status: false, error: "pene.json vacío" }, null, 2));
+        // Generar array con las 34 imágenes
+        const imagenes = [];
+        for (let i = 1; i <= 34; i++) {
+            const nombreArchivo = `foto${i}.jpg`;
+            const rutaArchivo = path.join(carpetaImagenes, nombreArchivo);
+            
+            if (fs.existsSync(rutaArchivo)) {
+                imagenes.push(nombreArchivo);
+            }
         }
 
-        // Selecciona el link aleatorio de Catbox
-        const linkAleatorio = linksArray[Math.floor(Math.random() * linksArray.length)];
+        if (imagenes.length === 0) {
+            res.setHeader('Content-Type', 'application/json; charset=utf-8');
+            return res.status(404).send(JSON.stringify({ 
+                status: false, 
+                error: "No se encontraron imágenes (foto1.jpg a foto34.jpg)" 
+            }, null, 2));
+        }
 
-        // DETECCIÓN AUTOMÁTICA: ¿Es foto o es video?
-        const esVideo = linkAleatorio.toLowerCase().endsWith('.mp4');
+        // Seleccionar imagen aleatoria
+        const imagenAleatoria = imagenes[Math.floor(Math.random() * imagenes.length)];
         
-        const urlImagen = esVideo ? "null" : linkAleatorio;
-        const urlVideo = esVideo ? linkAleatorio : "null";
-        const tipoMime = esVideo ? "video/mp4" : "image/jpeg";
+        // URL pública (ajusta según tu estructura)
+        const urlImagen = `/api/nsfw/pene/${imagenAleatoria}`;
 
-        // Estructura del objeto final
+        // Estructura de respuesta
         const respuestaApi = {
             status: true,
             Author: "StarLyn",
@@ -40,24 +49,26 @@ export default async function handler(req, res) {
                     {
                         title: "Moonlight Staff API",
                         image: urlImagen,
-                        video: urlVideo,
+                        video: "null",
                         category: "NSFW",
-                        type: tipoMime
+                        type: "image/jpeg"
                     }
                 ]
             }
         };
 
-        // CONFIGURACIÓN DE CABECERAS (Forzamos JSON con codificación limpia)
         res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        res.setHeader('Access-Control-Allow-Origin', '*'); 
+        res.setHeader('Access-Control-Allow-Origin', '*');
 
-        // EL TRUCO: Enviamos el JSON formateado con 2 espacios de separación
         const jsonBonito = JSON.stringify(respuestaApi, null, 2);
         return res.status(200).send(jsonBonito);
 
     } catch (error) {
+        console.error(error);
         res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        return res.status(500).send(JSON.stringify({ status: false, error: "Error interno" }, null, 2));
+        return res.status(500).send(JSON.stringify({ 
+            status: false, 
+            error: "Error interno del servidor" 
+        }, null, 2));
     }
 }
