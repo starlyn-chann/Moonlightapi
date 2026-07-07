@@ -117,7 +117,6 @@
 
         .categories-wrapper { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
         
-        /* Botones neutros de categorías */
         .cat-chip {
             background: #141029;
             border: 1px solid #201942;
@@ -136,7 +135,6 @@
         }
         .cat-chip span { opacity: 0.6; font-size: 0.7rem; }
 
-        /* Estilos activos luminosos cuando se seleccionan */
         .cat-chip.active-nsfw {
             background: #7c3aed;
             color: #ffffff;
@@ -150,7 +148,7 @@
             box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
         }
 
-        /* Ocultos por defecto para que solo aparezcan al tocar la categoría */
+        /* Ocultos al inicio para obligar a presionar la categoría primero */
         .endpoint-block {
             background: #120e24;
             border: 1px solid #221b4a;
@@ -324,13 +322,11 @@
             <input type="text" value="Cari endpoint..." disabled style="color: #3b3754;">
         </div>
 
-        <!-- Botones de las categorías -->
         <div class="categories-wrapper">
             <div class="cat-chip" id="chipNsfw" onclick="activarCategoria('nsfw')">NSFW <span>1</span></div>
             <div class="cat-chip" id="chipAnime" onclick="activarCategoria('anime')">Anime <span>1</span></div>
         </div>
 
-        <!-- ENDPOINT NSFW: PENE (Oculto al inicio) -->
         <div class="endpoint-block" id="peneEndpoint">
             <div class="endpoint-trigger" onclick="toggleAccordion('peneEndpoint')">
                 <div class="trigger-left">
@@ -369,7 +365,6 @@
             </div>
         </div>
 
-        <!-- ENDPOINT ANIME: SHINOBU (Oculto al inicio) -->
         <div class="endpoint-block anime-block" id="shinobuEndpoint">
             <div class="endpoint-trigger" onclick="toggleAccordion('shinobuEndpoint')">
                 <div class="trigger-left">
@@ -411,20 +406,19 @@
     </div>
 
     <script>
-        // Sincronizar endpoints dinámicamente con la URL actual de Vercel
+        // Visualización de la URL de producción simulada según tu dominio de Vercel
         document.getElementById('urlBoxPene').innerText = `${window.location.origin}/api/nsfw/pene/`;
         document.getElementById('urlBoxShinobu').innerText = `${window.location.origin}/api/aleatorio/shinobu/`;
 
         let seleccionActual = null;
 
-        // FUNCIÓN MEJORADA: Maneja el despliegue exclusivo al tocar la categoría
+        // Mostrar u ocultar el bloque completo según la categoría pulsada
         function activarCategoria(cat) {
             const blockPene = document.getElementById('peneEndpoint');
             const blockShinobu = document.getElementById('shinobuEndpoint');
             const chipNsfw = document.getElementById('chipNsfw');
             const chipAnime = document.getElementById('chipAnime');
 
-            // Si se vuelve a presionar el botón activo, se desactiva todo y vuelve a quedar vacío
             if (seleccionActual === cat) {
                 seleccionActual = null;
                 blockPene.style.display = 'none';
@@ -437,19 +431,13 @@
             seleccionActual = cat;
 
             if (cat === 'nsfw') {
-                // Muestra Pene y oculta Shinobu por completo
                 blockPene.style.display = 'block';
                 blockShinobu.style.display = 'none';
-                
-                // Ilumina el botón de NSFW y apaga el de Anime
                 chipNsfw.classList.add('active-nsfw');
                 chipAnime.classList.remove('active-anime');
             } else if (cat === 'anime') {
-                // Muestra Shinobu y oculta Pene por completo
                 blockPene.style.display = 'none';
                 blockShinobu.style.display = 'block';
-                
-                // Ilumina el botón de Anime y apaga el de NSFW
                 chipAnime.classList.add('active-anime');
                 chipNsfw.classList.remove('active-nsfw');
             }
@@ -460,14 +448,15 @@
             block.classList.toggle('active');
         }
 
+        // FUNCIÓN CORREGIDA: Lee los JSON locales desde la misma raíz del index.html
         function fireEngine(tipo) {
             const esPene = (tipo === 'pene');
             const output = document.getElementById(esPene ? 'outputPene' : 'outputShinobu');
             const ind = document.getElementById(esPene ? 'indPene' : 'indShinobu');
             const txt = document.getElementById(esPene ? 'txtPene' : 'txtShinobu');
             
-            // Apuntamos a las rutas internas correspondientes desde la raíz de la Docs
-            const jsonRuta = esPene ? './api/nsfw/pene/pene.json' : './api/aleatorio/shinobu/shinobu.json';
+            // RUTAS EN LA RAÍZ DIRECTA: ./pene.json y ./shinobu.json
+            const jsonRuta = esPene ? './pene.json' : './shinobu.json';
             const categoriaNombre = esPene ? 'NSFW' : 'Anime';
 
             output.innerText = '// Processing request...';
@@ -478,6 +467,7 @@
                     return response.json();
                 })
                 .then(linksArray => {
+                    // Selecciona un enlace aleatorio del array dentro del JSON
                     const randomLink = linksArray[Math.floor(Math.random() * linksArray.length)];
                     const isVideo = randomLink.toLowerCase().endsWith('.mp4');
                     const mimeType = isVideo ? 'video/mp4' : (randomLink.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg');
@@ -501,6 +491,7 @@
 
                     let formatted = JSON.stringify(responseStructure, null, 2);
 
+                    // Formateador de colores para el bloque de código JSON
                     formatted = formatted
                         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
                         .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|\b[0-9]+\b)/g, function (match) {
@@ -519,7 +510,7 @@
                 .catch(err => {
                     ind.className = "status-indicator";
                     txt.innerText = "Error";
-                    output.innerText = `// Error: No se pudo conectar a la base de enlaces de ${tipo}.`;
+                    output.innerText = `// Error: No se pudo cargar el archivo "${jsonRuta}" desde la raíz del servidor.`;
                 });
         }
     </script>
