@@ -3,53 +3,61 @@ import path from 'path';
 
 export default async function handler(req, res) {
     try {
-        const carpeta = path.join(process.cwd(), 'api', 'nsfw', 'pene');
+        // Busca el archivo pene.json que está en su misma carpeta
+        const rutaJson = path.join(process.cwd(), 'api', 'nsfw', 'pene', 'pene.json');
 
-        if (!fs.existsSync(carpeta)) {
-            return res.status(404).send('Carpeta no encontrada');
+        if (!fs.existsSync(rutaJson)) {
+            res.setHeader('Content-Type', 'application/json; charset=utf-8');
+            return res.status(404).send(JSON.stringify({ status: false, error: "Falta pene.json" }, null, 2));
         }
 
-        const mediaFiles = [];
+        // Lee el archivo json de al lado
+        const contenidoRaw = fs.readFileSync(rutaJson, 'utf8');
+        const linksArray = JSON.parse(contenidoRaw);
 
-        // Fotos: foto1.jpg hasta foto34.jpg
-        for (let i = 1; i <= 34; i++) {
-            const foto = `foto${i}.jpg`;
-            if (fs.existsSync(path.join(carpeta, foto))) {
-                mediaFiles.push(foto);
+        if (!linksArray || linksArray.length === 0) {
+            res.setHeader('Content-Type', 'application/json; charset=utf-8');
+            return res.status(400).send(JSON.stringify({ status: false, error: "pene.json vacío" }, null, 2));
+        }
+
+        // Selecciona el link aleatorio de Catbox
+        const linkAleatorio = linksArray[Math.floor(Math.random() * linksArray.length)];
+
+        // DETECCIÓN AUTOMÁTICA: ¿Es foto o es video?
+        const esVideo = linkAleatorio.toLowerCase().endsWith('.mp4');
+
+        const urlImagen = esVideo ? "null" : linkAleatorio;
+        const urlVideo = esVideo ? linkAleatorio : "null";
+        const tipoMime = esVideo ? "video/mp4" : "image/jpeg";
+
+        // Estructura del objeto final
+        const respuestaApi = {
+            status: true,
+            Author: "StarLyn",
+            result: {
+                status: true,
+                data: [
+                    {
+                        title: "Moonlight Staff API",
+                        image: urlImagen,
+                        video: urlVideo,
+                        category: "NSFW",
+                        type: tipoMime
+                    }
+                ]
             }
-        }
+        };
 
-        // Videos: vídeo1.mp4 hasta vídeo30.mp4
-        for (let i = 1; i <= 30; i++) {
-            const video = `vídeo${i}.mp4`;
-            if (fs.existsSync(path.join(carpeta, video))) {
-                mediaFiles.push(video);
-            }
-        }
+        // CONFIGURACIÓN DE CABECERAS (Forzamos JSON con codificación limpia)
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        res.setHeader('Access-Control-Allow-Origin', '*'); 
 
-        if (mediaFiles.length === 0) {
-            return res.status(404).send('No se encontraron fotos ni vídeos');
-        }
-
-        // Seleccionar uno aleatorio
-        const archivoAleatorio = mediaFiles[Math.floor(Math.random() * mediaFiles.length)];
-        const rutaArchivo = path.join(carpeta, archivoAleatorio);
-
-        const buffer = fs.readFileSync(rutaArchivo);
-
-        // Configurar tipo correcto
-        const contentType = archivoAleatorio.endsWith('.mp4') ? 'video/mp4' : 'image/jpeg';
-
-        res.setHeader('Content-Type', contentType);
-        res.setHeader('Content-Length', buffer.length);
-        res.setHeader('Cache-Control', 'public, max-age=3600');
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('X-File-Name', archivoAleatorio);
-
-        return res.status(200).send(buffer);
+        // EL TRUCO: Enviamos el JSON formateado con 2 espacios de separación
+        const jsonBonito = JSON.stringify(respuestaApi, null, 2);
+        return res.status(200).send(jsonBonito);
 
     } catch (error) {
-        console.error(error);
-        return res.status(500).send('Error interno');
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        return res.status(500).send(JSON.stringify({ status: false, error: "Error interno" }, null, 2));
     }
 }
