@@ -3,61 +3,59 @@ import path from 'path';
 
 export default async function handler(req, res) {
     try {
-        // Busca el archivo maid.json que está en su misma carpeta
         const rutaJson = path.join(process.cwd(), 'api', 'aleatorio', 'maid', 'maid.json');
 
         if (!fs.existsSync(rutaJson)) {
-            res.setHeader('Content-Type', 'application/json; charset=utf-8');
-            return res.status(404).send(JSON.stringify({ status: false, error: "Falta maid.json" }, null, 2));
+            return res.status(404).json({ status: false, error: "Falta maid.json" });
         }
 
-        // Lee el archivo json de al lado
         const contenidoRaw = fs.readFileSync(rutaJson, 'utf8');
         const linksArray = JSON.parse(contenidoRaw);
 
         if (!linksArray || linksArray.length === 0) {
-            res.setHeader('Content-Type', 'application/json; charset=utf-8');
-            return res.status(400).send(JSON.stringify({ status: false, error: "maid.json vacío" }, null, 2));
+            return res.status(400).json({ status: false, error: "maid.json vacío" });
         }
 
-        // Selecciona un link al azar de Maid
+        // Seleccionar link aleatorio
         const linkAleatorio = linksArray[Math.floor(Math.random() * linksArray.length)];
 
-        // DETECCIÓN AUTOMÁTICA: ¿Es foto o es video de anime?
+        // Detectar si es video o imagen
         const esVideo = linkAleatorio.toLowerCase().endsWith('.mp4');
 
-        const urlImagen = esVideo ? "null" : linkAleatorio;
-        const urlVideo = esVideo ? linkAleatorio : "null";
-        const tipoMime = esVideo ? "video/mp4" : "image/jpeg";
+        // Fetch del archivo desde Catbox
+        const response = await fetch(linkAleatorio);
 
-        // Estructura del objeto final ordenada con tu firma (Idéntica a Shinobu)
-        const respuestaApi = {
-            status: true,
-            Author: "StarLyn",
-            result: {
-                status: true,
-                data: [
-                    {
-                        title: "Moonlight Staff API",
-                        image: urlImagen,
-                        video: urlVideo,
-                        category: "Anime",
-                        type: tipoMime
-                    }
-                ]
-            }
-        };
+        if (!response.ok) {
+            return res.status(502).json({ 
+                status: false, 
+                error: "No se pudo obtener el archivo de Catbox" 
+            });
+        }
 
-        // CONFIGURACIÓN DE CABECERAS (Forzamos JSON ordenado)
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        res.setHeader('Access-Control-Allow-Origin', '*'); 
+        // Configurar headers según el tipo
+        if (esVideo) {
+            res.setHeader('Content-Type', 'video/mp4');
+            res.setHeader('Content-Disposition', 'inline'); // o 'attachment' si quieres forzar descarga
+        } else {
+            res.setHeader('Content-Type', 'image/jpeg'); // Catbox suele ser jpeg/webp/png
+            // Puedes mejorar la detección según la extensión:
+            // const ext = path.extname(linkAleatorio).toLowerCase();
+            // if (ext === '.png') res.setHeader('Content-Type', 'image/png');
+            // if (ext === '.webp') res.setHeader('Content-Type', 'image/webp');
+        }
 
-        // Enviamos el JSON formateado con los 2 espacios de separación para que no salga feo
-        const jsonBonito = JSON.stringify(respuestaApi, null, 2);
-        return res.status(200).send(jsonBonito);
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Cache-Control', 'public, max-age=3600'); // opcional: caché de 1 hora
+
+        // Enviar el stream directamente
+        const buffer = await response.arrayBuffer();
+        return res.status(200).send(Buffer.from(buffer));
 
     } catch (error) {
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        return res.status(500).send(JSON.stringify({ status: false, error: "Error interno en la API de Maid" }, null, 2));
+        console.error(error);
+        return res.status(500).json({ 
+            status: false, 
+            error: "Error interno en la API de Maid" 
+        });
     }
 }
