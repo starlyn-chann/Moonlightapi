@@ -6,49 +6,60 @@ export default async function handler(req, res) {
         const carpeta = path.join(process.cwd(), 'api', 'nsfw', 'pene');
 
         if (!fs.existsSync(carpeta)) {
-            return res.status(404).send('❌ Carpeta no encontrada: api/nsfw/pene');
+            return res.status(404).send('Carpeta no encontrada');
         }
 
-        // Leer todos los archivos de la carpeta
-        const archivos = fs.readdirSync(carpeta);
+        const imagenes = [];
+        const videos = [];
 
-        // Filtro muy flexible: cualquier archivo que termine en .jpg/.jpeg/.mp4
-        const mediaFiles = archivos.filter(archivo => {
-            const nombre = archivo.toLowerCase().trim();
-            return nombre.endsWith('.jpg') || 
-                   nombre.endsWith('.jpeg') || 
-                   nombre.endsWith('.mp4');
-        });
+        // Buscar fotos: foto1.jpg → foto34.jpg
+        for (let i = 1; i <= 34; i++) {
+            const nombre = `foto${i}.jpg`;
+            if (fs.existsSync(path.join(carpeta, nombre))) {
+                imagenes.push(nombre);
+            }
+        }
 
-        if (mediaFiles.length === 0) {
-            let mensaje = '❌ No se encontraron archivos .jpg o .mp4\n\n';
-            mensaje += `Archivos encontrados en la carpeta (${archivos.length}):\n`;
-            mensaje += archivos.length > 0 ? archivos.join('\n') : 'Ninguno';
-            return res.status(404).send(mensaje);
+        // Buscar videos: vídeo1.mp4 → vídeo30.mp4 (con tilde)
+        for (let i = 1; i <= 30; i++) {
+            const nombre = `vídeo${i}.mp4`;
+            if (fs.existsSync(path.join(carpeta, nombre))) {
+                videos.push(nombre);
+            }
+        }
+
+        // Combinar todos los archivos encontrados
+        const todosLosArchivos = [...imagenes, ...videos];
+
+        if (todosLosArchivos.length === 0) {
+            return res.status(404).send(
+                'No se encontraron archivos.\n' +
+                `Fotos encontradas: ${imagenes.length}/34\n` +
+                `Videos encontrados: ${videos.length}/30`
+            );
         }
 
         // Seleccionar uno aleatorio
-        const archivoAleatorio = mediaFiles[Math.floor(Math.random() * mediaFiles.length)];
+        const archivoAleatorio = todosLosArchivos[Math.floor(Math.random() * todosLosArchivos.length)];
         const rutaArchivo = path.join(carpeta, archivoAleatorio);
 
-        // Leer el archivo
         const archivoBuffer = fs.readFileSync(rutaArchivo);
 
-        // Tipo MIME
-        const ext = path.extname(archivoAleatorio).toLowerCase();
-        const contentType = ext === '.mp4' ? 'video/mp4' : 'image/jpeg';
+        // Tipo de contenido
+        const esVideo = archivoAleatorio.toLowerCase().includes('.mp4');
+        const contentType = esVideo ? 'video/mp4' : 'image/jpeg';
 
         // Headers
         res.setHeader('Content-Type', contentType);
         res.setHeader('Content-Length', archivoBuffer.length);
         res.setHeader('Cache-Control', 'public, max-age=3600');
         res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('X-File-Name', archivoAleatorio);   // Para saber cuál se sirvió
+        res.setHeader('X-File-Name', archivoAleatorio);
 
         return res.status(200).send(archivoBuffer);
 
     } catch (error) {
         console.error(error);
-        return res.status(500).send('❌ Error interno del servidor');
+        return res.status(500).send('Error interno del servidor');
     }
 }
