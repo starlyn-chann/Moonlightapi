@@ -3,61 +3,60 @@ import path from 'path';
 
 export default async function handler(req, res) {
     try {
-        // Busca el archivo shinobu.json que está en su misma carpeta
+        // Ruta al archivo shinobu.json
         const rutaJson = path.join(process.cwd(), 'api', 'aleatorio', 'shinobu', 'shinobu.json');
 
         if (!fs.existsSync(rutaJson)) {
-            res.setHeader('Content-Type', 'application/json; charset=utf-8');
-            return res.status(404).send(JSON.stringify({ status: false, error: "Falta shinobu.json" }, null, 2));
+            return res.status(404).json({ status: false, error: "Falta shinobu.json" });
         }
 
-        // Lee el archivo json de al lado
         const contenidoRaw = fs.readFileSync(rutaJson, 'utf8');
-        const linksArray = JSON.parse(contenidoRaw);
+        let linksArray = JSON.parse(contenidoRaw);
 
-        if (!linksArray || linksArray.length === 0) {
-            res.setHeader('Content-Type', 'application/json; charset=utf-8');
-            return res.status(400).send(JSON.stringify({ status: false, error: "shinobu.json vacío" }, null, 2));
+        if (!Array.isArray(linksArray) || linksArray.length === 0) {
+            return res.status(400).json({ status: false, error: "shinobu.json vacío o inválido" });
         }
 
-        // Selecciona un link al azar de Shinobu Kocho
-        const linkAleatorio = linksArray[Math.floor(Math.random() * linksArray.length)];
+        // Selecciona un link aleatorio
+        const randomIndex = Math.floor(Math.random() * linksArray.length);
+        const linkAleatorio = linksArray[randomIndex];
 
-        // DETECCIÓN AUTOMÁTICA: ¿Es foto o es video de anime?
+        // Obtener el archivo desde Catbox
+        const response = await fetch(linkAleatorio, { cache: 'no-store' });
+
+        if (!response.ok) {
+            return res.status(502).json({ status: false, error: "Error al obtener el archivo de Catbox" });
+        }
+
+        // Detectar tipo de contenido
         const esVideo = linkAleatorio.toLowerCase().endsWith('.mp4');
-        
-        const urlImagen = esVideo ? "null" : linkAleatorio;
-        const urlVideo = esVideo ? linkAleatorio : "null";
-        const tipoMime = esVideo ? "video/mp4" : "image/jpeg";
+        const ext = path.extname(linkAleatorio).toLowerCase();
 
-        // Estructura del objeto final ordenada con tu firma
-        const respuestaApi = {
-            status: true,
-            Author: "StarLyn",
-            result: {
-                status: true,
-                data: [
-                    {
-                        title: "Moonlight Staff API",
-                        image: urlImagen,
-                        video: urlVideo,
-                        category: "Anime",
-                        type: tipoMime
-                    }
-                ]
-            }
-        };
+        if (esVideo) {
+            res.setHeader('Content-Type', 'video/mp4');
+        } else if (ext === '.png') {
+            res.setHeader('Content-Type', 'image/png');
+        } else if (ext === '.webp') {
+            res.setHeader('Content-Type', 'image/webp');
+        } else if (ext === '.gif') {
+            res.setHeader('Content-Type', 'image/gif');
+        } else {
+            res.setHeader('Content-Type', 'image/jpeg');
+        }
 
-        // CONFIGURACIÓN DE CABECERAS (Forzamos JSON ordenado)
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        res.setHeader('Access-Control-Allow-Origin', '*'); 
+        // Anti-caché fuerte (para que siempre muestre una imagen diferente)
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+        res.setHeader('Surrogate-Control', 'no-store');
+        res.setHeader('Access-Control-Allow-Origin', '*');
 
-        // Enviamos el JSON formateado con los 2 espacios de separación para que no salga feo
-        const jsonBonito = JSON.stringify(respuestaApi, null, 2);
-        return res.status(200).send(jsonBonito);
+        // Enviar la imagen/video directamente
+        const buffer = await response.arrayBuffer();
+        return res.status(200).send(Buffer.from(buffer));
 
     } catch (error) {
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        return res.status(500).send(JSON.stringify({ status: false, error: "Error interno en la API de Shinobu" }, null, 2));
+        console.error('Error en API Shinobu:', error);
+        return res.status(500).json({ status: false, error: "Error interno en la API de Shinobu" });
     }
 }
