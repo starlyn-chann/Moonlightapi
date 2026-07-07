@@ -117,7 +117,7 @@
 
         .categories-wrapper { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
         
-        /* Estilos base de los chips deshabilitados/neutrales */
+        /* Botones neutros de categorías */
         .cat-chip {
             background: #141029;
             border: 1px solid #201942;
@@ -136,7 +136,7 @@
         }
         .cat-chip span { opacity: 0.6; font-size: 0.7rem; }
 
-        /* Estados Activos independientes para cada botón */
+        /* Estilos activos luminosos cuando se seleccionan */
         .cat-chip.active-nsfw {
             background: #7c3aed;
             color: #ffffff;
@@ -150,13 +150,14 @@
             box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
         }
 
+        /* Ocultos por defecto para que solo aparezcan al tocar la categoría */
         .endpoint-block {
             background: #120e24;
             border: 1px solid #221b4a;
             border-radius: 14px;
             overflow: hidden;
             margin-bottom: 20px;
-            display: block; /* Controlado dinámicamente por JS */
+            display: none; 
         }
 
         .endpoint-trigger {
@@ -323,11 +324,13 @@
             <input type="text" value="Cari endpoint..." disabled style="color: #3b3754;">
         </div>
 
+        <!-- Botones de las categorías -->
         <div class="categories-wrapper">
-            <div class="cat-chip" id="chipNsfw" onclick="filtrarCategoria('nsfw')">NSFW <span>1</span></div>
-            <div class="cat-chip" id="chipAnime" onclick="filtrarCategoria('anime')">Anime <span>1</span></div>
+            <div class="cat-chip" id="chipNsfw" onclick="activarCategoria('nsfw')">NSFW <span>1</span></div>
+            <div class="cat-chip" id="chipAnime" onclick="activarCategoria('anime')">Anime <span>1</span></div>
         </div>
 
+        <!-- ENDPOINT NSFW: PENE (Oculto al inicio) -->
         <div class="endpoint-block" id="peneEndpoint">
             <div class="endpoint-trigger" onclick="toggleAccordion('peneEndpoint')">
                 <div class="trigger-left">
@@ -366,6 +369,7 @@
             </div>
         </div>
 
+        <!-- ENDPOINT ANIME: SHINOBU (Oculto al inicio) -->
         <div class="endpoint-block anime-block" id="shinobuEndpoint">
             <div class="endpoint-trigger" onclick="toggleAccordion('shinobuEndpoint')">
                 <div class="trigger-left">
@@ -407,41 +411,45 @@
     </div>
 
     <script>
+        // Sincronizar endpoints dinámicamente con la URL actual de Vercel
         document.getElementById('urlBoxPene').innerText = `${window.location.origin}/api/nsfw/pene/`;
         document.getElementById('urlBoxShinobu').innerText = `${window.location.origin}/api/aleatorio/shinobu/`;
 
-        // Variable global para rastrear qué categoría está seleccionada actualmente
-        let categoriaActiva = 'todas';
+        let seleccionActual = null;
 
-        // FUNCIÓN CLAVE: Filtra qué bloques se ven en base al chip presionado
-        function filtrarCategoria(cat) {
+        // FUNCIÓN MEJORADA: Maneja el despliegue exclusivo al tocar la categoría
+        function activarCategoria(cat) {
             const blockPene = document.getElementById('peneEndpoint');
             const blockShinobu = document.getElementById('shinobuEndpoint');
             const chipNsfw = document.getElementById('chipNsfw');
             const chipAnime = document.getElementById('chipAnime');
 
-            // Si vuelven a tocar la categoría activa, se limpian los filtros (Muestra todo)
-            if (categoriaActiva === cat) {
-                categoriaActiva = 'todas';
-                blockPene.style.display = 'block';
-                blockShinobu.style.display = 'block';
+            // Si se vuelve a presionar el botón activo, se desactiva todo y vuelve a quedar vacío
+            if (seleccionActual === cat) {
+                seleccionActual = null;
+                blockPene.style.display = 'none';
+                blockShinobu.style.display = 'none';
                 chipNsfw.classList.remove('active-nsfw');
                 chipAnime.classList.remove('active-anime');
                 return;
             }
 
-            // Cambiar categoría y aplicar clases de luces neón correspondientes
-            categoriaActiva = cat;
+            seleccionActual = cat;
+
             if (cat === 'nsfw') {
+                // Muestra Pene y oculta Shinobu por completo
                 blockPene.style.display = 'block';
                 blockShinobu.style.display = 'none';
                 
+                // Ilumina el botón de NSFW y apaga el de Anime
                 chipNsfw.classList.add('active-nsfw');
                 chipAnime.classList.remove('active-anime');
             } else if (cat === 'anime') {
+                // Muestra Shinobu y oculta Pene por completo
                 blockPene.style.display = 'none';
                 blockShinobu.style.display = 'block';
                 
+                // Ilumina el botón de Anime y apaga el de NSFW
                 chipAnime.classList.add('active-anime');
                 chipNsfw.classList.remove('active-nsfw');
             }
@@ -457,7 +465,9 @@
             const output = document.getElementById(esPene ? 'outputPene' : 'outputShinobu');
             const ind = document.getElementById(esPene ? 'indPene' : 'indShinobu');
             const txt = document.getElementById(esPene ? 'txtPene' : 'txtShinobu');
-            const jsonRuta = esPene ? './pene.json' : '../../aleatorio/shinobu/shinobu.json';
+            
+            // Apuntamos a las rutas internas correspondientes desde la raíz de la Docs
+            const jsonRuta = esPene ? './api/nsfw/pene/pene.json' : './api/aleatorio/shinobu/shinobu.json';
             const categoriaNombre = esPene ? 'NSFW' : 'Anime';
 
             output.innerText = '// Processing request...';
@@ -505,3 +515,13 @@
                     ind.className = "status-indicator success";
                     txt.innerText = "200 OK";
                     output.innerHTML = formatted;
+                })
+                .catch(err => {
+                    ind.className = "status-indicator";
+                    txt.innerText = "Error";
+                    output.innerText = `// Error: No se pudo conectar a la base de enlaces de ${tipo}.`;
+                });
+        }
+    </script>
+</body>
+</html>
