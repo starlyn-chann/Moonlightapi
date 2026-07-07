@@ -9,57 +9,47 @@ export default async function handler(req, res) {
             return res.status(404).send('Carpeta no encontrada');
         }
 
-        const imagenes = [];
-        const videos = [];
+        const mediaFiles = [];
 
-        // Buscar fotos: foto1.jpg → foto34.jpg
+        // Fotos: foto1.jpg hasta foto34.jpg
         for (let i = 1; i <= 34; i++) {
-            const nombre = `foto${i}.jpg`;
-            if (fs.existsSync(path.join(carpeta, nombre))) {
-                imagenes.push(nombre);
+            const foto = `foto${i}.jpg`;
+            if (fs.existsSync(path.join(carpeta, foto))) {
+                mediaFiles.push(foto);
             }
         }
 
-        // Buscar videos: vídeo1.mp4 → vídeo30.mp4 (con tilde)
+        // Videos: vídeo1.mp4 hasta vídeo30.mp4
         for (let i = 1; i <= 30; i++) {
-            const nombre = `vídeo${i}.mp4`;
-            if (fs.existsSync(path.join(carpeta, nombre))) {
-                videos.push(nombre);
+            const video = `vídeo${i}.mp4`;
+            if (fs.existsSync(path.join(carpeta, video))) {
+                mediaFiles.push(video);
             }
         }
 
-        // Combinar todos los archivos encontrados
-        const todosLosArchivos = [...imagenes, ...videos];
-
-        if (todosLosArchivos.length === 0) {
-            return res.status(404).send(
-                'No se encontraron archivos.\n' +
-                `Fotos encontradas: ${imagenes.length}/34\n` +
-                `Videos encontrados: ${videos.length}/30`
-            );
+        if (mediaFiles.length === 0) {
+            return res.status(404).send('No se encontraron fotos ni vídeos');
         }
 
         // Seleccionar uno aleatorio
-        const archivoAleatorio = todosLosArchivos[Math.floor(Math.random() * todosLosArchivos.length)];
+        const archivoAleatorio = mediaFiles[Math.floor(Math.random() * mediaFiles.length)];
         const rutaArchivo = path.join(carpeta, archivoAleatorio);
 
-        const archivoBuffer = fs.readFileSync(rutaArchivo);
+        const buffer = fs.readFileSync(rutaArchivo);
 
-        // Tipo de contenido
-        const esVideo = archivoAleatorio.toLowerCase().includes('.mp4');
-        const contentType = esVideo ? 'video/mp4' : 'image/jpeg';
+        // Configurar tipo correcto
+        const contentType = archivoAleatorio.endsWith('.mp4') ? 'video/mp4' : 'image/jpeg';
 
-        // Headers
         res.setHeader('Content-Type', contentType);
-        res.setHeader('Content-Length', archivoBuffer.length);
+        res.setHeader('Content-Length', buffer.length);
         res.setHeader('Cache-Control', 'public, max-age=3600');
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('X-File-Name', archivoAleatorio);
 
-        return res.status(200).send(archivoBuffer);
+        return res.status(200).send(buffer);
 
     } catch (error) {
         console.error(error);
-        return res.status(500).send('Error interno del servidor');
+        return res.status(500).send('Error interno');
     }
 }
