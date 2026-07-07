@@ -116,9 +116,12 @@
         }
 
         .categories-wrapper { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+        
+        /* Estilos base de los chips deshabilitados/neutrales */
         .cat-chip {
-            background: #7c3aed;
-            color: #ffffff;
+            background: #141029;
+            border: 1px solid #201942;
+            color: #8c88a5;
             font-family: 'Space Grotesk', sans-serif;
             font-size: 0.75rem;
             font-weight: 700;
@@ -127,10 +130,25 @@
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
         }
         .cat-chip span { opacity: 0.6; font-size: 0.7rem; }
-        .cat-chip.anime-chip { background: #00f2ff; color: #000; box-shadow: 0 0 15px rgba(0, 242, 255, 0.3); }
+
+        /* Estados Activos independientes para cada botón */
+        .cat-chip.active-nsfw {
+            background: #7c3aed;
+            color: #ffffff;
+            border-color: #7c3aed;
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.4);
+        }
+        .cat-chip.active-anime {
+            background: #00f2ff;
+            color: #000000;
+            border-color: #00f2ff;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
+        }
 
         .endpoint-block {
             background: #120e24;
@@ -138,6 +156,7 @@
             border-radius: 14px;
             overflow: hidden;
             margin-bottom: 20px;
+            display: block; /* Controlado dinámicamente por JS */
         }
 
         .endpoint-trigger {
@@ -305,8 +324,8 @@
         </div>
 
         <div class="categories-wrapper">
-            <div class="cat-chip">NSFW <span>1</span></div>
-            <div class="cat-chip anime-chip">Anime <span>1</span></div>
+            <div class="cat-chip" id="chipNsfw" onclick="filtrarCategoria('nsfw')">NSFW <span>1</span></div>
+            <div class="cat-chip" id="chipAnime" onclick="filtrarCategoria('anime')">Anime <span>1</span></div>
         </div>
 
         <div class="endpoint-block" id="peneEndpoint">
@@ -388,21 +407,53 @@
     </div>
 
     <script>
-        // Sincronizar dinámicamente los cuadros de las URL
         document.getElementById('urlBoxPene').innerText = `${window.location.origin}/api/nsfw/pene/`;
         document.getElementById('urlBoxShinobu').innerText = `${window.location.origin}/api/aleatorio/shinobu/`;
 
-        // Función de acordeón genérica para abrir el bloque correspondiente
+        // Variable global para rastrear qué categoría está seleccionada actualmente
+        let categoriaActiva = 'todas';
+
+        // FUNCIÓN CLAVE: Filtra qué bloques se ven en base al chip presionado
+        function filtrarCategoria(cat) {
+            const blockPene = document.getElementById('peneEndpoint');
+            const blockShinobu = document.getElementById('shinobuEndpoint');
+            const chipNsfw = document.getElementById('chipNsfw');
+            const chipAnime = document.getElementById('chipAnime');
+
+            // Si vuelven a tocar la categoría activa, se limpian los filtros (Muestra todo)
+            if (categoriaActiva === cat) {
+                categoriaActiva = 'todas';
+                blockPene.style.display = 'block';
+                blockShinobu.style.display = 'block';
+                chipNsfw.classList.remove('active-nsfw');
+                chipAnime.classList.remove('active-anime');
+                return;
+            }
+
+            // Cambiar categoría y aplicar clases de luces neón correspondientes
+            categoriaActiva = cat;
+            if (cat === 'nsfw') {
+                blockPene.style.display = 'block';
+                blockShinobu.style.display = 'none';
+                
+                chipNsfw.classList.add('active-nsfw');
+                chipAnime.classList.remove('active-anime');
+            } else if (cat === 'anime') {
+                blockPene.style.display = 'none';
+                blockShinobu.style.display = 'block';
+                
+                chipAnime.classList.add('active-anime');
+                chipNsfw.classList.remove('active-nsfw');
+            }
+        }
+
         function toggleAccordion(elementId) {
             const block = document.getElementById(elementId);
             block.classList.toggle('active');
         }
 
-        // Motor unificado que procesa la petición de acuerdo al tipo ("pene" o "shinobu")
         function fireEngine(tipo) {
             const esPene = (tipo === 'pene');
-            
-            // Asignación de selectores según la categoría clicada
             const output = document.getElementById(esPene ? 'outputPene' : 'outputShinobu');
             const ind = document.getElementById(esPene ? 'indPene' : 'indShinobu');
             const txt = document.getElementById(esPene ? 'txtPene' : 'txtShinobu');
@@ -421,7 +472,6 @@
                     const isVideo = randomLink.toLowerCase().endsWith('.mp4');
                     const mimeType = isVideo ? 'video/mp4' : (randomLink.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg');
 
-                    // Armamos la respuesta exacta
                     const responseStructure = {
                         "status": true,
                         "Author": "StarLyn",
@@ -441,7 +491,6 @@
 
                     let formatted = JSON.stringify(responseStructure, null, 2);
 
-                    // Formateador visual para colorear las llaves del JSON
                     formatted = formatted
                         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
                         .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|\b[0-9]+\b)/g, function (match) {
@@ -456,13 +505,3 @@
                     ind.className = "status-indicator success";
                     txt.innerText = "200 OK";
                     output.innerHTML = formatted;
-                })
-                .catch(err => {
-                    ind.className = "status-indicator";
-                    txt.innerText = "Error";
-                    output.innerText = `// Error: No se pudo procesar la lista local de enlaces de ${tipo}.`;
-                });
-        }
-    </script>
-</body>
-</html>
