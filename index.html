@@ -3,384 +3,711 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moonlight Docs</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <title>Moonlight API Docs</title>
+    <link rel="icon" type="image/jpeg" href="https://files.catbox.moe/8i7nc1.jpeg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
     <style>
-        /* Variables de color de Moonlight (Neon Blue & Purple) */
+        /* ── DISEÑO INTEGRAL INSPIRADO EN XAPI ── */
         :root {
-            --neon-blue: #00f0ff;
-            --neon-purple: #bd00ff;
-            --bg-dark: #07060f;
-            --card-bg: rgba(14, 11, 28, 0.85);
+            --bg: #0b0f19;
+            --surface: #111827;
+            --surface-card: #1f2937;
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #f3f4f6;
+            --text-muted: #9ca3af;
+            
+            --primary: #7c3aed;
+            --primary-glow: rgba(124, 58, 237, 0.15);
+            --cyan: #06b6d4;
+            --cyan-glow: rgba(6, 182, 212, 0.15);
+            --green: #10b981;
+            --red: #ef4444;
+            --yellow: #f59e0b;
+            
+            --font-sans: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --radius: 12px;
         }
 
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Rajdhani', sans-serif;
+            box-sizing: border-box;
+            outline: none;
         }
 
         body {
-            background: linear-gradient(135deg, #07060f 0%, #0a0815 50%, #06050d 100%);
-            color: #e2e8f0;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font-sans);
             min-height: 100vh;
-            overflow-x: hidden;
+            line-height: 1.5;
+            padding-bottom: 60px;
         }
 
-        /* Scrollbar personalizado estilo Moonlight */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+        /* Navbar estilo Xapi */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: rgba(17, 24, 39, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        ::-webkit-scrollbar-track {
-            background: var(--bg-dark);
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: -0.5px;
         }
-        ::-webkit-scrollbar-thumb {
-            background: var(--neon-purple);
+
+        .brand img {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            object-fit: cover;
+        }
+
+        .brand em {
+            color: var(--primary);
+            font-style: normal;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary-glow);
+        }
+
+        /* Contenedor Principal Dashboard */
+        .container {
+            max-width: 1100px;
+            margin: 32px auto;
+            padding: 0 24px;
+        }
+
+        /* Buscador Predictivo Superior */
+        .search-wrapper {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .search-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 14px 14px 46px;
+            color: var(--text);
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        /* Layout Grid de Xapi */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        /* Tarjeta de Endpoint */
+        .endpoint-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .endpoint-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+
+        /* Cabecera Interactiva */
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .method-badge {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--green);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .endpoint-path {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text);
+            flex: 1;
+        }
+
+        .endpoint-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-right: 16px;
+        }
+
+        .endpoint-arrow {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            transition: transform 0.2s ease;
+        }
+
+        .endpoint-card.active .endpoint-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* Cuerpo Desplegable (Detalles del Testeo) */
+        .endpoint-body {
+            display: none;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.15);
+            border-top: 1px solid var(--border);
+        }
+
+        .endpoint-card.active .endpoint-body {
+            display: block;
+        }
+
+        /* Sección de Parámetros */
+        .section-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .param-row {
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .param-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+        }
+
+        .param-name {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .param-type {
+            color: #818cf8;
+            font-size: 0.75rem;
+            background: rgba(129, 140, 248, 0.1);
+            padding: 2px 6px;
             border-radius: 4px;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--neon-blue);
+
+        .param-req {
+            color: var(--red);
+            font-size: 0.75rem;
         }
 
-        /* Estilos Neon Estilo Moonlight Docs */
-        .neon-border {
-            border: 2px solid var(--neon-purple);
-            box-shadow: 0 0 10px rgba(189, 0, 255, 0.3), inset 0 0 10px rgba(189, 0, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-        .neon-border:hover {
-            border-color: var(--neon-blue);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.5), inset 0 0 10px rgba(0, 240, 255, 0.2);
-        }
-
-        .neon-text-blue {
-            color: var(--neon-blue);
-            text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
-        }
-        .neon-text-purple {
-            color: var(--neon-purple);
-            text-shadow: 0 0 8px rgba(189, 0, 255, 0.6);
+        .param-input {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 6px 12px;
+            color: var(--text);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            width: 180px;
+            text-align: right;
         }
 
-        /* Fuentes especiales para títulos y terminales */
-        .font-orbitron { font-family: 'Orbitron', sans-serif; }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        /* URL Generator Box */
+        .url-box {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
 
-        /* Lienzo para partículas de fondo */
-        #particles-canvas {
+        .url-text {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--cyan);
+            word-break: break-all;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.15s;
+        }
+
+        .copy-btn:hover {
+            color: var(--text);
+            background: var(--surface-card);
+        }
+
+        /* Action Execute Button */
+        .execute-btn {
+            width: 100%;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .execute-btn:hover {
+            background: #6d28d9;
+        }
+
+        /* Panel de Respuesta JSON */
+        .response-wrapper {
+            margin-top: 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #070a12;
+            overflow: hidden;
+        }
+
+        .response-header {
+            background: var(--surface-card);
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .status-dot.fetching { background: var(--yellow); animation: blink 1s infinite; }
+        .status-dot.success { background: var(--green); }
+        .status-dot.error { background: var(--red); }
+
+        .response-body {
+            padding: 14px;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .response-pre {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: #d1d5db;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin: 0;
+        }
+
+        /* Marcadores de Resaltado JSON */
+        .jk { color: #93c5fd; }
+        .js { color: #34d399; }
+        .jn { color: #fbbf24; }
+        .jb { color: #f472b6; }
+
+        /* Fallback No Results */
+        #no-results {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        #no-results i { font-size: 1.5rem; margin-bottom: 8px; color: var(--primary); }
+
+        /* Toast Alert minimalista */
+        .toast {
             position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            pointer-events: none; z-index: 1;
+            bottom: 24px;
+            right: 24px;
+            background: var(--surface-card);
+            border: 1px solid var(--primary);
+            color: var(--text);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
         }
+        .toast.show { transform: translateY(0); opacity: 1; }
 
-        /* Highlight de JSON */
-        .json-key { color: #d2a8ff; font-weight: bold; }
-        .json-string { color: #a5d6ff; }
-        .json-number { color: #ff7b72; }
-        .json-boolean { color: #79c0ff; }
+        @keyframes blink { 50% { opacity: 0.4; } }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        footer a { color: var(--text-muted); text-decoration: none; }
+        footer a:hover { color: var(--primary); }
     </style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body>
 
-    <canvas id="particles-canvas"></canvas>
+<nav class="navbar">
+    <div class="brand">
+        <img src="https://files.catbox.moe/8i7nc1.jpeg" alt="Moonlight Logo">
+        <span>MOONLIGHT<em>API</em></span>
+    </div>
+    <div class="nav-links">
+        <a href="https://wa.me/529992042946?text=starlyn" target="_blank" class="nav-btn"><i class="fas fa-code"></i> Developer</a>
+        <a href="https://whatsapp.com/channel/0029Vb6qIht5q08ZMPgVrA1y" target="_blank" class="nav-btn"><i class="fab fa-whatsapp"></i> Channel</a>
+    </div>
+</nav>
 
-    <nav class="border-b-2 border-[#bd00ff] bg(12,10,22,0.9) sticky top-0 z-50 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-[#bd00ff] text-white flex items-center justify-center font-bold text-xl rounded-lg shadow-[0_0_10px_rgba(189,0,255,0.8)] border border-black">
-                    <i class="fa-solid fa-moon"></i>
-                </div>
-                <h1 class="font-orbitron font-bold text-lg tracking-wider italic neon-text-blue">MOONLIGHT DOCS</h1>
+<div class="container">
+
+    <div class="search-wrapper">
+        <i class="fas fa-search"></i>
+        <input type="text" id="search-input" class="search-input" placeholder="Buscar rutas o endpoints por nombre o descripción...">
+    </div>
+
+    <div class="dashboard-grid" id="endpoints-container">
+
+        <div class="endpoint-card" data-keywords="nsfw pene random system engine repository">
+            <div class="endpoint-header" onclick="toggleCard(this)">
+                <span class="method-badge">GET</span>
+                <span class="endpoint-path">/api/nsfw/pene/</span>
+                <span class="endpoint-desc">Random System Engine Repository.</span>
+                <i class="fas fa-chevron-down endpoint-arrow"></i>
             </div>
-            
-            <div class="flex-1 max-w-md mx-auto overflow-hidden h-8 bg-black/60 border border-[#bd00ff]/40 flex items-center hidden md:flex rounded px-4">
-                <div class="text-white text-xs font-mono tracking-widest whitespace-nowrap animate-pulse">
-                    SYSTEM STATUS: ALL SYSTEMS OPERATIONAL // READY
+            <div class="endpoint-body">
+                <div class="section-title"><i class="fas fa-sliders"></i> Query Parameters</div>
+                <div class="param-row">
+                    <div class="param-info">
+                        <span class="param-name">query</span>
+                        <span class="param-type">string</span>
+                        <span class="param-req">*</span>
+                    </div>
+                    <input type="text" class="param-input" value="pene" disabled>
                 </div>
-            </div>
 
-            <div class="flex items-center gap-3">
-                <a href="#" class="w-10 h-10 border border-[#bd00ff] bg-black/40 rounded flex items-center justify-center hover:bg-[#bd00ff]/20 transition-all">
-                    <i class="fa-brands fa-whatsapp text-xl text-[#00f0ff]"></i>
-                </a>
+                <div class="section-title"><i class="fas fa-link"></i> Request URL</div>
+                <div class="url-box">
+                    <span class="url-text" id="urlPene">/api/nsfw/pene/</span>
+                    <button class="copy-btn" onclick="copyText('urlPene')"><i class="fas fa-copy"></i></button>
+                </div>
+
+                <button class="execute-btn" onclick="runEngine('pene')"><i class="fas fa-bolt"></i> Enviar Petición</button>
+
+                <div class="response-wrapper">
+                    <div class="response-header">
+                        <div class="status-indicator">
+                            <div class="status-dot" id="dot-pene"></div>
+                            <span id="status-pene">IDLE</span>
+                        </div>
+                        <button class="copy-btn" onclick="copyText('output-pene')"><i class="fas fa-copy"></i></button>
+                    </div>
+                    <div class="response-body">
+                        <pre class="response-pre" id="output-pene">// Esperando ejecución...</pre>
+                    </div>
+                </div>
             </div>
         </div>
-    </nav>
 
-    <main class="flex-grow max-w-7xl mx-auto w-full px-4 py-8 grid lg:grid-cols-12 gap-8 items-start relative z-10">
-        
-        <aside class="lg:col-span-4 lg:sticky lg:top-24 flex flex-col gap-6 w-full">
-            
-            <div class="bg-black/80 border-2 border-[#bd00ff] shadow-[0_0_15px_rgba(189,0,255,0.2)] flex flex-col h-[280px] rounded-lg overflow-hidden">
-                <div class="bg-black/40 p-2 flex items-center justify-between border-b border-[#bd00ff]/30">
-                    <div class="flex gap-2 pl-1">
-                        <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
-                        <div class="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
-                        <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+        <div class="endpoint-card" data-keywords="anime aleatorio shinobu kocho repository">
+            <div class="endpoint-header" onclick="toggleCard(this)">
+                <span class="method-badge">GET</span>
+                <span class="endpoint-path">/api/aleatorio/shinobu/</span>
+                <span class="endpoint-desc">Random Anime Shinobu Kocho Repository.</span>
+                <i class="fas fa-chevron-down endpoint-arrow"></i>
+            </div>
+            <div class="endpoint-body">
+                <div class="section-title"><i class="fas fa-sliders"></i> Query Parameters</div>
+                <div class="param-row">
+                    <div class="param-info">
+                        <span class="param-name">query</span>
+                        <span class="param-type">string</span>
+                        <span class="param-req">*</span>
                     </div>
-                    <span class="text-[10px] text-[#00f0ff] font-bold font-orbitron tracking-wider">MOONLIGHT CORE v2.0</span>
+                    <input type="text" class="param-input" value="shinobu" disabled>
                 </div>
-                <div id="term-logs" class="p-3 font-mono text-[11px] text-gray-300 overflow-y-auto flex-1 space-y-1">
-                    <div><span class="text-green-400">root@moonlight:~$</span> initialized docs shell...</div>
-                </div>
-            </div>
-            
-            <div class="relative">
-                <input type="text" id="search-input" placeholder="BUSCAR ENDPOINT..." class="w-full h-12 bg-black/60 border-2 border-[#bd00ff] px-4 pl-10 font-bold font-orbitron text-xs tracking-wider text-white focus:outline-none focus:border-[#00f0ff] transition-all rounded shadow-lg placeholder:text-gray-600">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-4 text-[#bd00ff]"></i>
-            </div>
 
-            <div class="bg(14,11,28,0.7) border-2 border-[#bd00ff] p-4 rounded-lg backdrop-blur-md">
-                <h3 class="font-orbitron font-bold text-sm tracking-wide neon-text-purple mb-3 uppercase">SERVER PANEL</h3>
-                <div class="space-y-2 font-mono text-xs">
-                    <div class="flex justify-between border-b border-[#bd00ff]/10 pb-1">
-                        <span class="text-gray-500">HORA LOCAL</span>
-                        <span id="server-time" class="text-white font-bold">00:00:00</span>
+                <div class="section-title"><i class="fas fa-link"></i> Request URL</div>
+                <div class="url-box">
+                    <span class="url-text" id="urlShinobu">/api/aleatorio/shinobu/</span>
+                    <button class="copy-btn" onclick="copyText('urlShinobu')"><i class="fas fa-copy"></i></button>
+                </div>
+
+                <button class="execute-btn" onclick="runEngine('shinobu')"><i class="fas fa-bolt"></i> Enviar Petición</button>
+
+                <div class="response-wrapper">
+                    <div class="response-header">
+                        <div class="status-indicator">
+                            <div class="status-dot" id="dot-shinobu"></div>
+                            <span id="status-shinobu">IDLE</span>
+                        </div>
+                        <button class="copy-btn" onclick="copyText('output-shinobu')"><i class="fas fa-copy"></i></button>
                     </div>
-                    <div class="flex justify-between border-b border-[#bd00ff]/10 pb-1">
-                        <span class="text-gray-500">FECHA</span>
-                        <span id="server-date" class="text-white">--/--/----</span>
+                    <div class="response-body">
+                        <pre class="response-pre" id="output-shinobu">// Esperando ejecución...</pre>
                     </div>
                 </div>
             </div>
-        </aside>
+        </div>
 
-        <section class="lg:col-span-8 w-full min-h-[50vh]">
-            <div id="api-container" class="space-y-4">
-                </div>
-            
-            <div id="no-results" class="hidden flex-col items-center justify-center py-20 text-center opacity-60">
-                <i class="fa-solid fa-box-open text-4xl mb-3 text-[#bd00ff]"></i>
-                <p class="font-orbitron font-bold text-lg text-[#00f0ff]">NO ENDPOINTS FOUND</p>
+        <div class="endpoint-card" data-keywords="anime aleatorio maid repository">
+            <div class="endpoint-header" onclick="toggleCard(this)">
+                <span class="method-badge">GET</span>
+                <span class="endpoint-path">/api/aleatorio/maid/</span>
+                <span class="endpoint-desc">Random Anime Maid Character Repository.</span>
+                <i class="fas fa-chevron-down endpoint-arrow"></i>
             </div>
-        </section>
-    </main>
+            <div class="endpoint-body">
+                <div class="section-title"><i class="fas fa-sliders"></i> Query Parameters</div>
+                <div class="param-row">
+                    <div class="param-info">
+                        <span class="param-name">query</span>
+                        <span class="param-type">string</span>
+                        <span class="param-req">*</span>
+                    </div>
+                    <input type="text" class="param-input" value="maid" disabled>
+                </div>
 
-    <footer class="border-t border-[#bd00ff]/20 bg-black/40 py-6 text-center text-xs text-gray-500 font-mono mt-auto relative z-10">
-        © 2026 Moonlight Docs • Powered by StarLyn
+                <div class="section-title"><i class="fas fa-link"></i> Request URL</div>
+                <div class="url-box">
+                    <span class="url-text" id="urlMaid">/api/aleatorio/maid/</span>
+                    <button class="copy-btn" onclick="copyText('urlMaid')"><i class="fas fa-copy"></i></button>
+                </div>
+
+                <button class="execute-btn" onclick="runEngine('maid')"><i class="fas fa-bolt"></i> Enviar Petición</button>
+
+                <div class="response-wrapper">
+                    <div class="response-header">
+                        <div class="status-indicator">
+                            <div class="status-dot" id="dot-maid"></div>
+                            <span id="status-maid">IDLE</span>
+                        </div>
+                        <button class="copy-btn" onclick="copyText('output-maid')"><i class="fas fa-copy"></i></button>
+                    </div>
+                    <div class="response-body">
+                        <pre class="response-pre" id="output-maid">// Esperando ejecución...</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="no-results">
+            <i class="fas fa-search"></i>
+            <span>No se encontraron rutas con ese nombre</span>
+        </div>
+
+    </div>
+
+    <footer>
+        MOONLIGHT API &copy; 2026 · <a href="https://wa.me/529992042946?text=starlyn" target="_blank">Support</a>
     </footer>
+</div>
 
-    <script>
-        // Sincronización del Reloj a la zona horaria de México (America/Mexico_City)
-        function startLocalClock() {
-            const timeEl = document.getElementById('server-time');
-            const dateEl = document.getElementById('server-date');
-            
-            setInterval(() => {
-                const now = new Date();
-                const timeStr = now.toLocaleTimeString('es-MX', { timeZone: 'America/Mexico_City', hour12: false });
-                const dateStr = now.toLocaleDateString('es-MX', { timeZone: 'America/Mexico_City', day: 'numeric', month: 'short', year: 'numeric' });
-                if(timeEl) timeEl.innerText = timeStr;
-                if(dateEl) dateEl.innerText = dateStr;
-            }, 1000);
+<div id="toast" class="toast">¡Copiado al portapapeles!</div>
+
+<script>
+// Sincronizar endpoints dinámicamente con la URL base del host en Vercel
+document.getElementById('urlPene').innerText = `${window.location.origin}/api/nsfw/pene/`;
+document.getElementById('urlShinobu').innerText = `${window.location.origin}/api/aleatorio/shinobu/`;
+document.getElementById('urlMaid').innerText = `${window.location.origin}/api/aleatorio/maid/`;
+
+// Desplegables de Tarjetas de forma nativa e independiente
+function toggleCard(header) {
+    const card = header.parentElement;
+    card.classList.toggle('active');
+}
+
+// Utilidad global de Toasts
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.innerText = msg;
+    toast.classList.add('show');
+    clearTimeout(toast.timeout);
+    toast.timeout = setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// Copiar texto ágil
+function copyText(id) {
+    const text = document.getElementById(id).innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('¡Copiado con éxito!');
+    });
+}
+
+// Buscador predictivo en vivo estilo Xapi (Filtrado global instantáneo)
+document.getElementById('search-input').addEventListener('input', (e) => {
+    const val = e.target.value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.endpoint-card');
+    const fallback = document.getElementById('no-results');
+    let visibles = 0;
+
+    cards.forEach(card => {
+        const keywords = card.getAttribute('data-keywords');
+        if (keywords.includes(val)) {
+            card.style.display = 'block';
+            visibles++;
+        } else {
+            card.style.display = 'none';
         }
+    });
 
-        // Simulación de carga e inicio de servicios en la Terminal lateral
-        function terminalLog(msg, isSuccess = true) {
-            const logs = document.getElementById('term-logs');
-            if(!logs) return;
-            const line = document.createElement('div');
-            line.innerHTML = `<span class="${isSuccess ? 'text-[#00f0ff]' : 'text-red-500'}">»</span> ${msg}`;
-            logs.appendChild(line);
-            logs.scrollTop = logs.scrollHeight;
-        }
+    fallback.style.display = (visibles === 0) ? 'flex' : 'none';
+});
 
-        // Estructura de inyección dinámica idéntica al motor JavaScript de Xapi
-        // Puedes agregar aquí los endpoints que gustes siguiendo este formato exacto:
-        const configData = {
-            "DOWNLOADERS": [
-                { name: "TikTok Video Downloader", endpoint: "/api/dl/tiktok", method: "GET", params: [{ name: "url", required: true }] },
-                { name: "Instagram Media Downloader", endpoint: "/api/dl/ig", method: "GET", params: [{ name: "url", required: true }] }
-            ],
-            "INTELIGENCIA ARTIFICIAL": [
-                { name: "Chat GPT-4o", endpoint: "/api/ai/gpt4", method: "GET", params: [{ name: "text", required: true }] }
-            ]
-        };
+// Formateador Estético de JSON
+function colorizeJSON(str) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"([^"]+)"(\s*:)/g, '<span class="jk">"$1"</span>$2')
+        .replace(/:\s*"([^"]*)"/g, ': <span class="js">"$1"</span>')
+        .replace(/:\s*(-?\d+\.?\d*)/g, ': <span class="jn">$1</span>')
+        .replace(/:\s*(true|false)/g, ': <span class="jb">$1</span>')
+        .replace(/:\s*(null)/g, ': <span class="jn">$1</span>');
+}
 
-        function renderEndpoints(tags) {
-            const container = document.getElementById('api-container');
-            if(!container) return;
-            container.innerHTML = '';
+// Motor de Lectura Inyectado para mapear tus bases de datos locales (.json)
+function runEngine(tipo) {
+    const out = document.getElementById(`output-${tipo}`);
+    const dot = document.getElementById(`dot-${tipo}`);
+    const status = document.getElementById(`status-${tipo}`);
 
-            for (const [cat, routes] of Object.entries(tags)) {
-                const catId = `cat-${cat.replace(/\s+/g, '-')}`;
-                const section = document.createElement('div');
-                section.className = "w-full mb-6";
+    out.innerText = '// Enviando request al servidor...';
+    status.innerText = 'FETCHING';
+    dot.className = 'status-dot fetching';
 
-                section.innerHTML = `
-                    <button onclick="toggleCategory('${catId}')" class="w-full flex items-center justify-between bg-[rgba(14,11,28,0.6)] text-white p-4 rounded-lg neon-border mb-3">
-                        <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-folder text-[#bd00ff]"></i>
-                            <h2 class="text-md font-orbitron font-bold uppercase tracking-wider">${cat}</h2>
-                        </div>
-                        <div class="flex items-center gap-3 font-mono text-xs">
-                            <span class="bg-[#bd00ff]/20 text-[#00f0ff] px-2 py-0.5 rounded border border-[#00f0ff]/30">${routes.length} API</span>
-                            <i id="arrow-${catId}" class="fa-solid fa-chevron-down transition-transform"></i>
-                        </div>
-                    </button>
-                    <div id="grid-${catId}" class="grid grid-cols-1 gap-3 hidden px-1"></div>
-                `;
+    fetch(`./${tipo}.json`)
+        .then(res => { if (!res.ok) throw new Error(); return res.json(); })
+        .then(linksArray => {
+            const randomLink = linksArray[Math.floor(Math.random() * linksArray.length)];
+            const isVideo = randomLink.toLowerCase().endsWith('.mp4');
+            const mime = isVideo ? 'video/mp4' : (randomLink.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg');
 
-                const grid = section.querySelector(`#grid-${catId}`);
-
-                routes.forEach((route, idx) => {
-                    const id = `${cat}-${idx}`.replace(/\s+/g, '-');
-                    const card = document.createElement('div');
-                    card.className = "bg-[#0c0a16] border border-[#bd00ff]/30 rounded-lg p-3 transition-all";
-                    card.setAttribute('data-search', `${route.name} ${route.endpoint} ${cat}`);
-
-                    card.innerHTML = `
-                        <div class="flex justify-between items-center cursor-pointer select-none" onclick="toggleEndpoint('${id}')">
-                            <div class="flex items-center gap-3 overflow-hidden">
-                                <span class="px-2 py-0.5 text-[10px] font-mono font-bold text-black bg-[#00f0ff] rounded">${route.method}</span>
-                                <code class="text-xs font-mono text-gray-300 truncate">${route.endpoint}</code>
-                            </div>
-                            <i id="icon-${id}" class="fa-solid fa-plus text-xs text-[#bd00ff]"></i>
-                        </div>
-                        
-                        <div id="body-${id}" class="hidden mt-3 pt-3 border-t border-[#bd00ff]/20 space-y-3">
-                            <p class="text-xs text-gray-400 font-mono">${route.name}</p>
-                            
-                            <div class="space-y-2">
-                                ${route.params.map(p => `
-                                    <div>
-                                        <div class="flex justify-between mb-1 text-[11px] font-mono">
-                                            <span class="text-[#00f0ff] font-bold"><i class="fa-solid fa-terminal text-[8px] mr-1"></i>${p.name.toUpperCase()}</span>
-                                            <span class="${p.required ? 'text-red-400' : 'text-gray-500'}">${p.required ? 'REQUERIDO' : 'OPCIONAL'}</span>
-                                        </div>
-                                        <input type="text" id="input-${id}-${p.name}" placeholder="Ingresar valor..." class="w-full bg-black/40 border border-[#bd00ff]/40 font-mono text-xs p-2 text-white focus:outline-none focus:border-[#00f0ff] rounded">
-                                    </div>
-                                `).join('')}
-                            </div>
-
-                            <div class="flex gap-2 pt-2">
-                                <button onclick="executeTest('${route.endpoint}', '${route.method}', '${id}')" class="flex-1 bg-[#bd00ff] hover:bg-[#bd00ff]/80 text-white font-orbitron font-bold text-xs py-2 tracking-widest uppercase rounded border border-black shadow-[0_0_8px_rgba(189,0,255,0.4)]">
-                                    EJECUTAR
-                                </button>
-                            </div>
-
-                            <div id="res-${id}" class="hidden bg-black border border-[#00f0ff]/30 rounded-lg overflow-hidden font-mono text-[11px]">
-                                <div class="bg-black/80 px-3 py-1.5 border-b border-[#00f0ff]/20 flex justify-between items-center text-[10px] text-gray-400">
-                                    <span>STATUS: <span id="status-${id}" class="text-yellow-400">WAITING</span></span>
-                                    <span id="time-${id}">--ms</span>
-                                </div>
-                                <div id="output-${id}" class="p-3 max-h-[250px] overflow-y-auto whitespace-pre-wrap break-all text-gray-300"></div>
-                            </div>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
-
-                container.appendChild(section);
-            }
-        }
-
-        // Controladores de Colapso e Interacción
-        function toggleCategory(catId) {
-            const grid = document.getElementById(`grid-${catId}`);
-            const arrow = document.getElementById(`arrow-${catId}`);
-            grid.classList.toggle('hidden');
-            if (arrow) arrow.classList.toggle('rotate-180');
-        }
-
-        function toggleEndpoint(id) {
-            const body = document.getElementById(`body-${id}`);
-            const icon = document.getElementById(`icon-${id}`);
-            body.classList.toggle('hidden');
-            if (icon) icon.classList.toggle('rotate-45');
-        }
-
-        // Lógica del motor de peticiones asíncronas
-        async function executeTest(endpoint, method, id) {
-            const resArea = document.getElementById(`res-${id}`);
-            const output = document.getElementById(`output-${id}`);
-            const status = document.getElementById(`status-${id}`);
-            const timeBox = document.getElementById('time-' + id);
-            
-            resArea.classList.remove('hidden');
-            status.innerText = "PROCESANDO...";
-            output.innerText = "Esperando respuesta del servidor...";
-
-            const start = Date.now();
-
-            // Capturar los parámetros ingresados por el usuario
-            const params = {};
-            document.querySelectorAll(`[id^="input-${id}-"]`).forEach(input => {
-                const paramName = input.id.replace(`input-${id}-`, '');
-                if(input.value) params[paramName] = input.value;
-            });
-
-            // Armar la URL final para la petición
-            let queryUrl = endpoint + (method === 'GET' && Object.keys(params).length ? '?' + new URLSearchParams(params) : '');
-
-            try {
-                // Aquí se hace la petición real a tu servidor Backend
-                const response = await fetch(queryUrl, { method });
-                const duration = Date.now() - start;
-                timeBox.innerText = `${duration}ms`;
-                status.innerText = `${response.status} ${response.statusText}`;
-                
-                if(response.ok) {
-                    status.className = "text-green-400 font-bold";
-                    const json = await response.json();
-                    output.innerHTML = syntaxHighlight(json);
-                    terminalLog(`GET ${endpoint} -> Exitoso en ${duration}ms`, true);
-                } else {
-                    status.className = "text-red-400 font-bold";
-                    output.innerText = await response.text();
-                    terminalLog(`GET ${endpoint} -> Falló con status ${response.status}`, false);
+            const responseStructure = {
+                "status": true,
+                "Author": "StarLyn",
+                "result": {
+                    "status": true,
+                    "data": [
+                        {
+                            "title": "Moonlight Staff API",
+                            "image": isVideo ? null : randomLink,
+                            "video": isVideo ? randomLink : null,
+                            "category": (tipo === 'pene') ? 'NSFW' : 'Anime',
+                            "type": mime
+                        }
+                    ]
                 }
-            } catch (err) {
-                status.innerText = "ERROR_CONEXION";
-                status.className = "text-red-500 font-bold";
-                output.innerText = `No se pudo conectar al endpoint:\n${err.message}`;
-                timeBox.innerText = "0ms";
-            }
-        }
+            };
 
-        // Embellecedor sintáctico para el visor de JSON de los logs
-        function syntaxHighlight(json) {
-            if (typeof json != 'string') json = JSON.stringify(json, undefined, 2);
-            return json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-                let cls = 'json-number';
-                if (/^"/.test(match)) {
-                    if (/:$/.test(match)) cls = 'json-key';
-                    else cls = 'json-string';
-                } else if (/true|false/.test(match)) cls = 'json-boolean';
-                return `<span class="${cls}">${match}</span>`;
-            });
-        }
-
-        // Sistema de filtrado y búsqueda en tiempo real
-        document.getElementById('search-input').addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            let hasResults = false;
-
-            document.querySelectorAll('[data-search]').forEach(card => {
-                const searchTxt = card.getAttribute('data-search').toLowerCase();
-                if(searchTxt.includes(query)) {
-                    card.classList.remove('hidden');
-                    hasResults = true;
-                } else {
-                    card.classList.add('hidden');
-                }
-            });
-
-            document.getElementById('no-results').classList.toggle('hidden', hasResults);
+            status.innerText = '200 OK';
+            dot.className = 'status-dot success';
+            out.innerHTML = colorizeJSON(JSON.stringify(responseStructure, null, 2));
+        })
+        .catch(() => {
+            status.innerText = 'ERROR';
+            dot.className = 'status-dot error';
+            out.innerText = `// Error: Falló la lectura del archivo fuente "./${tipo}.json" en la raíz.`;
         });
-
-        // Inicialización al cargar la ventana
-        document.addEventListener('DOMContentLoaded', () => {
-            startLocalClock();
-            renderEndpoints(configData);
-            terminalLog("Moonlight Docs cargado exitosamente.", true);
-            terminalLog("Servidor vinculado a la zona horaria de México.", true);
-        });
-    </script>
+}
+</script>
 </body>
 </html>
