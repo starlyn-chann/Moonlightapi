@@ -1,238 +1,232 @@
 <!DOCTYPE html>
-<html lang="es" class="dark">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moonlight Archive — Xapi Dashboard</title>
+    <title>MOONLIGHT API</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', sans-serif; }
+        
+        /* Estilo Neo-brutalist: Sombras duras */
+        .shadow-hard {
+            box-shadow: 4px 4px 0px 0px #8b5cf6;
+        }
+        .shadow-hard-error {
+            box-shadow: 4px 4px 0px 0px #ef4444;
+        }
+        
+        /* Animación Marquesina */
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            animation: marquee 20s linear infinite;
+        }
+    </style>
 </head>
-<body class="bg-[#09090b] text-[#fafafa] font-sans min-h-screen flex antialiased">
+<body class="bg-zinc-950 text-zinc-50 min-h-screen selection:bg-purple-500 selection:text-black overflow-x-hidden relative">
 
-    <aside class="w-64 bg-[#09090b] border-r border-[#1f1f23] flex flex-col justify-between shrink-0 hidden md:flex">
-        <div>
-            <div class="p-5 border-b border-[#1f1f23] flex items-center gap-2.5">
-                <div class="w-7 h-7 rounded bg-zinc-800 flex items-center justify-center text-white font-mono text-xs border border-zinc-700">
-                    M
-                </div>
-                <div>
-                    <h1 class="font-semibold tracking-tight text-sm text-zinc-200 font-mono">Moonlight Engine</h1>
-                    <p class="text-[11px] text-zinc-500 font-mono">v2.1.0</p>
-                </div>
+    <!-- Fondo de Estrellas/Blobs sutiles del diseño original -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl"></div>
+    </div>
+
+    <!-- NAVBAR -->
+    <header class="border-b-2 border-zinc-800 bg-zinc-900/80 backdrop-blur-md sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <h1 id="nav-title" class="font-display font-bold text-xl tracking-tighter uppercase italic text-purple-400">
+                    MOONLIGHT API
+                </h1>
             </div>
-
-            <div class="p-4">
-                <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
-                    <input type="text" id="sidebarSearch" onkeyup="filterEndpoints()" placeholder="Buscar endpoint..." 
-                           class="w-full bg-[#121214] border border-[#1f1f23] rounded px-3 py-1.5 pl-8 text-xs text-zinc-300 placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition-colors font-mono">
-                </div>
-            </div>
-
-            <nav class="px-3 space-y-0.5">
-                <span class="px-3 py-2 text-[10px] font-medium text-zinc-500 tracking-wider uppercase block font-mono">Endpoints</span>
-                <button onclick="filterCategory('all')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded text-zinc-400 hover:bg-[#121214] hover:text-zinc-200 text-xs transition-all font-mono text-left">
-                    <i class="fa-solid fa-layer-group text-zinc-600 w-4"></i> Todos los módulos
-                </button>
-                <button onclick="filterCategory('anime')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded text-zinc-400 hover:bg-[#121214] hover:text-zinc-200 text-xs transition-all font-mono text-left">
-                    <i class="fa-solid fa-wand-magic-sparkles text-zinc-600 w-4"></i> Anime & SFW
-                </button>
-                <button onclick="filterCategory('nsfw')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded text-zinc-400 hover:bg-[#121214] hover:text-zinc-200 text-xs transition-all font-mono text-left">
-                    <i class="fa-solid fa-eye-slash text-zinc-600 w-4"></i> Contenido NSFW
-                </button>
-            </nav>
-        </div>
-
-        <div class="p-4 border-t border-[#1f1f23] bg-[#0c0c0e]">
-            <div class="flex items-center justify-between mb-2">
-                <div class="overflow-hidden pr-2">
-                    <p class="text-[11px] font-medium text-zinc-400 truncate font-mono" id="trackTitle">Audio de Respaldo</p>
-                </div>
-                <button onclick="toggleAudio()" id="playBtn" class="text-zinc-400 hover:text-white transition-colors">
-                    <i class="fa-solid fa-play text-xs"></i>
-                </button>
-            </div>
-            <audio id="bgAudio" src="" loop></audio>
-        </div>
-    </aside>
-
-    <div class="flex-1 flex flex-col min-w-0 bg-[#09090b]">
-        <header class="h-14 border-b border-[#1f1f23] bg-[#09090b] px-6 flex items-center justify-between sticky top-0 z-40">
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-2 text-[11px] font-mono bg-[#121214] px-2.5 py-1 rounded border border-[#1f1f23]">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
-                    <span class="text-zinc-400">STATUS:</span>
-                    <span class="text-emerald-400 font-semibold">ACTIVE</span>
-                </div>
-            </div>
-            <button onclick="openLoginModal()" class="px-2.5 py-1.5 bg-[#121214] hover:bg-[#1a1a1e] text-zinc-400 hover:text-zinc-200 text-xs font-mono rounded border border-[#1f1f23] transition-colors">
-                <i class="fa-solid fa-lock text-[10px] mr-1.5"></i> Admin
-            </button>
-        </header>
-
-        <main class="p-6 space-y-6 flex-1 overflow-y-auto max-w-7xl w-full mx-auto">
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="endpointsGrid">
+            <!-- Marquesina animada original -->
+            <div class="w-full sm:w-64 overflow-hidden border-2 border-zinc-800 bg-black py-1 px-2 rounded transform -skew-x-12">
+                <div class="whitespace-nowrap animate-marquee inline-block text-xs font-mono font-bold text-purple-300">
+                    WELCOME TO MOONLIGHT API DASHBOARD • PREMIUM REST API • 
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTAINER PRINCIPAL -->
+    <main class="max-w-7xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6 relative z-10">
+        
+        <!-- PANEL IZQUIERDO: Consola Terminal y Estado (4 Columnas) -->
+        <section class="lg:col-span-4 flex flex-col gap-6">
+            
+            <!-- TERMINAL DE COMANDOS INTERACTIVA -->
+            <div class="border-2 border-black bg-zinc-950 rounded shadow-hard overflow-hidden">
+                <div class="bg-zinc-900 px-3 py-2 border-b-2 border-black flex items-center justify-between">
+                    <div class="flex gap-1.5">
+                        <span class="w-3 h-3 rounded-full bg-red-500 inline-block border border-black"></span>
+                        <span class="w-3 h-3 rounded-full bg-yellow-500 inline-block border border-black"></span>
+                        <span class="w-3 h-3 rounded-full bg-green-500 inline-block border border-black"></span>
+                    </div>
+                    <span class="text-xs font-mono text-zinc-400">live_logs.sh</span>
+                </div>
+                <!-- logs internos -->
+                <div id="term-logs" class="p-3 h-64 overflow-y-auto font-mono text-xs space-y-2 bg-black text-zinc-300">
+                    <div><span class="text-purple-400">root@starlyn:~/MoonlightApi~$</span> npm start</div>
+                    <div class="text-zinc-500">[info] Inicializando Moonlight API Core...</div>
+                    <div class="text-green-400">[success] Servidor corriendo exitosamente en el puerto 3000.</div>
+                    <div class="text-zinc-400">--------------------------------------------------</div>
+                </div>
+            </div>
+
+            <!-- BUSCADOR -->
+            <div class="border-2 border-black bg-zinc-900 p-4 rounded shadow-hard">
+                <label for="search-input" class="block font-display font-bold text-sm uppercase tracking-wide mb-2 text-purple-400">Buscar Endpoint</label>
+                <input type="text" id="search-input" placeholder="Ej: tiktok, maid..." class="w-full bg-black border-2 border-zinc-700 rounded p-2 text-sm font-mono text-white focus:outline-none focus:border-purple-500">
+            </div>
+        </section>
+
+        <!-- PANEL DERECHO: Lista de Endpoints Interactivos (8 Columnas) -->
+        <section class="lg:col-span-8 flex flex-col gap-6">
+            
+            <!-- SECCIÓN: DOWNLOADER -->
+            <div class="border-2 border-black bg-zinc-900 rounded shadow-hard p-4">
+                <h3 class="font-display font-bold text-lg text-purple-400 border-b-2 border-zinc-800 pb-2 mb-4 uppercase tracking-wider">
+                    📥 Downloader
+                </h3>
                 
-                <div class="endpoint-card bg-[#09090b] border border-[#1f1f23] rounded p-4 flex flex-col justify-between" data-category="anime" data-name="shinobu">
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-mono text-sky-400 font-semibold">GET</span>
-                            <span class="text-[10px] text-zinc-500 font-mono">Anime</span>
+                <div class="space-y-3">
+                    <!-- Endpoint: TikTok -->
+                    <div class="bg-zinc-950 p-3 border-2 border-zinc-800 rounded flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div>
+                            <span class="bg-green-500 text-black font-mono font-bold text-xs px-2 py-0.5 rounded border border-black mr-2">GET</span>
+                            <code class="text-sm font-mono text-zinc-300">/api/dl/tiktok</code>
+                            <p class="text-xs text-zinc-400 mt-1">Descarga videos de TikTok sin marca de agua.</p>
                         </div>
-                        <h4 class="font-medium text-zinc-200 text-xs font-mono mb-1">/api/anime/shinobu</h4>
-                        <p class="text-[11px] text-zinc-400 mb-4 font-sans">Retorna multimedia aleatorio de Shinobu Oshino.</p>
-                    </div>
-                    <button onclick="testReq('/api/anime/shinobu')" class="w-full py-1.5 bg-[#121214] hover:bg-[#1a1a1e] text-zinc-300 text-[11px] font-mono rounded border border-[#1f1f23] transition-all">
-                        Execute Test
-                    </button>
-                </div>
-
-                <div class="endpoint-card bg-[#09090b] border border-[#1f1f23] rounded p-4 flex flex-col justify-between" data-category="anime" data-name="maid">
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-mono text-sky-400 font-semibold">GET</span>
-                            <span class="text-[10px] text-zinc-500 font-mono">Anime</span>
+                        <div class="flex gap-2 w-full sm:w-auto justify-end">
+                            <button onclick="probarEndpoint('/api/dl/tiktok', true)" class="bg-purple-600 hover:bg-purple-500 text-white font-mono text-xs px-3 py-1.5 rounded border border-black font-bold transition-all cursor-pointer">Test Success</button>
+                            <button onclick="probarEndpoint('/api/dl/tiktok', false)" class="bg-zinc-800 hover:bg-red-900 text-red-400 font-mono text-xs px-3 py-1.5 rounded border border-zinc-700 transition-all cursor-pointer">Test Error</button>
                         </div>
-                        <h4 class="font-medium text-zinc-200 text-xs font-mono mb-1">/api/anime/maid</h4>
-                        <p class="text-[11px] text-zinc-400 mb-4 font-sans">Galería de sirvientas de anime en alta definición.</p>
                     </div>
-                    <button onclick="testReq('/api/anime/maid')" class="w-full py-1.5 bg-[#121214] hover:bg-[#1a1a1e] text-zinc-300 text-[11px] font-mono rounded border border-[#1f1f23] transition-all">
-                        Execute Test
-                    </button>
                 </div>
-
-                <div class="endpoint-card bg-[#09090b] border border-[#1f1f23] rounded p-4 flex flex-col justify-between" data-category="nsfw" data-name="pene">
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-[10px] font-mono text-amber-500 font-semibold">GET</span>
-                            <span class="text-[10px] text-zinc-500 font-mono">NSFW</span>
-                        </div>
-                        <h4 class="font-medium text-zinc-200 text-xs font-mono mb-1">/api/nsfw/pene</h4>
-                        <p class="text-[11px] text-zinc-400 mb-4 font-sans">Módulo explícito para respuestas directas de comandos.</p>
-                    </div>
-                    <button onclick="testReq('/api/nsfw/pene')" class="w-full py-1.5 bg-[#121214] hover:bg-[#1a1a1e] text-zinc-300 text-[11px] font-mono rounded border border-[#1f1f23] transition-all">
-                        Execute Test
-                    </button>
-                </div>
-
             </div>
 
-            <div class="bg-[#09090b] rounded border border-[#1f1f23] overflow-hidden">
-                <div class="bg-[#0c0c0e] px-4 py-2 border-b border-[#1f1f23] flex items-center justify-between">
-                    <span class="text-[11px] font-mono text-zinc-400"><i class="fa-solid fa-terminal text-[10px] mr-1.5 text-zinc-500"></i> Console Output</span>
-                    <button onclick="clearTerminal()" class="text-[10px] text-zinc-500 hover:text-zinc-300 font-mono">Clear</button>
-                </div>
-                <div class="p-4 bg-[#09090b] font-mono text-xs h-48 overflow-y-auto space-y-1 text-zinc-400" id="terminalOutput">
-                    <p class="text-zinc-600">// Moonlight Console active. Waiting for endpoint executions...</p>
+            <!-- SECCIÓN: ALEATORIO & ANIME -->
+            <div class="border-2 border-black bg-zinc-900 rounded shadow-hard p-4">
+                <h3 class="font-display font-bold text-lg text-purple-400 border-b-2 border-zinc-800 pb-2 mb-4 uppercase tracking-wider">
+                    🌸 Aleatorio / Anime
+                </h3>
+                
+                <div class="space-y-3">
+                    <!-- Endpoint: Shinobu -->
+                    <div class="bg-zinc-950 p-3 border-2 border-zinc-800 rounded flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div>
+                            <span class="bg-green-500 text-black font-mono font-bold text-xs px-2 py-0.5 rounded border border-black mr-2">GET</span>
+                            <code class="text-sm font-mono text-zinc-300">/api/aleatorio/shinobu</code>
+                            <p class="text-xs text-zinc-400 mt-1">Obtén imágenes aleatorias de Shinobu Kocho.</p>
+                        </div>
+                        <div class="flex gap-2 w-full sm:w-auto justify-end">
+                            <button onclick="probarEndpoint('/api/aleatorio/shinobu', true)" class="bg-purple-600 hover:bg-purple-500 text-white font-mono text-xs px-3 py-1.5 rounded border border-black font-bold transition-all cursor-pointer">Test Success</button>
+                            <button onclick="probarEndpoint('/api/aleatorio/shinobu', false)" class="bg-zinc-800 hover:bg-red-900 text-red-400 font-mono text-xs px-3 py-1.5 rounded border border-zinc-700 transition-all cursor-pointer">Test Error</button>
+                        </div>
+                    </div>
+
+                    <!-- Endpoint: Maid -->
+                    <div class="bg-zinc-950 p-3 border-2 border-zinc-800 rounded flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div>
+                            <span class="bg-green-500 text-black font-mono font-bold text-xs px-2 py-0.5 rounded border border-black mr-2">GET</span>
+                            <code class="text-sm font-mono text-zinc-300">/api/aleatorio/maid</code>
+                            <p class="text-xs text-zinc-400 mt-1">Imágenes e ilustraciones de maids anime.</p>
+                        </div>
+                        <div class="flex gap-2 w-full sm:w-auto justify-end">
+                            <button onclick="probarEndpoint('/api/aleatorio/maid', true)" class="bg-purple-600 hover:bg-purple-500 text-white font-mono text-xs px-3 py-1.5 rounded border border-black font-bold transition-all cursor-pointer">Test Success</button>
+                            <button onclick="probarEndpoint('/api/aleatorio/maid', false)" class="bg-zinc-800 hover:bg-red-900 text-red-400 font-mono text-xs px-3 py-1.5 rounded border border-zinc-700 transition-all cursor-pointer">Test Error</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </main>
-    </div>
 
-    <div id="loginModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-150">
-        <div class="bg-[#09090b] border border-[#1f1f23] rounded p-5 w-full max-w-xs transform scale-95 transition-transform duration-150" id="modalContent">
-            <div class="flex justify-between items-center mb-3">
-                <h3 class="text-xs font-mono text-zinc-200">System Authentication</h3>
-                <button onclick="closeLoginModal()" class="text-zinc-500 hover:text-zinc-300 text-xs"><i class="fa-solid fa-xmark"></i></button>
+            <!-- SECCIÓN: NSFW (RESTRINGIDO) -->
+            <div class="border-2 border-red-500 bg-zinc-900 rounded shadow-hard-error p-4">
+                <h3 class="font-display font-bold text-lg text-red-400 border-b-2 border-red-950 pb-2 mb-4 uppercase tracking-wider">
+                    🔞 NSFW Content
+                </h3>
+                
+                <div class="space-y-3">
+                    <!-- Endpoint: Pene -->
+                    <div class="bg-zinc-950 p-3 border-2 border-zinc-800 rounded flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div>
+                            <span class="bg-green-500 text-black font-mono font-bold text-xs px-2 py-0.5 rounded border border-black mr-2">GET</span>
+                            <code class="text-sm font-mono text-zinc-300">/api/nsfw/pene</code>
+                            <p class="text-xs text-zinc-400 mt-1">Módulo restringido para adultos.</p>
+                        </div>
+                        <div class="flex gap-2 w-full sm:w-auto justify-end">
+                            <button onclick="probarEndpoint('/api/nsfw/pene', true)" class="bg-purple-600 hover:bg-purple-500 text-white font-mono text-xs px-3 py-1.5 rounded border border-black font-bold transition-all cursor-pointer">Test Success</button>
+                            <button onclick="probarEndpoint('/api/nsfw/pene', false)" class="bg-zinc-800 hover:bg-red-900 text-red-400 font-mono text-xs px-3 py-1.5 rounded border border-zinc-700 transition-all cursor-pointer">Test Error</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <form onsubmit="doLogin(event)" class="space-y-3">
-                <input type="password" id="adminPassword" placeholder="Token" required class="w-full bg-[#121214] border border-[#1f1f23] rounded px-3 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-zinc-500">
-                <button type="submit" class="w-full py-1.5 bg-zinc-100 hover:bg-zinc-200 text-black font-mono font-medium text-xs rounded transition-colors">
-                    Access
-                </button>
-            </form>
-            <div id="loginFeedback" class="mt-2 text-[10px] font-mono text-center hidden"></div>
-        </div>
-    </div>
 
+        </section>
+    </main>
+
+    <!-- SCRIPTS EXTRAS AL FINAL (Manteniendo tus Prism.js requeridos intactos) -->
+    <script src="js/prism.min.js"></script>
+    <script src="js/prism-javascript.min.js"></script>
+
+    <!-- SCRIPT DE INTERACCIÓN DE LA TERMINAL -->
     <script>
-        function filterCategory(cat) {
-            const cards = document.querySelectorAll('.endpoint-card');
-            cards.forEach(card => {
-                if (cat === 'all' || card.getAttribute('data-category') === cat) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        }
+        function probarEndpoint(route, isSuccess) {
+            const container = document.getElementById('term-logs');
+            if (!container) return;
 
-        function filterEndpoints() {
-            const query = document.getElementById('sidebarSearch').value.toLowerCase();
-            const cards = document.querySelectorAll('.endpoint-card');
-            cards.forEach(card => {
-                const name = card.getAttribute('data-name').toLowerCase();
-                const path = card.querySelector('h4').innerText.toLowerCase();
-                if (name.includes(query) || path.includes(query)) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        }
+            const time = new Date().toLocaleTimeString();
+            let logLine = '';
 
-        async function testReq(endpoint) {
-            const terminal = document.getElementById('terminalOutput');
-            const timestamp = new Date().toLocaleTimeString();
-            terminal.innerHTML += `<p class="text-zinc-500">[${timestamp}] GET ${endpoint} ...</p>`;
+            if (isSuccess) {
+                // Formato Exitoso 200 OK en Verde brillante
+                logLine = `<div class="font-mono text-xs text-green-400">` +
+                          `<span class="text-zinc-500">[${time}]</span> ` +
+                          `<span class="text-purple-400">root@starlyn:~$</span> GET ${route} — ` +
+                          `<span class="bg-green-500 text-black px-1 font-bold rounded">200 OK</span>` +
+                          `</div>`;
+            } else {
+                // Formato Fallido 400 Bad Request o 500 Internal Error en Rojo brillante
+                logLine = `<div class="font-mono text-xs text-red-400">` +
+                          `<span class="text-zinc-500">[${time}]</span> ` +
+                          `<span class="text-purple-400">root@starlyn:~$</span> GET ${route} — ` +
+                          `<span class="bg-red-500 text-white px-1 font-bold rounded">400 BAD REQUEST</span>` +
+                          `</div>`;
+            }
+
+            // Añadir el log a la consola
+            container.insertAdjacentHTML('beforeend', logLine);
             
-            try {
-                const res = await fetch(endpoint);
-                if (!res.ok) throw new Error();
-                const data = await res.json();
-                terminal.innerHTML += `<pre class="text-zinc-300 text-[11px] p-2 bg-[#121214] border border-[#1f1f23] rounded my-1">${JSON.stringify(data, null, 2)}</pre>`;
-            } catch (err) {
-                let mockData = { status: true, result: "https://images.example.com/file.jpg" };
-                terminal.innerHTML += `<pre class="text-zinc-400 text-[11px] p-2 bg-[#121214] border border-[#1f1f23] rounded my-1">${JSON.stringify(mockData, null, 2)}</pre>`;
-            }
-            terminal.scrollTop = terminal.scrollHeight;
+            // Auto-scrolling hacia abajo
+            container.scrollTop = container.scrollHeight;
         }
 
-        function clearTerminal() {
-            document.getElementById('terminalOutput').innerHTML = `<p class="text-zinc-600">// Terminal cleared.</p>`;
-        }
-
-        function openLoginModal() {
-            const modal = document.getElementById('loginModal');
-            const content = document.getElementById('modalContent');
-            modal.classList.remove('hidden');
-            setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); }, 10);
-        }
-
-        function closeLoginModal() {
-            const modal = document.getElementById('loginModal');
-            const content = document.getElementById('modalContent');
-            modal.classList.add('opacity-0'); content.classList.add('scale-95');
-            setTimeout(() => modal.classList.add('hidden'), 150);
-        }
-
-        function doLogin(e) {
-            e.preventDefault();
-            const pass = document.getElementById('adminPassword').value;
-            const feedback = document.getElementById('loginFeedback');
-            feedback.classList.remove('hidden');
-            if (pass === 'starlyn') {
-                feedback.className = "mt-2 text-[10px] font-mono text-center text-emerald-400";
-                feedback.innerText = "Access granted.";
-                setTimeout(() => { closeLoginModal(); feedback.classList.add('hidden'); }, 1000);
-            } else {
-                feedback.className = "mt-2 text-[10px] font-mono text-center text-red-400";
-                feedback.innerText = "Auth failed.";
-            }
-        }
-
-        function toggleAudio() {
-            const audio = document.getElementById('bgAudio');
-            const btn = document.getElementById('playBtn');
-            if (audio.paused) {
-                audio.play().catch(() => {});
-                btn.innerHTML = `<i class="fa-solid fa-pause text-xs"></i>`;
-            } else {
-                audio.pause();
-                btn.innerHTML = `<i class="fa-solid fa-play text-xs"></i>`;
-            }
-        }
+        // Lógica básica del buscador reactivo en tiempo real
+        document.getElementById('search-input').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            const endpoints = document.querySelectorAll('main code');
+            
+            endpoints.forEach(el => {
+                const card = el.closest('.bg-zinc-950');
+                if(el.textContent.toLowerCase().includes(query)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
     </script>
 </body>
 </html>
