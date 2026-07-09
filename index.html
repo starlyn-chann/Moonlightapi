@@ -3,33 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moonlight API Docs</title>
+    <title>Xapi - Moonlight Docs</title>
     <link rel="icon" type="image/jpeg" href="https://files.catbox.moe/8i7nc1.jpeg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
     <style>
-        /* ── DISEÑO INTEGRAL INSPIRADO EN XAPI ── */
+        /* ── INTERFAZ IDENTICA A XAPI ── */
         :root {
-            --bg: #0b0f19;
-            --surface: #111827;
-            --surface-card: #1f2937;
-            --border: rgba(255, 255, 255, 0.08);
-            --text: #f3f4f6;
-            --text-muted: #9ca3af;
+            --xapi-bg: #0e131f;
+            --xapi-sidebar: #131a26;
+            --xapi-navbar: #151d2a;
+            --xapi-card: #182232;
+            --xapi-border: #222f43;
+            --xapi-text: #ffffff;
+            --xapi-text-muted: #6b7c96;
             
-            --primary: #7c3aed;
-            --primary-glow: rgba(124, 58, 237, 0.15);
-            --cyan: #06b6d4;
-            --cyan-glow: rgba(6, 182, 212, 0.15);
-            --green: #10b981;
-            --red: #ef4444;
-            --yellow: #f59e0b;
+            --xapi-green: #00e676;
+            --xapi-green-bg: rgba(0, 230, 118, 0.15);
+            --xapi-blue: #00b0ff;
+            --xapi-red: #ff1744;
+            --xapi-yellow: #ffea00;
             
-            --font-sans: 'Plus Jakarta Sans', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-            --radius: 12px;
+            --font-main: 'Inter', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
         }
 
         * {
@@ -40,622 +38,600 @@
         }
 
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: var(--font-sans);
-            min-height: 100vh;
-            line-height: 1.5;
-            padding-bottom: 60px;
+            background-color: var(--xapi-bg);
+            color: var(--xapi-text);
+            font-family: var(--font-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        /* Navbar estilo Xapi */
+        /* Top Navbar */
         .navbar {
+            height: 60px;
+            background: var(--xapi-navbar);
+            border-bottom: 1px solid var(--xapi-border);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px 24px;
-            background: rgba(17, 24, 39, 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            padding: 0 20px;
+            z-index: 10;
         }
 
         .brand {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             font-weight: 700;
             font-size: 1.1rem;
-            letter-spacing: -0.5px;
+            letter-spacing: 0.5px;
         }
 
         .brand img {
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
             object-fit: cover;
         }
 
-        .brand em {
-            color: var(--primary);
-            font-style: normal;
+        .brand span {
+            color: var(--xapi-blue);
         }
 
-        .nav-links {
+        .nav-stats {
             display: flex;
-            gap: 12px;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: var(--xapi-text-muted);
         }
 
-        .nav-btn {
-            background: var(--surface-card);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            text-decoration: none;
-            display: inline-flex;
+        .stat-item i {
+            color: var(--xapi-green);
+            margin-right: 4px;
+        }
+
+        /* Main Workspace Layout */
+        .main-layout {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 60px);
+            overflow: hidden;
+        }
+
+        /* Sidebar Fijo de Xapi */
+        .sidebar {
+            width: 240px;
+            background: var(--xapi-sidebar);
+            border-right: 1px solid var(--xapi-border);
+            display: flex;
+            flex-direction: column;
+            padding: 15px 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--xapi-text-muted);
+            padding: 10px 20px;
+        }
+
+        .menu-item {
+            display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #b2c0d2;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
             transition: all 0.2s;
         }
 
-        .nav-btn:hover {
-            border-color: var(--primary);
-            background: var(--primary-glow);
+        .menu-item:hover, .menu-item.active {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--xapi-text);
+            border-left: 3px solid var(--xapi-blue);
+            padding-left: 17px;
         }
 
-        /* Contenedor Principal Dashboard */
-        .container {
-            max-width: 1100px;
-            margin: 32px auto;
-            padding: 0 24px;
+        .menu-item i {
+            width: 16px;
+            text-align: center;
+            color: var(--xapi-text-muted);
         }
 
-        /* Buscador Predictivo Superior */
-        .search-wrapper {
+        .menu-item.active i {
+            color: var(--xapi-blue);
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            background: var(--xapi-bg);
+        }
+
+        /* Search Bar Superior */
+        .search-container {
             position: relative;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
-        .search-wrapper i {
+        .search-container i {
             position: absolute;
-            left: 16px;
+            left: 15px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--text-muted);
-            font-size: 1rem;
+            color: var(--xapi-text-muted);
         }
 
-        .search-input {
+        .search-bar {
             width: 100%;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 14px 14px 14px 46px;
-            color: var(--text);
-            font-size: 0.95rem;
-            transition: all 0.2s;
+            background: var(--xapi-card);
+            border: 1px solid var(--xapi-border);
+            border-radius: 6px;
+            padding: 12px 15px 12px 42px;
+            color: var(--xapi-text);
+            font-size: 0.9rem;
         }
 
-        .search-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-glow);
-        }
-
-        /* Layout Grid de Xapi */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 16px;
-        }
-
-        /* Tarjeta de Endpoint */
-        .endpoint-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
+        /* Lista de Endpoints estilo Tabla de Xapi */
+        .endpoint-row {
+            background: var(--xapi-card);
+            border: 1px solid var(--xapi-border);
+            border-radius: 6px;
+            margin-bottom: 12px;
             overflow: hidden;
-            transition: all 0.2s ease;
         }
 
-        .endpoint-card:hover {
-            border-color: rgba(255, 255, 255, 0.15);
-            transform: translateY(-1px);
-        }
-
-        /* Cabecera Interactiva */
-        .endpoint-header {
+        .endpoint-trigger {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 16px 20px;
+            padding: 14px 20px;
             cursor: pointer;
             user-select: none;
         }
 
-        .method-badge {
-            font-family: var(--font-mono);
+        /* El bloque GET robusto de Xapi */
+        .badge-get {
+            background: var(--xapi-green-bg);
+            color: var(--xapi-green);
+            font-family: var(--font-code);
             font-size: 0.75rem;
             font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 6px;
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--green);
-            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 5px 12px;
+            border-radius: 4px;
+            min-width: 65px;
+            text-align: center;
+            margin-right: 15px;
         }
 
-        .endpoint-path {
-            font-family: var(--font-mono);
+        .path-text {
+            font-family: var(--font-code);
             font-size: 0.9rem;
             font-weight: 500;
-            color: var(--text);
+            color: #e2e8f0;
             flex: 1;
         }
 
-        .endpoint-desc {
+        .desc-text {
             font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-right: 16px;
+            color: var(--xapi-text-muted);
+            margin-right: 20px;
         }
 
-        .endpoint-arrow {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            transition: transform 0.2s ease;
+        .arrow-icon {
+            color: var(--xapi-text-muted);
+            font-size: 0.8rem;
+            transition: transform 0.2s;
         }
 
-        .endpoint-card.active .endpoint-arrow {
+        .endpoint-row.open .arrow-icon {
             transform: rotate(180deg);
         }
 
-        /* Cuerpo Desplegable (Detalles del Testeo) */
-        .endpoint-body {
+        /* Desplegable Técnico */
+        .endpoint-details {
             display: none;
             padding: 20px;
-            background: rgba(0, 0, 0, 0.15);
-            border-top: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid var(--xapi-border);
         }
 
-        .endpoint-card.active .endpoint-body {
+        .endpoint-row.open .endpoint-details {
             display: block;
         }
 
-        /* Sección de Parámetros */
-        .section-title {
+        .panel-title {
             font-size: 0.8rem;
-            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            color: var(--xapi-text-muted);
+            margin-bottom: 10px;
+            font-weight: 600;
         }
 
-        .param-row {
-            background: var(--surface-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 10px 14px;
+        /* Caja de parámetros */
+        .params-box {
+            background: var(--xapi-navbar);
+            border: 1px solid var(--xapi-border);
+            border-radius: 4px;
+            padding: 12px 15px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 16px;
+            margin-bottom: 15px;
         }
 
-        .param-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-family: var(--font-mono);
+        .param-meta {
+            font-family: var(--font-code);
             font-size: 0.85rem;
         }
 
-        .param-name {
-            color: var(--text);
-            font-weight: 500;
-        }
+        .param-name { color: var(--xapi-text); font-weight: 500; }
+        .param-type { color: var(--xapi-blue); margin-left: 8px; font-size: 0.75rem; }
+        .param-req { color: var(--xapi-red); margin-left: 4px; }
 
-        .param-type {
-            color: #818cf8;
-            font-size: 0.75rem;
-            background: rgba(129, 140, 248, 0.1);
-            padding: 2px 6px;
+        .param-value {
+            background: var(--xapi-bg);
+            border: 1px solid var(--xapi-border);
+            color: var(--xapi-text-muted);
+            padding: 4px 10px;
             border-radius: 4px;
-        }
-
-        .param-req {
-            color: var(--red);
-            font-size: 0.75rem;
-        }
-
-        .param-input {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 6px 12px;
-            color: var(--text);
-            font-family: var(--font-mono);
+            font-family: var(--font-code);
             font-size: 0.8rem;
-            width: 180px;
+            width: 150px;
             text-align: right;
         }
 
-        /* URL Generator Box */
-        .url-box {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 12px 14px;
+        /* Consola de Resultados */
+        .console-container {
+            border: 1px solid var(--xapi-border);
+            border-radius: 4px;
+            background: #090d16;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .console-header {
+            background: var(--xapi-navbar);
+            padding: 6px 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 16px;
+            border-bottom: 1px solid var(--xapi-border);
         }
 
-        .url-text {
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            color: var(--cyan);
-            word-break: break-all;
+        .console-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-code);
+            font-size: 0.75rem;
+            color: var(--xapi-text-muted);
         }
 
-        .copy-btn {
+        .console-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--xapi-text-muted);
+        }
+        .console-dot.run { background: var(--xapi-yellow); }
+        .console-dot.ok { background: var(--xapi-green); }
+        .console-dot.err { background: var(--xapi-red); }
+
+        .console-action-btn {
             background: transparent;
             border: none;
-            color: var(--text-muted);
+            color: var(--xapi-text-muted);
             cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 4px;
-            transition: all 0.15s;
+            padding: 2px 6px;
         }
+        .console-action-btn:hover { color: var(--xapi-text); }
 
-        .copy-btn:hover {
-            color: var(--text);
-            background: var(--surface-card);
-        }
-
-        /* Action Execute Button */
-        .execute-btn {
-            width: 100%;
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
+        .console-body {
             padding: 12px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .console-pre {
+            font-family: var(--font-code);
+            font-size: 0.8rem;
+            color: #cfd8dc;
+            white-space: pre-wrap;
+            margin: 0;
+        }
+
+        /* Botón Ejecutar robusto de Xapi */
+        .btn-test {
+            background: var(--xapi-blue);
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 16px;
+            font-size: 0.85rem;
             font-weight: 600;
-            font-size: 0.9rem;
             cursor: pointer;
+            width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            transition: background 0.2s;
         }
+        .btn-test:hover { background: #40c4ff; }
 
-        .execute-btn:hover {
-            background: #6d28d9;
-        }
+        /* Helpers de Resaltado JSON */
+        .jk { color: #64b5f6; }
+        .js { color: #81c784; }
+        .jn { color: #ffd54f; }
+        .jb { color: #f06292; }
 
-        /* Panel de Respuesta JSON */
-        .response-wrapper {
-            margin-top: 16px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            background: #070a12;
-            overflow: hidden;
-        }
-
-        .response-header {
-            background: var(--surface-card);
-            padding: 8px 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-family: var(--font-mono);
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
-
-        .status-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--text-muted);
-        }
-
-        .status-dot.fetching { background: var(--yellow); animation: blink 1s infinite; }
-        .status-dot.success { background: var(--green); }
-        .status-dot.error { background: var(--red); }
-
-        .response-body {
-            padding: 14px;
-            max-height: 260px;
-            overflow-y: auto;
-        }
-
-        .response-pre {
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            color: #d1d5db;
-            white-space: pre-wrap;
-            word-break: break-all;
-            margin: 0;
-        }
-
-        /* Marcadores de Resaltado JSON */
-        .jk { color: #93c5fd; }
-        .js { color: #34d399; }
-        .jn { color: #fbbf24; }
-        .jb { color: #f472b6; }
-
-        /* Fallback No Results */
-        #no-results {
+        /* Not Match Fallback */
+        #no-match {
             display: none;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px;
-            color: var(--text-muted);
+            text-align: center;
+            padding: 30px;
+            color: var(--xapi-text-muted);
             font-size: 0.9rem;
         }
-        #no-results i { font-size: 1.5rem; margin-bottom: 8px; color: var(--primary); }
 
-        /* Toast Alert minimalista */
-        .toast {
+        /* Toast Alert */
+        .toast-popup {
             position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: var(--surface-card);
-            border: 1px solid var(--primary);
-            color: var(--text);
-            padding: 10px 16px;
-            border-radius: 8px;
+            bottom: 20px;
+            right: 20px;
+            background: var(--xapi-card);
+            border-left: 4px solid var(--xapi-blue);
+            color: var(--xapi-text);
+            padding: 12px 18px;
+            border-radius: 4px;
             font-size: 0.85rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transform: translateX(120%);
+            transition: transform 0.25s ease-in-out;
             z-index: 1000;
         }
-        .toast.show { transform: translateY(0); opacity: 1; }
-
-        @keyframes blink { 50% { opacity: 0.4; } }
-
-        footer {
-            text-align: center;
-            margin-top: 40px;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-        footer a { color: var(--text-muted); text-decoration: none; }
-        footer a:hover { color: var(--primary); }
+        .toast-popup.active { transform: translateX(0); }
     </style>
 </head>
 <body>
 
-<nav class="navbar">
-    <div class="brand">
-        <img src="https://files.catbox.moe/8i7nc1.jpeg" alt="Moonlight Logo">
-        <span>MOONLIGHT<em>API</em></span>
-    </div>
-    <div class="nav-links">
-        <a href="https://wa.me/529992042946?text=starlyn" target="_blank" class="nav-btn"><i class="fas fa-code"></i> Developer</a>
-        <a href="https://whatsapp.com/channel/0029Vb6qIht5q08ZMPgVrA1y" target="_blank" class="nav-btn"><i class="fab fa-whatsapp"></i> Channel</a>
-    </div>
-</nav>
+    <nav class="navbar">
+        <div class="brand">
+            <img src="https://files.catbox.moe/8i7nc1.jpeg" alt="Moonlight">
+            Moonlight <span>API</span>
+        </div>
+        <div class="nav-stats">
+            <div class="stat-item"><i class="fas fa-server"></i> Server: Online</div>
+            <div class="stat-item"><i class="fas fa-layer-group"></i> Endpoints: 3</div>
+        </div>
+    </nav>
 
-<div class="container">
+    <div class="main-layout">
+        
+        <aside class="sidebar">
+            <div class="sidebar-title">Módulos</div>
+            <div class="menu-item active" onclick="filterCategory('all', this)"><i class="fas fa-box"></i> Todos los Endpoints</div>
+            <div class="menu-item" onclick="filterCategory('nsfw', this)"><i class="fas fa-eye-slash"></i> Rest NSFW</div>
+            <div class="menu-item" onclick="filterCategory('anime', this)"><i class="fas fa-ghost"></i> Rest Anime</div>
+            
+            <div class="sidebar-title" style="margin-top: 15px;">Canales</div>
+            <a href="https://wa.me/529992042946?text=starlyn" target="_blank" class="menu-item"><i class="fab fa-whatsapp"></i> Soporte Soporte</a>
+            <a href="https://whatsapp.com/channel/0029Vb6qIht5q08ZMPgVrA1y" target="_blank" class="menu-item"><i class="fas fa-bullhorn"></i> Canal Oficial</a>
+        </aside>
 
-    <div class="search-wrapper">
-        <i class="fas fa-search"></i>
-        <input type="text" id="search-input" class="search-input" placeholder="Buscar rutas o endpoints por nombre o descripción...">
-    </div>
+        <main class="content-area">
 
-    <div class="dashboard-grid" id="endpoints-container">
-
-        <div class="endpoint-card" data-keywords="nsfw pene random system engine repository">
-            <div class="endpoint-header" onclick="toggleCard(this)">
-                <span class="method-badge">GET</span>
-                <span class="endpoint-path">/api/nsfw/pene/</span>
-                <span class="endpoint-desc">Random System Engine Repository.</span>
-                <i class="fas fa-chevron-down endpoint-arrow"></i>
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="xapi-search" class="search-bar" placeholder="Buscar endpoint por ruta o tag...">
             </div>
-            <div class="endpoint-body">
-                <div class="section-title"><i class="fas fa-sliders"></i> Query Parameters</div>
-                <div class="param-row">
-                    <div class="param-info">
-                        <span class="param-name">query</span>
-                        <span class="param-type">string</span>
-                        <span class="param-req">*</span>
+
+            <div id="endpoints-list">
+
+                <div class="endpoint-row" data-cat="nsfw" data-tokens="nsfw pene random engine">
+                    <div class="endpoint-trigger" onclick="toggleRow(this)">
+                        <div class="badge-get">GET</div>
+                        <div class="path-text">/api/nsfw/pene/</div>
+                        <div class="desc-text">Random System Engine Repository.</div>
+                        <i class="fas fa-chevron-down arrow-icon"></i>
                     </div>
-                    <input type="text" class="param-input" value="pene" disabled>
-                </div>
-
-                <div class="section-title"><i class="fas fa-link"></i> Request URL</div>
-                <div class="url-box">
-                    <span class="url-text" id="urlPene">/api/nsfw/pene/</span>
-                    <button class="copy-btn" onclick="copyText('urlPene')"><i class="fas fa-copy"></i></button>
-                </div>
-
-                <button class="execute-btn" onclick="runEngine('pene')"><i class="fas fa-bolt"></i> Enviar Petición</button>
-
-                <div class="response-wrapper">
-                    <div class="response-header">
-                        <div class="status-indicator">
-                            <div class="status-dot" id="dot-pene"></div>
-                            <span id="status-pene">IDLE</span>
+                    <div class="endpoint-details">
+                        <div class="panel-title">Parámetros</div>
+                        <div class="params-box">
+                            <div class="param-meta">
+                                <span class="param-name">query</span>
+                                <span class="param-type">string</span>
+                                <span class="param-req">*</span>
+                            </div>
+                            <input type="text" class="param-value" value="pene" disabled>
                         </div>
-                        <button class="copy-btn" onclick="copyText('output-pene')"><i class="fas fa-copy"></i></button>
-                    </div>
-                    <div class="response-body">
-                        <pre class="response-pre" id="output-pene">// Esperando ejecución...</pre>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="endpoint-card" data-keywords="anime aleatorio shinobu kocho repository">
-            <div class="endpoint-header" onclick="toggleCard(this)">
-                <span class="method-badge">GET</span>
-                <span class="endpoint-path">/api/aleatorio/shinobu/</span>
-                <span class="endpoint-desc">Random Anime Shinobu Kocho Repository.</span>
-                <i class="fas fa-chevron-down endpoint-arrow"></i>
-            </div>
-            <div class="endpoint-body">
-                <div class="section-title"><i class="fas fa-sliders"></i> Query Parameters</div>
-                <div class="param-row">
-                    <div class="param-info">
-                        <span class="param-name">query</span>
-                        <span class="param-type">string</span>
-                        <span class="param-req">*</span>
-                    </div>
-                    <input type="text" class="param-input" value="shinobu" disabled>
-                </div>
-
-                <div class="section-title"><i class="fas fa-link"></i> Request URL</div>
-                <div class="url-box">
-                    <span class="url-text" id="urlShinobu">/api/aleatorio/shinobu/</span>
-                    <button class="copy-btn" onclick="copyText('urlShinobu')"><i class="fas fa-copy"></i></button>
-                </div>
-
-                <button class="execute-btn" onclick="runEngine('shinobu')"><i class="fas fa-bolt"></i> Enviar Petición</button>
-
-                <div class="response-wrapper">
-                    <div class="response-header">
-                        <div class="status-indicator">
-                            <div class="status-dot" id="dot-shinobu"></div>
-                            <span id="status-shinobu">IDLE</span>
+                        <div class="panel-title">URL Solicitud</div>
+                        <div class="params-box">
+                            <span class="param-meta" id="urlPene" style="color:var(--xapi-blue)">/api/nsfw/pene/</span>
+                            <button class="console-action-btn" onclick="copyContent('urlPene')"><i class="fas fa-copy"></i></button>
                         </div>
-                        <button class="copy-btn" onclick="copyText('output-shinobu')"><i class="fas fa-copy"></i></button>
-                    </div>
-                    <div class="response-body">
-                        <pre class="response-pre" id="output-shinobu">// Esperando ejecución...</pre>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="endpoint-card" data-keywords="anime aleatorio maid repository">
-            <div class="endpoint-header" onclick="toggleCard(this)">
-                <span class="method-badge">GET</span>
-                <span class="endpoint-path">/api/aleatorio/maid/</span>
-                <span class="endpoint-desc">Random Anime Maid Character Repository.</span>
-                <i class="fas fa-chevron-down endpoint-arrow"></i>
-            </div>
-            <div class="endpoint-body">
-                <div class="section-title"><i class="fas fa-sliders"></i> Query Parameters</div>
-                <div class="param-row">
-                    <div class="param-info">
-                        <span class="param-name">query</span>
-                        <span class="param-type">string</span>
-                        <span class="param-req">*</span>
-                    </div>
-                    <input type="text" class="param-input" value="maid" disabled>
-                </div>
+                        <button class="btn-test" onclick="fireEngine('pene')"><i class="fas fa-play"></i> Test Endpoint</button>
 
-                <div class="section-title"><i class="fas fa-link"></i> Request URL</div>
-                <div class="url-box">
-                    <span class="url-text" id="urlMaid">/api/aleatorio/maid/</span>
-                    <button class="copy-btn" onclick="copyText('urlMaid')"><i class="fas fa-copy"></i></button>
-                </div>
-
-                <button class="execute-btn" onclick="runEngine('maid')"><i class="fas fa-bolt"></i> Enviar Petición</button>
-
-                <div class="response-wrapper">
-                    <div class="response-header">
-                        <div class="status-indicator">
-                            <div class="status-dot" id="dot-maid"></div>
-                            <span id="status-maid">IDLE</span>
+                        <div class="console-container">
+                            <div class="console-header">
+                                <div class="console-status">
+                                    <div class="console-dot" id="dot-pene"></div>
+                                    <span id="status-pene">IDLE</span>
+                                </div>
+                                <button class="console-action-btn" onclick="copyContent('output-pene')"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <div class="console-body">
+                                <pre class="console-pre" id="output-pene">// Waiting for request...</pre>
+                            </div>
                         </div>
-                        <button class="copy-btn" onclick="copyText('output-maid')"><i class="fas fa-copy"></i></button>
-                    </div>
-                    <div class="response-body">
-                        <pre class="response-pre" id="output-maid">// Esperando ejecución...</pre>
                     </div>
                 </div>
+
+                <div class="endpoint-row" data-cat="anime" data-tokens="anime aleatorio shinobu kocho">
+                    <div class="endpoint-trigger" onclick="toggleRow(this)">
+                        <div class="badge-get">GET</div>
+                        <div class="path-text">/api/aleatorio/shinobu/</div>
+                        <div class="desc-text">Random Anime Shinobu Kocho Repository.</div>
+                        <i class="fas fa-chevron-down arrow-icon"></i>
+                    </div>
+                    <div class="endpoint-details">
+                        <div class="panel-title">Parámetros</div>
+                        <div class="params-box">
+                            <div class="param-meta">
+                                <span class="param-name">query</span>
+                                <span class="param-type">string</span>
+                                <span class="param-req">*</span>
+                            </div>
+                            <input type="text" class="param-value" value="shinobu" disabled>
+                        </div>
+
+                        <div class="panel-title">URL Solicitud</div>
+                        <div class="params-box">
+                            <span class="param-meta" id="urlShinobu" style="color:var(--xapi-blue)">/api/aleatorio/shinobu/</span>
+                            <button class="console-action-btn" onclick="copyContent('urlShinobu')"><i class="fas fa-copy"></i></button>
+                        </div>
+
+                        <button class="btn-test" onclick="fireEngine('shinobu')"><i class="fas fa-play"></i> Test Endpoint</button>
+
+                        <div class="console-container">
+                            <div class="console-header">
+                                <div class="console-status">
+                                    <div class="console-dot" id="dot-shinobu"></div>
+                                    <span id="status-shinobu">IDLE</span>
+                                </div>
+                                <button class="console-action-btn" onclick="copyContent('output-shinobu')"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <div class="console-body">
+                                <pre class="console-pre" id="output-shinobu">// Waiting for request...</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="endpoint-row" data-cat="anime" data-tokens="anime aleatorio maid">
+                    <div class="endpoint-trigger" onclick="toggleRow(this)">
+                        <div class="badge-get">GET</div>
+                        <div class="path-text">/api/aleatorio/maid/</div>
+                        <div class="desc-text">Random Anime Maid Character Repository.</div>
+                        <i class="fas fa-chevron-down arrow-icon"></i>
+                    </div>
+                    <div class="endpoint-details">
+                        <div class="panel-title">Parámetros</div>
+                        <div class="params-box">
+                            <div class="param-meta">
+                                <span class="param-name">query</span>
+                                <span class="param-type">string</span>
+                                <span class="param-req">*</span>
+                            </div>
+                            <input type="text" class="param-value" value="maid" disabled>
+                        </div>
+
+                        <div class="panel-title">URL Solicitud</div>
+                        <div class="params-box">
+                            <span class="param-meta" id="urlMaid" style="color:var(--xapi-blue)">/api/aleatorio/maid/</span>
+                            <button class="console-action-btn" onclick="copyContent('urlMaid')"><i class="fas fa-copy"></i></button>
+                        </div>
+
+                        <button class="btn-test" onclick="fireEngine('maid')"><i class="fas fa-play"></i> Test Endpoint</button>
+
+                        <div class="console-container">
+                            <div class="console-header">
+                                <div class="console-status">
+                                    <div class="console-dot" id="dot-maid"></div>
+                                    <span id="status-maid">IDLE</span>
+                                </div>
+                                <button class="console-action-btn" onclick="copyContent('output-maid')"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <div class="console-body">
+                                <pre class="console-pre" id="output-maid">// Waiting for request...</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="no-match">No results match your criteria</div>
+
             </div>
-        </div>
-
-        <div id="no-results">
-            <i class="fas fa-search"></i>
-            <span>No se encontraron rutas con ese nombre</span>
-        </div>
-
+        </main>
     </div>
 
-    <footer>
-        MOONLIGHT API &copy; 2026 · <a href="https://wa.me/529992042946?text=starlyn" target="_blank">Support</a>
-    </footer>
-</div>
-
-<div id="toast" class="toast">¡Copiado al portapapeles!</div>
+    <div id="toast" class="toast-popup">Copiado al portapapeles</div>
 
 <script>
-// Sincronizar endpoints dinámicamente con la URL base del host en Vercel
+// Sincronizar endpoints dinámicamente con la URL base de Vercel
 document.getElementById('urlPene').innerText = `${window.location.origin}/api/nsfw/pene/`;
 document.getElementById('urlShinobu').innerText = `${window.location.origin}/api/aleatorio/shinobu/`;
 document.getElementById('urlMaid').innerText = `${window.location.origin}/api/aleatorio/maid/`;
 
-// Desplegables de Tarjetas de forma nativa e independiente
-function toggleCard(header) {
-    const card = header.parentElement;
-    card.classList.toggle('active');
+// Desplegables nativos de Xapi
+function toggleRow(element) {
+    element.parentElement.classList.toggle('open');
 }
 
-// Utilidad global de Toasts
-function showToast(msg) {
-    const toast = document.getElementById('toast');
-    toast.innerText = msg;
-    toast.classList.add('show');
-    clearTimeout(toast.timeout);
-    toast.timeout = setTimeout(() => toast.classList.remove('show'), 2000);
+// Alertas flotantes (Toasts)
+function pushToast(msg) {
+    const t = document.getElementById('toast');
+    t.innerText = msg;
+    t.classList.add('active');
+    clearTimeout(t.timer);
+    t.timer = setTimeout(() => t.classList.remove('active'), 2000);
 }
 
-// Copiar texto ágil
-function copyText(id) {
-    const text = document.getElementById(id).innerText;
-    navigator.clipboard.writeText(text).then(() => {
-        showToast('¡Copiado con éxito!');
+function copyContent(id) {
+    navigator.clipboard.writeText(document.getElementById(id).innerText).then(() => {
+        pushToast('¡Copiado con éxito!');
     });
 }
 
-// Buscador predictivo en vivo estilo Xapi (Filtrado global instantáneo)
-document.getElementById('search-input').addEventListener('input', (e) => {
-    const val = e.target.value.toLowerCase().trim();
-    const cards = document.querySelectorAll('.endpoint-card');
-    const fallback = document.getElementById('no-results');
-    let visibles = 0;
+// Filtrador de la barra lateral (Módulos de categorías)
+let currentFilter = 'all';
+function filterCategory(cat, element) {
+    document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+    element.classList.add('active');
+    currentFilter = cat;
+    applyFilters();
+}
 
-    cards.forEach(card => {
-        const keywords = card.getAttribute('data-keywords');
-        if (keywords.includes(val)) {
-            card.style.display = 'block';
-            visibles++;
+// Buscador predictivo en vivo + integración de categoría cruzada
+document.getElementById('xapi-search').addEventListener('input', applyFilters);
+
+function applyFilters() {
+    const query = document.getElementById('xapi-search').value.toLowerCase().trim();
+    const rows = document.querySelectorAll('.endpoint-row');
+    const fallback = document.getElementById('no-match');
+    let visibleCount = 0;
+
+    rows.forEach(row => {
+        const rowCat = row.getAttribute('data-cat');
+        const tokens = row.getAttribute('data-tokens');
+        
+        const matchesCat = (currentFilter === 'all' || rowCat === currentFilter);
+        const matchesQuery = (query === "" || tokens.includes(query));
+
+        if (matchesCat && matchesQuery) {
+            row.style.display = 'block';
+            visibleCount++;
         } else {
-            card.style.display = 'none';
+            row.style.display = 'none';
         }
     });
 
-    fallback.style.display = (visibles === 0) ? 'flex' : 'none';
-});
+    fallback.style.display = (visibleCount === 0) ? 'block' : 'none';
+}
 
-// Formateador Estético de JSON
-function colorizeJSON(str) {
+// Formateador JSON nativo
+function paintJSON(str) {
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
         .replace(/"([^"]+)"(\s*:)/g, '<span class="jk">"$1"</span>$2')
         .replace(/:\s*"([^"]*)"/g, ': <span class="js">"$1"</span>')
@@ -664,15 +640,15 @@ function colorizeJSON(str) {
         .replace(/:\s*(null)/g, ': <span class="jn">$1</span>');
 }
 
-// Motor de Lectura Inyectado para mapear tus bases de datos locales (.json)
-function runEngine(tipo) {
+// Motor de ejecución Moonlight inyectado en la estructura de Xapi
+function fireEngine(tipo) {
     const out = document.getElementById(`output-${tipo}`);
     const dot = document.getElementById(`dot-${tipo}`);
     const status = document.getElementById(`status-${tipo}`);
 
-    out.innerText = '// Enviando request al servidor...';
-    status.innerText = 'FETCHING';
-    dot.className = 'status-dot fetching';
+    out.innerText = '// Fetching data from server...';
+    status.innerText = 'PENDING';
+    dot.className = 'console-dot run';
 
     fetch(`./${tipo}.json`)
         .then(res => { if (!res.ok) throw new Error(); return res.json(); })
@@ -699,13 +675,13 @@ function runEngine(tipo) {
             };
 
             status.innerText = '200 OK';
-            dot.className = 'status-dot success';
-            out.innerHTML = colorizeJSON(JSON.stringify(responseStructure, null, 2));
+            dot.className = 'console-dot ok';
+            out.innerHTML = paintJSON(JSON.stringify(responseStructure, null, 2));
         })
         .catch(() => {
-            status.innerText = 'ERROR';
-            dot.className = 'status-dot error';
-            out.innerText = `// Error: Falló la lectura del archivo fuente "./${tipo}.json" en la raíz.`;
+            status.innerText = '500 ERROR';
+            dot.className = 'console-dot err';
+            out.innerText = `// Error: Base local "./${tipo}.json" inaccesible.`;
         });
 }
 </script>
