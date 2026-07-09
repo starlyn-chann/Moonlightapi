@@ -1,689 +1,359 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xapi - Moonlight Docs</title>
-    <link rel="icon" type="image/jpeg" href="https://files.catbox.moe/8i7nc1.jpeg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
+    <title>Moonlight Archive — API Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ── INTERFAZ IDENTICA A XAPI ── */
-        :root {
-            --xapi-bg: #0e131f;
-            --xapi-sidebar: #131a26;
-            --xapi-navbar: #151d2a;
-            --xapi-card: #182232;
-            --xapi-border: #222f43;
-            --xapi-text: #ffffff;
-            --xapi-text-muted: #6b7c96;
-            
-            --xapi-green: #00e676;
-            --xapi-green-bg: rgba(0, 230, 118, 0.15);
-            --xapi-blue: #00b0ff;
-            --xapi-red: #ff1744;
-            --xapi-yellow: #ffea00;
-            
-            --font-main: 'Inter', sans-serif;
-            --font-code: 'JetBrains Mono', monospace;
+        /* Estética Neón y Sombreado Rígido Cyberpunk */
+        .neon-border-blue {
+            box-shadow: 4px 4px 0px 0px #3b82f6;
+            border: 2px solid #3b82f6;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            outline: none;
+        .neon-border-purple {
+            box-shadow: 4px 4px 0px 0px #a855f7;
+            border: 2px solid #a855f7;
         }
-
-        body {
-            background-color: var(--xapi-bg);
-            color: var(--xapi-text);
-            font-family: var(--font-main);
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
+        .neon-text-blue {
+            text-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
         }
-
-        /* Top Navbar */
-        .navbar {
-            height: 60px;
-            background: var(--xapi-navbar);
-            border-bottom: 1px solid var(--xapi-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            z-index: 10;
+        .neon-text-purple {
+            text-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
         }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 700;
-            font-size: 1.1rem;
-            letter-spacing: 0.5px;
-        }
-
-        .brand img {
-            width: 32px;
-            height: 32px;
-            border-radius: 4px;
-            object-fit: cover;
-        }
-
-        .brand span {
-            color: var(--xapi-blue);
-        }
-
-        .nav-stats {
-            display: flex;
-            gap: 15px;
-            font-size: 0.85rem;
-            color: var(--xapi-text-muted);
-        }
-
-        .stat-item i {
-            color: var(--xapi-green);
-            margin-right: 4px;
-        }
-
-        /* Main Workspace Layout */
-        .main-layout {
-            display: flex;
-            flex: 1;
-            height: calc(100vh - 60px);
-            overflow: hidden;
-        }
-
-        /* Sidebar Fijo de Xapi */
-        .sidebar {
-            width: 240px;
-            background: var(--xapi-sidebar);
-            border-right: 1px solid var(--xapi-border);
-            display: flex;
-            flex-direction: column;
-            padding: 15px 0;
-            overflow-y: auto;
-        }
-
-        .sidebar-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: var(--xapi-text-muted);
-            padding: 10px 20px;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 20px;
-            color: #b2c0d2;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .menu-item:hover, .menu-item.active {
-            background: rgba(255, 255, 255, 0.03);
-            color: var(--xapi-text);
-            border-left: 3px solid var(--xapi-blue);
-            padding-left: 17px;
-        }
-
-        .menu-item i {
-            width: 16px;
-            text-align: center;
-            color: var(--xapi-text-muted);
-        }
-
-        .menu-item.active i {
-            color: var(--xapi-blue);
-        }
-
-        /* Content Area */
-        .content-area {
-            flex: 1;
-            padding: 25px;
-            overflow-y: auto;
-            background: var(--xapi-bg);
-        }
-
-        /* Search Bar Superior */
-        .search-container {
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        .search-container i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--xapi-text-muted);
-        }
-
-        .search-bar {
-            width: 100%;
-            background: var(--xapi-card);
-            border: 1px solid var(--xapi-border);
-            border-radius: 6px;
-            padding: 12px 15px 12px 42px;
-            color: var(--xapi-text);
-            font-size: 0.9rem;
-        }
-
-        /* Lista de Endpoints estilo Tabla de Xapi */
-        .endpoint-row {
-            background: var(--xapi-card);
-            border: 1px solid var(--xapi-border);
-            border-radius: 6px;
-            margin-bottom: 12px;
-            overflow: hidden;
-        }
-
-        .endpoint-trigger {
-            display: flex;
-            align-items: center;
-            padding: 14px 20px;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        /* El bloque GET robusto de Xapi */
-        .badge-get {
-            background: var(--xapi-green-bg);
-            color: var(--xapi-green);
-            font-family: var(--font-code);
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 5px 12px;
-            border-radius: 4px;
-            min-width: 65px;
-            text-align: center;
-            margin-right: 15px;
-        }
-
-        .path-text {
-            font-family: var(--font-code);
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #e2e8f0;
-            flex: 1;
-        }
-
-        .desc-text {
-            font-size: 0.85rem;
-            color: var(--xapi-text-muted);
-            margin-right: 20px;
-        }
-
-        .arrow-icon {
-            color: var(--xapi-text-muted);
-            font-size: 0.8rem;
-            transition: transform 0.2s;
-        }
-
-        .endpoint-row.open .arrow-icon {
-            transform: rotate(180deg);
-        }
-
-        /* Desplegable Técnico */
-        .endpoint-details {
-            display: none;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.2);
-            border-top: 1px solid var(--xapi-border);
-        }
-
-        .endpoint-row.open .endpoint-details {
-            display: block;
-        }
-
-        .panel-title {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--xapi-text-muted);
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        /* Caja de parámetros */
-        .params-box {
-            background: var(--xapi-navbar);
-            border: 1px solid var(--xapi-border);
-            border-radius: 4px;
-            padding: 12px 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-
-        .param-meta {
-            font-family: var(--font-code);
-            font-size: 0.85rem;
-        }
-
-        .param-name { color: var(--xapi-text); font-weight: 500; }
-        .param-type { color: var(--xapi-blue); margin-left: 8px; font-size: 0.75rem; }
-        .param-req { color: var(--xapi-red); margin-left: 4px; }
-
-        .param-value {
-            background: var(--xapi-bg);
-            border: 1px solid var(--xapi-border);
-            color: var(--xapi-text-muted);
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-family: var(--font-code);
-            font-size: 0.8rem;
-            width: 150px;
-            text-align: right;
-        }
-
-        /* Consola de Resultados */
-        .console-container {
-            border: 1px solid var(--xapi-border);
-            border-radius: 4px;
-            background: #090d16;
-            overflow: hidden;
-            margin-top: 15px;
-        }
-
-        .console-header {
-            background: var(--xapi-navbar);
-            padding: 6px 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--xapi-border);
-        }
-
-        .console-status {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-family: var(--font-code);
-            font-size: 0.75rem;
-            color: var(--xapi-text-muted);
-        }
-
-        .console-dot {
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
-            border-radius: 50%;
-            background: var(--xapi-text-muted);
         }
-        .console-dot.run { background: var(--xapi-yellow); }
-        .console-dot.ok { background: var(--xapi-green); }
-        .console-dot.err { background: var(--xapi-red); }
-
-        .console-action-btn {
-            background: transparent;
-            border: none;
-            color: var(--xapi-text-muted);
-            cursor: pointer;
-            padding: 2px 6px;
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
         }
-        .console-action-btn:hover { color: var(--xapi-text); }
-
-        .console-body {
-            padding: 12px;
-            max-height: 220px;
-            overflow-y: auto;
+        ::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 3px;
         }
-
-        .console-pre {
-            font-family: var(--font-code);
-            font-size: 0.8rem;
-            color: #cfd8dc;
-            white-space: pre-wrap;
-            margin: 0;
-        }
-
-        /* Botón Ejecutar robusto de Xapi */
-        .btn-test {
-            background: var(--xapi-blue);
-            color: #000;
-            border: none;
-            border-radius: 4px;
-            padding: 10px 16px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .btn-test:hover { background: #40c4ff; }
-
-        /* Helpers de Resaltado JSON */
-        .jk { color: #64b5f6; }
-        .js { color: #81c784; }
-        .jn { color: #ffd54f; }
-        .jb { color: #f06292; }
-
-        /* Not Match Fallback */
-        #no-match {
-            display: none;
-            text-align: center;
-            padding: 30px;
-            color: var(--xapi-text-muted);
-            font-size: 0.9rem;
-        }
-
-        /* Toast Alert */
-        .toast-popup {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--xapi-card);
-            border-left: 4px solid var(--xapi-blue);
-            color: var(--xapi-text);
-            padding: 12px 18px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transform: translateX(120%);
-            transition: transform 0.25s ease-in-out;
-            z-index: 1000;
-        }
-        .toast-popup.active { transform: translateX(0); }
     </style>
 </head>
-<body>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex antialiased selection:bg-purple-500 selection:text-white">
 
-    <nav class="navbar">
-        <div class="brand">
-            <img src="https://files.catbox.moe/8i7nc1.jpeg" alt="Moonlight">
-            Moonlight <span>API</span>
-        </div>
-        <div class="nav-stats">
-            <div class="stat-item"><i class="fas fa-server"></i> Server: Online</div>
-            <div class="stat-item"><i class="fas fa-layer-group"></i> Endpoints: 3</div>
-        </div>
-    </nav>
-
-    <div class="main-layout">
-        
-        <aside class="sidebar">
-            <div class="sidebar-title">Módulos</div>
-            <div class="menu-item active" onclick="filterCategory('all', this)"><i class="fas fa-box"></i> Todos los Endpoints</div>
-            <div class="menu-item" onclick="filterCategory('nsfw', this)"><i class="fas fa-eye-slash"></i> Rest NSFW</div>
-            <div class="menu-item" onclick="filterCategory('anime', this)"><i class="fas fa-ghost"></i> Rest Anime</div>
-            
-            <div class="sidebar-title" style="margin-top: 15px;">Canales</div>
-            <a href="https://wa.me/529992042946?text=starlyn" target="_blank" class="menu-item"><i class="fab fa-whatsapp"></i> Soporte Soporte</a>
-            <a href="https://whatsapp.com/channel/0029Vb6qIht5q08ZMPgVrA1y" target="_blank" class="menu-item"><i class="fas fa-bullhorn"></i> Canal Oficial</a>
-        </aside>
-
-        <main class="content-area">
-
-            <div class="search-container">
-                <i class="fas fa-search"></i>
-                <input type="text" id="xapi-search" class="search-bar" placeholder="Buscar endpoint por ruta o tag...">
+    <!-- SIDEBAR (Barra Lateral Izquierda) -->
+    <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0 hidden md:flex">
+        <div>
+            <!-- Header Sidebar -->
+            <div class="p-6 border-b border-slate-800 flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/20">
+                    M
+                </div>
+                <div>
+                    <h1 class="font-bold tracking-wide text-sm neon-text-blue text-blue-400">MOONLIGHT</h1>
+                    <p class="text-xs text-slate-500 font-mono">v2.1.0 — Archive</p>
+                </div>
             </div>
 
-            <div id="endpoints-list">
+            <!-- Buscador en Sidebar -->
+            <div class="p-4">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                    <input type="text" id="sidebarSearch" onkeyup="filterEndpoints()" placeholder="Buscar endpoint..." 
+                           class="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-blue-500 transition-colors">
+                </div>
+            </div>
 
-                <div class="endpoint-row" data-cat="nsfw" data-tokens="nsfw pene random engine">
-                    <div class="endpoint-trigger" onclick="toggleRow(this)">
-                        <div class="badge-get">GET</div>
-                        <div class="path-text">/api/nsfw/pene/</div>
-                        <div class="desc-text">Random System Engine Repository.</div>
-                        <i class="fas fa-chevron-down arrow-icon"></i>
-                    </div>
-                    <div class="endpoint-details">
-                        <div class="panel-title">Parámetros</div>
-                        <div class="params-box">
-                            <div class="param-meta">
-                                <span class="param-name">query</span>
-                                <span class="param-type">string</span>
-                                <span class="param-req">*</span>
-                            </div>
-                            <input type="text" class="param-value" value="pene" disabled>
-                        </div>
+            <!-- Navegación de Categorías -->
+            <nav class="px-3 py-2 space-y-1">
+                <span class="px-3 py-2 text-[10px] font-bold text-slate-500 tracking-wider uppercase block">Navegación</span>
+                <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-slate-800 text-blue-400 text-sm font-medium transition-all">
+                    <i class="fa-solid fa-terminal text-xs"></i> Dashboard Principal
+                </a>
+                
+                <span class="px-3 pt-4 pb-2 text-[10px] font-bold text-slate-500 tracking-wider uppercase block">Categorías API</span>
+                <button onclick="filterCategory('all')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 text-sm transition-all text-left">
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-folder-open text-xs"></i> Todos los módulos</span>
+                </button>
+                <button onclick="filterCategory('anime')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 text-sm transition-all text-left">
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-wand-magic-sparkles text-xs"></i> Anime & SFW</span>
+                </button>
+                <button onclick="filterCategory('nsfw')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 text-sm transition-all text-left">
+                    <span class="flex items-center gap-3"><i class="fa-solid fa-eye-slash text-xs"></i> Contenido NSFW</span>
+                </button>
+            </nav>
+        </div>
 
-                        <div class="panel-title">URL Solicitud</div>
-                        <div class="params-box">
-                            <span class="param-meta" id="urlPene" style="color:var(--xapi-blue)">/api/nsfw/pene/</span>
-                            <button class="console-action-btn" onclick="copyContent('urlPene')"><i class="fas fa-copy"></i></button>
-                        </div>
+        <!-- Mini Reproductor de Música Ocultable/Integrado en Footer Sidebar -->
+        <div class="p-4 border-t border-slate-800 bg-slate-950/50">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="w-9 h-9 rounded bg-slate-800 border border-slate-700 flex items-center justify-center animate-pulse text-purple-400">
+                    <i class="fa-solid fa-music text-xs"></i>
+                </div>
+                <div class="overflow-hidden w-full">
+                    <p class="text-xs font-medium text-slate-300 truncate" id="trackTitle">Reproductor de Respaldo</p>
+                    <p class="text-[10px] text-slate-500 truncate" id="trackArtist">Moonlight Engine Staff</p>
+                </div>
+            </div>
+            <div class="flex items-center justify-between text-xs text-slate-400 px-1">
+                <button class="hover:text-purple-400 transition-colors"><i class="fa-solid fa-backward-step"></i></button>
+                <button onclick="toggleAudio()" id="playBtn" class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-play text-[10px] pl-0.5"></i>
+                </button>
+                <button class="hover:text-purple-400 transition-colors"><i class="fa-solid fa-forward-step"></i></button>
+            </div>
+            <!-- Audio oculto (puedes setear tu url directa aquí) -->
+            <audio id="bgAudio" src="" loop></audio>
+        </div>
+    </aside>
 
-                        <button class="btn-test" onclick="fireEngine('pene')"><i class="fas fa-play"></i> Test Endpoint</button>
+    <!-- MAIN CONTENT CONTAINER -->
+    <div class="flex-1 flex flex-col min-w-0">
+        <!-- TOPBAR / NAVBAR -->
+        <header class="h-16 border-b border-slate-800 bg-slate-900/50 backdrop-blur px-6 flex items-center justify-between sticky top-0 z-40">
+            <div class="flex items-center gap-4">
+                <button class="md:hidden text-slate-400 hover:text-slate-200"><i class="fa-solid fa-bars text-lg"></i></button>
+                <div class="flex items-center gap-2 text-xs font-mono bg-slate-950 px-3 py-1.5 rounded-md border border-slate-800">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-ping"></span>
+                    <span class="text-slate-400">System Status:</span>
+                    <span class="text-emerald-400 font-bold">ONLINE</span>
+                </div>
+            </div>
 
-                        <div class="console-container">
-                            <div class="console-header">
-                                <div class="console-status">
-                                    <div class="console-dot" id="dot-pene"></div>
-                                    <span id="status-pene">IDLE</span>
-                                </div>
-                                <button class="console-action-btn" onclick="copyContent('output-pene')"><i class="fas fa-copy"></i></button>
-                            </div>
-                            <div class="console-body">
-                                <pre class="console-pre" id="output-pene">// Waiting for request...</pre>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Login / Admin Trigger -->
+            <div class="flex items-center gap-3">
+                <button onclick="openLoginModal()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-lg border border-slate-700 transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-lock text-[10px]"></i> Admin Panel
+                </button>
+            </div>
+        </header>
+
+        <!-- DASHBOARD BODY GRID -->
+        <main class="p-6 space-y-6 flex-1 overflow-y-auto">
+            
+            <!-- Banner Informativo -->
+            <div class="p-6 bg-gradient-to-r from-blue-950/40 via-purple-950/20 to-slate-900 rounded-xl neon-border-blue relative overflow-hidden">
+                <div class="relative z-10 max-w-2xl">
+                    <h2 class="text-xl font-extrabold text-white mb-1 tracking-tight">Moonlight Archive System</h2>
+                    <p class="text-slate-400 text-xs leading-relaxed font-mono">
+                        Panel de control interactivo para la gestión y monitoreo de respuestas en formato JSON estructurado. Integra tus módulos automatizados de Termux y pruebas locales de manera inmediata.
+                    </p>
+                </div>
+                <div class="absolute -right-10 -bottom-10 text-9xl text-slate-800/10 font-bold pointer-events-none select-none">API</div>
+            </div>
+
+            <!-- SECCIÓN: ENDPOINTS -->
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold tracking-wider text-slate-400 uppercase font-mono flex items-center gap-2">
+                        <i class="fa-solid fa-circle text-[8px] text-purple-500"></i> Endpoints Disponibles
+                    </h3>
                 </div>
 
-                <div class="endpoint-row" data-cat="anime" data-tokens="anime aleatorio shinobu kocho">
-                    <div class="endpoint-trigger" onclick="toggleRow(this)">
-                        <div class="badge-get">GET</div>
-                        <div class="path-text">/api/aleatorio/shinobu/</div>
-                        <div class="desc-text">Random Anime Shinobu Kocho Repository.</div>
-                        <i class="fas fa-chevron-down arrow-icon"></i>
+                <!-- Grid de Tarjetas de Endpoints -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="endpointsGrid">
+                    
+                    <!-- Endpoint: Shinobu (Anime/SFW) -->
+                    <div class="endpoint-card bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition-all flex flex-col justify-between" data-category="anime" data-name="shinobu">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="px-2 py-0.5 bg-blue-500/10 text-blue-400 text-[10px] font-bold font-mono rounded border border-blue-500/20 uppercase">GET</span>
+                                <span class="text-[11px] text-slate-500 font-mono">Category: Anime</span>
+                            </div>
+                            <h4 class="font-bold text-slate-200 text-sm mb-1 font-mono">/api/anime/shinobu</h4>
+                            <p class="text-xs text-slate-400 mb-4">Retorna imágenes y archivos multimedia aleatorios de Shinobu Oshino.</p>
+                        </div>
+                        <button onclick="testReq('/api/anime/shinobu')" class="w-full py-2 bg-slate-950 hover:bg-blue-600 hover:text-white text-slate-300 text-xs font-mono font-bold rounded-lg border border-slate-800 hover:border-blue-500 transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-play text-[9px]"></i> Execute Test
+                        </button>
                     </div>
-                    <div class="endpoint-details">
-                        <div class="panel-title">Parámetros</div>
-                        <div class="params-box">
-                            <div class="param-meta">
-                                <span class="param-name">query</span>
-                                <span class="param-type">string</span>
-                                <span class="param-req">*</span>
-                            </div>
-                            <input type="text" class="param-value" value="shinobu" disabled>
-                        </div>
 
-                        <div class="panel-title">URL Solicitud</div>
-                        <div class="params-box">
-                            <span class="param-meta" id="urlShinobu" style="color:var(--xapi-blue)">/api/aleatorio/shinobu/</span>
-                            <button class="console-action-btn" onclick="copyContent('urlShinobu')"><i class="fas fa-copy"></i></button>
-                        </div>
-
-                        <button class="btn-test" onclick="fireEngine('shinobu')"><i class="fas fa-play"></i> Test Endpoint</button>
-
-                        <div class="console-container">
-                            <div class="console-header">
-                                <div class="console-status">
-                                    <div class="console-dot" id="dot-shinobu"></div>
-                                    <span id="status-shinobu">IDLE</span>
-                                </div>
-                                <button class="console-action-btn" onclick="copyContent('output-shinobu')"><i class="fas fa-copy"></i></button>
+                    <!-- Endpoint: Maid (Anime/SFW) -->
+                    <div class="endpoint-card bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition-all flex flex-col justify-between" data-category="anime" data-name="maid">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="px-2 py-0.5 bg-blue-500/10 text-blue-400 text-[10px] font-bold font-mono rounded border border-blue-500/20 uppercase">GET</span>
+                                <span class="text-[11px] text-slate-500 font-mono">Category: Anime</span>
                             </div>
-                            <div class="console-body">
-                                <pre class="console-pre" id="output-shinobu">// Waiting for request...</pre>
-                            </div>
+                            <h4 class="font-bold text-slate-200 text-sm mb-1 font-mono">/api/anime/maid</h4>
+                            <p class="text-xs text-slate-400 mb-4">Galería de sirvientas de anime de alta definición extraídas del repositorio local.</p>
                         </div>
+                        <button onclick="testReq('/api/anime/maid')" class="w-full py-2 bg-slate-950 hover:bg-blue-600 hover:text-white text-slate-300 text-xs font-mono font-bold rounded-lg border border-slate-800 hover:border-blue-500 transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-play text-[9px]"></i> Execute Test
+                        </button>
+                    </div>
+
+                    <!-- Endpoint: Pene (NSFW) -->
+                    <div class="endpoint-card bg-slate-900 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition-all flex flex-col justify-between" data-category="nsfw" data-name="pene">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="px-2 py-0.5 bg-purple-500/10 text-purple-400 text-[10px] font-bold font-mono rounded border border-purple-500/20 uppercase">GET</span>
+                                <span class="text-[11px] text-slate-500 font-mono">Category: NSFW</span>
+                            </div>
+                            <h4 class="font-bold text-slate-200 text-sm mb-1 font-mono">/api/nsfw/pene</h4>
+                            <p class="text-xs text-slate-400 mb-4">Modulo explícito estructurado para respuestas directas de comandos del bot.</p>
+                        </div>
+                        <button onclick="testReq('/api/nsfw/pene')" class="w-full py-2 bg-slate-950 hover:bg-purple-600 hover:text-white text-slate-300 text-xs font-mono font-bold rounded-lg border border-slate-800 hover:border-purple-500 transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-play text-[9px]"></i> Execute Test
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- SIMULADOR DE CONSOLA / TERMINAL INTERACTIVA -->
+            <div class="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden neon-border-purple">
+                <div class="bg-slate-950 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                        <span class="text-xs font-mono text-slate-400 ml-2"><i class="fa-solid fa-terminal text-[10px] text-purple-400 mr-1"></i> Response Terminal</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="clearTerminal()" class="text-[10px] bg-slate-900 border border-slate-800 px-2 py-1 rounded text-slate-400 hover:text-slate-200 font-mono">Clear</button>
                     </div>
                 </div>
-
-                <div class="endpoint-row" data-cat="anime" data-tokens="anime aleatorio maid">
-                    <div class="endpoint-trigger" onclick="toggleRow(this)">
-                        <div class="badge-get">GET</div>
-                        <div class="path-text">/api/aleatorio/maid/</div>
-                        <div class="desc-text">Random Anime Maid Character Repository.</div>
-                        <i class="fas fa-chevron-down arrow-icon"></i>
-                    </div>
-                    <div class="endpoint-details">
-                        <div class="panel-title">Parámetros</div>
-                        <div class="params-box">
-                            <div class="param-meta">
-                                <span class="param-name">query</span>
-                                <span class="param-type">string</span>
-                                <span class="param-req">*</span>
-                            </div>
-                            <input type="text" class="param-value" value="maid" disabled>
-                        </div>
-
-                        <div class="panel-title">URL Solicitud</div>
-                        <div class="params-box">
-                            <span class="param-meta" id="urlMaid" style="color:var(--xapi-blue)">/api/aleatorio/maid/</span>
-                            <button class="console-action-btn" onclick="copyContent('urlMaid')"><i class="fas fa-copy"></i></button>
-                        </div>
-
-                        <button class="btn-test" onclick="fireEngine('maid')"><i class="fas fa-play"></i> Test Endpoint</button>
-
-                        <div class="console-container">
-                            <div class="console-header">
-                                <div class="console-status">
-                                    <div class="console-dot" id="dot-maid"></div>
-                                    <span id="status-maid">IDLE</span>
-                                </div>
-                                <button class="console-action-btn" onclick="copyContent('output-maid')"><i class="fas fa-copy"></i></button>
-                            </div>
-                            <div class="console-body">
-                                <pre class="console-pre" id="output-maid">// Waiting for request...</pre>
-                            </div>
-                        </div>
-                    </div>
+                <div class="p-4 bg-slate-950 font-mono text-xs h-60 overflow-y-auto space-y-1.5 text-slate-300" id="terminalOutput">
+                    <p class="text-slate-500">// Moonlight Archive Console inicializada correctamente.</p>
+                    <p class="text-slate-500">// Presiona "Execute Test" en cualquier endpoint para inspeccionar la respuesta JSON en tiempo real.</p>
                 </div>
-
-                <div id="no-match">No results match your criteria</div>
-
             </div>
         </main>
     </div>
 
-    <div id="toast" class="toast-popup">Copiado al portapapeles</div>
+    <!-- MODAL DE LOGIN ADMINISTRATIVO -->
+    <div id="loginModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 w-full max-w-sm neon-border-blue transform scale-95 transition-transform duration-200" id="modalContent">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-sm text-slate-200 font-mono"><i class="fa-solid fa-shield-halved text-blue-400 mr-2"></i> Moonlight Authentication</h3>
+                <button onclick="closeLoginModal()" class="text-slate-500 hover:text-slate-300 text-sm"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="doLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-[11px] font-mono text-slate-400 mb-1">Access Token / Password</label>
+                    <input type="password" id="adminPassword" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-blue-500">
+                </div>
+                <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white font-mono font-bold text-xs rounded-lg transition-colors">
+                    Verify Credentials
+                </button>
+            </form>
+            <div id="loginFeedback" class="mt-3 text-[11px] font-mono text-center hidden"></div>
+        </div>
+    </div>
 
-<script>
-// Sincronizar endpoints dinámicamente con la URL base de Vercel
-document.getElementById('urlPene').innerText = `${window.location.origin}/api/nsfw/pene/`;
-document.getElementById('urlShinobu').innerText = `${window.location.origin}/api/aleatorio/shinobu/`;
-document.getElementById('urlMaid').innerText = `${window.location.origin}/api/aleatorio/maid/`;
-
-// Desplegables nativos de Xapi
-function toggleRow(element) {
-    element.parentElement.classList.toggle('open');
-}
-
-// Alertas flotantes (Toasts)
-function pushToast(msg) {
-    const t = document.getElementById('toast');
-    t.innerText = msg;
-    t.classList.add('active');
-    clearTimeout(t.timer);
-    t.timer = setTimeout(() => t.classList.remove('active'), 2000);
-}
-
-function copyContent(id) {
-    navigator.clipboard.writeText(document.getElementById(id).innerText).then(() => {
-        pushToast('¡Copiado con éxito!');
-    });
-}
-
-// Filtrador de la barra lateral (Módulos de categorías)
-let currentFilter = 'all';
-function filterCategory(cat, element) {
-    document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
-    element.classList.add('active');
-    currentFilter = cat;
-    applyFilters();
-}
-
-// Buscador predictivo en vivo + integración de categoría cruzada
-document.getElementById('xapi-search').addEventListener('input', applyFilters);
-
-function applyFilters() {
-    const query = document.getElementById('xapi-search').value.toLowerCase().trim();
-    const rows = document.querySelectorAll('.endpoint-row');
-    const fallback = document.getElementById('no-match');
-    let visibleCount = 0;
-
-    rows.forEach(row => {
-        const rowCat = row.getAttribute('data-cat');
-        const tokens = row.getAttribute('data-tokens');
-        
-        const matchesCat = (currentFilter === 'all' || rowCat === currentFilter);
-        const matchesQuery = (query === "" || tokens.includes(query));
-
-        if (matchesCat && matchesQuery) {
-            row.style.display = 'block';
-            visibleCount++;
-        } else {
-            row.style.display = 'none';
-        }
-    });
-
-    fallback.style.display = (visibleCount === 0) ? 'block' : 'none';
-}
-
-// Formateador JSON nativo
-function paintJSON(str) {
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/"([^"]+)"(\s*:)/g, '<span class="jk">"$1"</span>$2')
-        .replace(/:\s*"([^"]*)"/g, ': <span class="js">"$1"</span>')
-        .replace(/:\s*(-?\d+\.?\d*)/g, ': <span class="jn">$1</span>')
-        .replace(/:\s*(true|false)/g, ': <span class="jb">$1</span>')
-        .replace(/:\s*(null)/g, ': <span class="jn">$1</span>');
-}
-
-// Motor de ejecución Moonlight inyectado en la estructura de Xapi
-function fireEngine(tipo) {
-    const out = document.getElementById(`output-${tipo}`);
-    const dot = document.getElementById(`dot-${tipo}`);
-    const status = document.getElementById(`status-${tipo}`);
-
-    out.innerText = '// Fetching data from server...';
-    status.innerText = 'PENDING';
-    dot.className = 'console-dot run';
-
-    fetch(`./${tipo}.json`)
-        .then(res => { if (!res.ok) throw new Error(); return res.json(); })
-        .then(linksArray => {
-            const randomLink = linksArray[Math.floor(Math.random() * linksArray.length)];
-            const isVideo = randomLink.toLowerCase().endsWith('.mp4');
-            const mime = isVideo ? 'video/mp4' : (randomLink.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg');
-
-            const responseStructure = {
-                "status": true,
-                "Author": "StarLyn",
-                "result": {
-                    "status": true,
-                    "data": [
-                        {
-                            "title": "Moonlight Staff API",
-                            "image": isVideo ? null : randomLink,
-                            "video": isVideo ? randomLink : null,
-                            "category": (tipo === 'pene') ? 'NSFW' : 'Anime',
-                            "type": mime
-                        }
-                    ]
+    <!-- SCRIPTS DE INTERACCIÓN LOGICA -->
+    <script>
+        // Sistema de Filtrado Inteligente (Categorías y Buscador)
+        function filterCategory(cat) {
+            const cards = document.querySelectorAll('.endpoint-card');
+            cards.forEach(card => {
+                if (cat === 'all' || card.getAttribute('data-category') === cat) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
                 }
-            };
+            });
+        }
 
-            status.innerText = '200 OK';
-            dot.className = 'console-dot ok';
-            out.innerHTML = paintJSON(JSON.stringify(responseStructure, null, 2));
-        })
-        .catch(() => {
-            status.innerText = '500 ERROR';
-            dot.className = 'console-dot err';
-            out.innerText = `// Error: Base local "./${tipo}.json" inaccesible.`;
-        });
-}
-</script>
+        function filterEndpoints() {
+            const query = document.getElementById('sidebarSearch').value.toLowerCase();
+            const cards = document.querySelectorAll('.endpoint-card');
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name').toLowerCase();
+                const path = card.querySelector('h4').innerText.toLowerCase();
+                if (name.includes(query) || path.includes(query)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Simulación Dinámica de Ejecución de Endpoints (Prueba Local JSON)
+        async function testReq(endpoint) {
+            const terminal = document.getElementById('terminalOutput');
+            
+            // Añadir log de petición al inicio
+            const timestamp = new Date().toLocaleTimeString();
+            terminal.innerHTML += `<p class="text-blue-400">[${timestamp}] FETCHING: ${endpoint} ...</p>`;
+            
+            try {
+                // Intentar fetch real al backend (o simulación controlada si falla)
+                const res = await fetch(endpoint);
+                if (!res.ok) throw new Error(`HTTP Error status: ${res.status}`);
+                const data = await res.json();
+                
+                terminal.innerHTML += `<p class="text-emerald-400">[${timestamp}] RESPONSE SUCCESS:</p>`;
+                terminal.innerHTML += `<pre class="bg-slate-950 p-2 border border-slate-800 rounded text-slate-300 text-[11px] overflow-x-auto">${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (err) {
+                // Mock exacto con tus datos para pruebas locales en entornos estáticos
+                terminal.innerHTML += `<p class="text-amber-500">[${timestamp}] LOCAL MOCK RESPONSE (No backend pipe detected):</p>`;
+                
+                let mockData = { status: true, creator: "StarLyn", result: "https://images.example.com/fallback.jpg" };
+                if (endpoint.includes('pene')) {
+                    mockData.result = "Respuesta de comando estructurada de forma nativa exitosa.";
+                }
+                
+                terminal.innerHTML += `<pre class="bg-slate-900 p-2 border border-slate-800 rounded text-slate-400 text-[11px] overflow-x-auto">${JSON.stringify(mockData, null, 2)}</pre>`;
+            }
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function clearTerminal() {
+            document.getElementById('terminalOutput').innerHTML = `<p class="text-slate-500">// Terminal limpia. Esperando peticiones...</p>`;
+        }
+
+        // Sistema Interactivo del Modulo de Autenticación
+        function openLoginModal() {
+            const modal = document.getElementById('loginModal');
+            const content = document.getElementById('modalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeLoginModal() {
+            const modal = document.getElementById('loginModal');
+            const content = document.getElementById('modalContent');
+            modal.classList.add('opacity-0');
+            content.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
+
+        function doLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('adminPassword').value;
+            const feedback = document.getElementById('loginFeedback');
+            feedback.classList.remove('hidden');
+
+            // Simulación básica de credencial administrativa
+            if (pass === 'admin123' || pass === 'starlyn') {
+                feedback.className = "mt-3 text-[11px] font-mono text-center text-emerald-400";
+                feedback.innerText = "Access Granted. Redirecting workspace...";
+                setTimeout(() => {
+                    closeLoginModal();
+                    feedback.classList.add('hidden');
+                }, 1200);
+            } else {
+                feedback.className = "mt-3 text-[11px] font-mono text-center text-red-400";
+                feedback.innerText = "Error: Invalid Access Token.";
+            }
+        }
+
+        // Funciones básicas del Mini Reproductor
+        function toggleAudio() {
+            const audio = document.getElementById('bgAudio');
+            const btn = document.getElementById('playBtn');
+            if (audio.paused) {
+                audio.play().catch(() => {});
+                btn.innerHTML = `<i class="fa-solid fa-pause text-[10px]"></i>`;
+            } else {
+                audio.pause();
+                btn.innerHTML = `<i class="fa-solid fa-play text-[10px] pl-0.5"></i>`;
+            }
+        }
+    </script>
 </body>
 </html>
