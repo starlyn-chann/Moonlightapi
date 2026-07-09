@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="dark">
+<html lang="es" data-theme="dark" class="scroll-smooth">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -8,6 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+
 <style>
 /* ── TOKENS DE COLOR (Neon & Dark Cyberpunk) ─────────── */
 [data-theme="dark"]{
@@ -34,15 +36,18 @@
 /* ── ESTILOS BASE ───────────────────────────────────── */
 :root{--mono:'Share Tech Mono',monospace;--head:'Orbitron',sans-serif;--body:'Rajdhani',sans-serif;--r:14px;--rs:10px;--rx:7px;}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--tx);font-family:var(--body);font-size:15px;min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s;}
-body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:radial-gradient(circle,var(--b1) 1px,transparent 1px);background-size:32px 32px;opacity:.7;}
 
-/* Blobs de Fondo */
-.blob{position:fixed;border-radius:50%;pointer-events:none;z-index:0;will-change:transform;}
-.b1{width:420px;height:420px;top:-140px;right:-140px;background:radial-gradient(circle,var(--pg) 0%,transparent 70%);animation:bF 14s ease-in-out infinite alternate;}
-.b2{width:360px;height:360px;bottom:0;left:-120px;background:radial-gradient(circle,var(--pg) 0%,transparent 70%);animation:bF 11s ease-in-out infinite alternate-reverse;}
-@keyframes bF{0%{transform:translate(0,0);}100%{transform:translate(18px,-22px);}}
+.bg-grid-pattern {
+  background-size: 32px 32px;
+  background-image: linear-gradient(to right, var(--b1) 1px, transparent 1px), linear-gradient(to bottom, var(--b1) 1px, transparent 1px);
+}
+
+/* Blobs de Fondo con Animación Suave */
+.blob{position:fixed;border-radius:50%;pointer-events:none;z-index:0;will-change:transform;filter:blur(80px);opacity:0.15;}
+.b1{width:420px;height:420px;top:-140px;right:-140px;background:var(--p);animation:bF 14s ease-in-out infinite alternate;}
+.b2{width:360px;height:360px;bottom:-100px;left:-120px;background:var(--cyan);animation:bF 11s ease-in-out infinite alternate-reverse;}
+@keyframes bF{0%{transform:translate(0,0) scale(1);}100%{transform:translate(30px,-30px) scale(1.1);}}
 ::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-track{background:transparent;} ::-webkit-scrollbar-thumb{background:var(--b2);border-radius:4px;}
 
 /* Partículas */
@@ -114,11 +119,11 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 
 /* ── ENDPOINTS PANEL (Ocultos por defecto) ─────────── */
 .ep-panel{padding:0 16px;margin-top:14px;display:flex;flex-direction:column;gap:6px;}
-.ep-block { display: none; } /* Control de despliegue */
+.ep-block { display: none; }
 
 .ep-item{background:var(--card);border:1px solid var(--b1);border-radius:var(--rs);overflow:hidden;transition:border-color .2s;animation:slideIn .22s ease both;}
-.ep-item.open{border-color:var(--p2);}
-.ep-item.anime-item.open{border-color:var(--cyan);}
+.ep-item.open{border-color:var(--p2);box-shadow: 0 0 15px rgba(124,58,237,0.15);}
+.ep-item.anime-item.open{border-color:var(--cyan);box-shadow: 0 0 15px rgba(0,242,255,0.15);}
 .ep-hdr{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;}
 .ep-hdr:hover{background:rgba(124,58,237,.05);}
 .ep-item.open .ep-hdr{background:rgba(124,58,237,.08);}
@@ -147,7 +152,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 .fl{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:.6rem;font-weight:700;color:var(--mu2);margin-bottom:4px;}
 .fn{color:var(--tx2);} .ft{background:var(--card3);border:1px solid var(--b1);padding:1px 5px;border-radius:3px;font-size:.52rem;color:var(--mu);}
 .fr{color:var(--p3);font-size:.56rem;} .fh{color:var(--mu);font-size:.56rem;font-weight:400;margin-left:auto;}
-.fi{width:100%;background:var(--inp);border:1px solid var(--b2);border-radius:var(--rx);padding:9px 11px;font-family:var(--mono);font-size:.7rem;color:var(--tx);outline:none;}
+.fi{width:100%;background:var(--inp);border:1px solid var(--b2);border-radius:var(--rx);padding:9px 11px;font-family:var(--mono);font-size Tramite;.7rem;color:var(--tx);outline:none;}
 
 .ul{font-family:var(--mono);font-size:.56rem;font-weight:700;color:var(--mu);margin-bottom:4px;display:block;letter-spacing:1.5px;text-transform:uppercase;}
 .ub{background:var(--inp);border:1px solid var(--b1);border-radius:var(--rx);padding:7px 10px;display:flex;align-items:flex-start;gap:6px;margin-bottom:10px;}
@@ -161,18 +166,18 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 .anime-item .xbtn { background: var(--cyan); color: #000; box-shadow: 0 4px 14px rgba(0,242,255,0.2); }
 .anime-item .xbtn:hover { box-shadow: 0 8px 22px rgba(0,242,255,0.4); }
 
-/* Pantalla de Respuestas JSON */
-.rw{margin-top:10px;border:1px solid var(--b1);border-radius:var(--rx);overflow:hidden;background:var(--resp);}
-.rh{background:var(--card3);padding:6px 10px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--b1);}
-.rd{width:7px;height:7px;border-radius:50%;background:var(--mu);transition:background .25s;}
-.rd.ok{background:var(--green);box-shadow:0 0 5px var(--green);}
-.rd.err{background:var(--red);box-shadow:0 0 5px var(--red);}
+/* Ventana de Consola Estilo Nanzz (error.log / response.json) */
+.rw{margin-top:12px;border:1px solid var(--b2);border-radius:var(--rx);overflow:hidden;background:var(--resp);box-shadow: 0 10px 25px rgba(0,0,0,0.3);}
+.rh{background:var(--card3);padding:8px 12px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--b2);}
+.rd{width:8px;height:8px;border-radius:50%;background:var(--mu);transition:background .25s;}
+.rd.ok{background:var(--green);box-shadow:0 0 6px var(--green);}
+.rd.err{background:var(--red);box-shadow:0 0 6px var(--red);}
 .rd.ld{background:var(--yellow);animation:pulse .9s infinite;}
-.rs{font-family:var(--mono);font-size:.6rem;font-weight:700;padding:2px 6px;border-radius:3px;background:var(--card2);color:var(--mu2);text-transform:uppercase;}
+.rs{font-family:var(--mono);font-size:.6rem;font-weight:700;padding:2px 6px;border-radius:4px;background:var(--card2);color:var(--mu2);text-transform:uppercase;}
 .rs.ok{background:rgba(34,197,94,.11);color:var(--green);}
 .rs.err{background:rgba(244,63,94,.11);color:var(--red);}
 .rhr{margin-left:auto;}
-.rb{padding:10px;max-height:300px;overflow-y:auto;}
+.rb{padding:12px;max-height:300px;overflow-y:auto;}
 .rp{font-family:var(--mono);font-size:.65rem;color:var(--mu2);white-space:pre-wrap;word-break:break-word;margin:0;line-height:1.65;}
 
 /* Colores de resaltado JSON */
@@ -187,22 +192,24 @@ footer a:hover{color:var(--p3);}
 .toast{position:fixed;bottom:25px;right:14px;left:14px;max-width:280px;margin:0 auto;background:var(--card2);border:1px solid var(--p2);color:var(--p3);padding:9px 13px;border-radius:var(--rx);font-family:var(--mono);font-size:.66rem;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.45);transform:translateY(60px) scale(.96);opacity:0;transition:all .26s cubic-bezier(.34,1.56,.64,1);z-index:9999;display:flex;align-items:center;gap:7px;}
 .toast.show{transform:translateY(0) scale(1);opacity:1;}
 
-@keyframes bF{0%{transform:translate(0,0);}100%{transform:translate(18px,-22px);}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
 @keyframes logoGlow{0%,100%{opacity:1;}50%{opacity:.7;}}
 @keyframes slideIn{from{opacity:0;transform:translateX(-12px);}to{opacity:1;transform:translateX(0);}}
 </style>
 </head>
-<body>
+<body class="relative min-h-screen overflow-x-hidden selection:bg-[var(--p)] selection:text-white">
 
 <div id="splash">
   <div class="splash-logo">MOONLIGHT<em>API</em></div>
   <div class="splash-bar-wrap"><div class="splash-bar-fill"></div></div>
 </div>
 
-<div class="blob b1"></div>
-<div class="blob b2"></div>
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+  <div class="absolute inset-0 bg-grid-pattern opacity-60"></div>
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+</div>
 <div class="particles-container" id="particles-container"></div>
 
 <nav class="nav">
@@ -227,10 +234,10 @@ footer a:hover{color:var(--p3);}
 
 <div class="wrap">
   <div class="hero">
-    <div class="vid-box">
+    <div class="vid-box shadow-lg">
       <img src="https://files.catbox.moe/8i7nc1.jpeg" alt="Moonlight Banner">
     </div>
-    <div class="hero-body">
+    <div class="hero-body shadow-xl">
       <div class="eyebrow">FREE REST API</div>
       <div class="htitle">MOONLIGHT<br><span>DOCS</span></div>
       <div class="hsub">Explore &amp; test live endpoints — file engine included.</div>
@@ -281,12 +288,16 @@ footer a:hover{color:var(--p3);}
 
               <div class="rw">
                 <div class="rh">
-                  <div class="rd" id="dot-pene"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-green-500/80"></div>
+                  <div class="rd ml-2" id="dot-pene"></div>
                   <span class="rs" id="status-pene">IDLE</span>
                   <div class="rhr"><button class="icb" onclick="copiarResult('output-pene')"><i class="fas fa-copy"></i></button></div>
                 </div>
-                <div class="rb"><pre class="rp" id="output-pene">// Awaiting...</pre></div>
+                <div class="rb"><pre class="rp" id="output-pene">// Awaiting execution...</pre></div>
               </div>
+
             </div>
           </div>
         </div>
@@ -317,12 +328,16 @@ footer a:hover{color:var(--p3);}
 
               <div class="rw">
                 <div class="rh">
-                  <div class="rd" id="dot-shinobu"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-green-500/80"></div>
+                  <div class="rd ml-2" id="dot-shinobu"></div>
                   <span class="rs" id="status-shinobu">IDLE</span>
                   <div class="rhr"><button class="icb" onclick="copiarResult('output-shinobu')"><i class="fas fa-copy"></i></button></div>
                 </div>
-                <div class="rb"><pre class="rp" id="output-shinobu">// Awaiting...</pre></div>
+                <div class="rb"><pre class="rp" id="output-shinobu">// Awaiting execution...</pre></div>
               </div>
+
             </div>
           </div>
         </div>
@@ -353,12 +368,16 @@ footer a:hover{color:var(--p3);}
 
               <div class="rw">
                 <div class="rh">
-                  <div class="rd" id="dot-maid"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-green-500/80"></div>
+                  <div class="rd ml-2" id="dot-maid"></div>
                   <span class="rs" id="status-maid">IDLE</span>
                   <div class="rhr"><button class="icb" onclick="copiarResult('output-maid')"><i class="fas fa-copy"></i></button></div>
                 </div>
-                <div class="rb"><pre class="rp" id="output-maid">// Awaiting...</pre></div>
+                <div class="rb"><pre class="rp" id="output-maid">// Awaiting execution...</pre></div>
               </div>
+
             </div>
           </div>
         </div>
@@ -382,7 +401,7 @@ window.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{document.getElem
 // Sincronizar Request URLs reales según el host de Vercel
 document.getElementById('urlPene').innerText = `${window.location.origin}/api/nsfw/pene/`;
 document.getElementById('urlShinobu').innerText = `${window.location.origin}/api/aleatorio/shinobu/`;
-document.getElementById('urlMaid').innerText = `${window.location.origin}/api/aleatorio/maid/`; // Sincronización Maid
+document.getElementById('urlMaid').innerText = `${window.location.origin}/api/aleatorio/maid/`;
 
 // Partículas orgánicas de fondo
 function generarParticulas(){
@@ -414,12 +433,12 @@ function lanzarToast(msg){
   t.classList.add('show');clearTimeout(t._tm);t._tm=setTimeout(()=>t.classList.remove('show'),2200);
 }
 
-// Lógica de Categorías Exclusivas (Adaptada con blockMaid)
+// Lógica de Categorías Exclusivas
 let categoriaActual = null;
 function seleccionarCategoria(cat) {
   const bPene = document.getElementById('blockPene');
   const bShinobu = document.getElementById('blockShinobu');
-  const bMaid = document.getElementById('blockMaid'); // Añadido Maid
+  const bMaid = document.getElementById('blockMaid');
   const cNsfw = document.getElementById('chipNsfw');
   const cAnime = document.getElementById('chipAnime');
 
@@ -434,7 +453,7 @@ function seleccionarCategoria(cat) {
     bPene.style.display = 'block'; bShinobu.style.display = 'none'; bMaid.style.display = 'none';
     cNsfw.className = 'chip active-nsfw'; cAnime.className = 'chip';
   } else {
-    bPene.style.display = 'none'; bShinobu.style.display = 'block'; bMaid.style.display = 'block'; // Activa Shinobu y Maid
+    bPene.style.display = 'none'; bShinobu.style.display = 'block'; bMaid.style.display = 'block';
     cNsfw.className = 'chip'; cAnime.className = 'chip active-anime';
   }
 }
@@ -462,7 +481,6 @@ function ejecutarMotor(tipo) {
   const dot = document.getElementById(`dot-${tipo}`);
   const status = document.getElementById(`status-${tipo}`);
 
-  // Enrutador de bases locales
   let rutaJson = `./${tipo}.json`;
   let catNombre = (tipo === 'pene') ? 'NSFW' : 'Anime';
 
